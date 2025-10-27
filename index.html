@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Gestión de Servicios - MEOSA</title>
+    <!-- Carga de Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Configuración personalizada de Tailwind con la Paleta PH -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ph-primary': '#123A5B', // PRIMARY (Dark Blue)
+                        'ph-secondary-gray': '#5A5A5A', // WARNER GRAY
+                        'ph-accent-warning': '#FFA726', // Cobre Saturado (Warnings/Alertas Críticas)
+                        'ph-accent-warm': '#CAF56', // WARM ECENT (Acento de Inversión)
+                        'ph-accent-success': '#4CAF50', // MINIMAL ECENT (Progreso Exitoso)
+                        'ph-bg': '#f3f4f6', // Fondo general (Light Gray)
+                        'ph-white': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fontss.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        .progress-bar-vertical {
+            width: 3rem; /* Ancho fijo para las barras */
+            min-height: 100px;
+            display: flex;
+            flex-direction: column-reverse; /* Para que la barra crezca desde la base */
+            align-items: center;
+            position: relative;
+        }
+        .bar-fill {
+            transition: height 1s ease-out;
+            border-radius: 0.375rem 0.375rem 0 0;
+            width: 100%;
+        }
+        .table-custom th, .table-custom td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+    </style>
+</head>
+<body class="bg-ph-bg font-sans min-h-screen p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Encabezado y Saludo -->
+        <header class="bg-ph-white p-6 rounded-xl shadow-lg mb-8">
+            <h1 class="text-3xl font-extrabold text-ph-primary border-b-2 border-ph-accent-warning pb-2">
+                Dashboard de Gestión de Servicios
+            </h1>
+            <p class="mt-2 text-gray-600">
+                <span class="font-semibold">Cliente:</span> Felipe Medrano, MEOSA | Avance semanal presentado el Sábado <span class="font-bold text-ph-primary">25/10/2025</span>.
+            </p>
+        </header>
+
+        <!-- Sección 1: Mentoría de Personal (Métrica Principal) -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Card de Métrica General -->
+            <div class="lg:col-span-2 bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-accent-warning">
+                <h2 class="text-2xl font-bold text-ph-primary mb-4">Bloque de Mentoría de Personal (Q4 2025)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="p-4 bg-ph-primary text-ph-white rounded-lg">
+                        <p class="text-4xl font-extrabold" id="total-planned-hours">88</p>
+                        <p class="text-sm opacity-80 mt-1">Horas Totales Proyectadas</p>
+                    </div>
+                    <div class="p-4 bg-ph-accent-success text-ph-white rounded-lg">
+                        <p class="text-4xl font-extrabold" id="total-completed-hours">11</p>
+                        <p class="text-sm opacity-80 mt-1">Horas Ejecutadas (Acumulado)</p>
+                    </div>
+                    <div class="p-4 bg-gray-200 text-ph-primary rounded-lg">
+                        <p class="text-4xl font-extrabold" id="remaining-hours">77</p>
+                        <p class="text-sm mt-1">Horas Restantes</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Reunión Estratégica -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
+                <h2 class="text-xl font-bold text-ph-primary mb-4">Agenda Estratégica</h2>
+                <p class="text-lg font-semibold text-gray-800">One to One c/ Felipe Medrano</p>
+                <div class="mt-2 p-3 bg-ph-bg rounded-lg">
+                    <p class="text-sm text-gray-700 font-medium">Frecuencia:</p>
+                    <p class="text-base font-bold text-ph-accent-warning">Cada Sábado (Inició 25/10/2025)</p>
+                </div>
+                <p class="mt-3 text-sm text-gray-600">
+                    Propósito: Reporte semanal capitalizando avances de mentorías y servicios.
+                </p>
+            </div>
+        </section>
+
+        <!-- Sección 2: Inversión y Paquete Flexible -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Card de Inversión Total -->
+            <div class="lg:col-span-2 bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-accent-warm">
+                <h2 class="text-2xl font-bold text-ph-primary mb-4">Inversión Proyectada (Mentoría)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <!-- Métrica Principal -->
+                    <div class="text-center p-4 bg-ph-bg rounded-lg">
+                        <p class="text-sm text-gray-600 font-medium">Inversión Total Estimada (hasta 30/12)</p>
+                        <p class="text-5xl font-extrabold text-ph-accent-success mt-2" id="total-investment">$79,200</p>
+                        <p class="text-sm text-gray-500">MXN</p>
+                    </div>
+                    <!-- Gráfico Mensual -->
+                    <div class="flex justify-around items-end h-full">
+                        <!-- Octubre -->
+                        <div class="progress-bar-vertical" data-month="Oct" data-cost="18900">
+                            <div class="bar-fill bg-ph-accent-warm" id="bar-oct" style="height: 0%"></div>
+                            <span class="text-xs font-semibold mt-1">Oct ($18.9k)</span>
+                        </div>
+                        <!-- Noviembre -->
+                        <div class="progress-bar-vertical" data-month="Nov" data-cost="28800">
+                            <div class="bar-fill bg-ph-accent-warm" id="bar-nov" style="height: 0%"></div>
+                            <span class="text-xs font-semibold mt-1">Nov ($28.8k)</span>
+                        </div>
+                        <!-- Diciembre -->
+                        <div class="progress-bar-vertical" data-month="Dic" data-cost="31500">
+                            <div class="bar-fill bg-ph-accent-warm" id="bar-dic" style="height: 0%"></div>
+                            <span class="text-xs font-semibold mt-1">Dic ($31.5k)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Paquete Flexible -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
+                <h2 class="text-xl font-bold text-red-500 mb-4">Paquete Flexible Q4</h2>
+                <p class="text-lg font-semibold text-gray-800">Horas de Atención Adicional</p>
+                <div class="mt-2 p-3 bg-red-500 text-ph-white rounded-lg text-center">
+                    <p class="text-sm opacity-90">Costo por Hora de Servicio Adicional</p>
+                    <p class="text-3xl font-extrabold mt-1">$900 MXN</p>
+                </div>
+                <p class="mt-3 text-sm text-gray-600">
+                    Disponibilidad para atender cualquier solicitud o proyecto no planeado en este último trimestre.
+                </p>
+            </div>
+        </section>
+
+        <!-- Sección 3: Detalle de Mentorías -->
+        <h2 class="text-2xl font-bold text-ph-primary mb-4">Detalle de Acompañamientos Individuales</h2>
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+            <!-- Card 1: Mentoria Germán Ortiz -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-ph-accent-warning">Germán Ortiz</h3>
+                <p class="text-sm text-ph-secondary-gray mb-4">Planner Jr. | <span class="font-medium text-ph-primary">MEOSA</span></p>
+
+                <div class="space-y-2 text-sm">
+                    <p><span class="font-semibold">Inicio:</span> 20/10/2025</p>
+                    <p><span class="font-semibold">Finalización (Estimada):</span> 30/12/2025</p>
+                    <p><span class="font-semibold">Carga Semanal:</span> 4 Horas (2h Lun / 2h Vie)</p>
+                    <div class="p-3 bg-ph-bg rounded-lg mt-3">
+                        <p class="font-bold text-ph-primary">Progreso:</p>
+                        <p class="text-2xl font-extrabold text-ph-accent-success">4/44 Horas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2: Mentoria Edson Guzmán (COORDINADOR ACTUALIZADO) -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-ph-accent-warning">Edson Guzmán</h3>
+                <p class="text-sm text-ph-secondary-gray mb-4">Coord. de Proyectos Jr. | <span class="font-medium text-ph-primary">MEOSA</span></p>
+
+                <div class="space-y-2 text-sm">
+                    <p><span class="font-semibold">Inicio:</span> 20/10/2025</p>
+                    <p><span class="font-semibold">Finalización (Estimada):</span> 30/12/2025</p>
+                    <p><span class="font-semibold">Carga Semanal:</span> 3 Horas (1h Lun / 2h Vie)</p>
+                    <div class="p-3 bg-ph-bg rounded-lg mt-3">
+                        <p class="font-bold text-ph-primary">Progreso:</p>
+                        <p class="text-2xl font-extrabold text-ph-accent-success">3/31 Horas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3: Mentoria Johan López -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-xl font-bold text-ph-accent-warning">Johan López</h3>
+                <p class="text-sm text-ph-secondary-gray mb-4">Operativo Serv. Póliza Mto. SuKarne | <span class="font-medium text-ph-primary">MEOSA</span></p>
+
+                <div class="space-y-2 text-sm">
+                    <p><span class="font-semibold">Inicio:</span> 03/10/2025</p>
+                    <p><span class="font-semibold">Carga Semanal:</span> 1 Hora (1h Vie)</p>
+                    <p class="font-bold text-ph-accent-warning">Duración: Más Extensa</p>
+                    <div class="p-3 bg-ph-bg rounded-lg mt-3">
+                        <p class="font-bold text-ph-primary">Progreso:</p>
+                        <p class="text-2xl font-extrabold text-ph-accent-success">4/13 Horas</p>
+                        <p class="text-xs text-ph-secondary-gray">Proyectadas hasta 30/12/2025</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 4: Hitos Críticos y Proyectos Nuevos -->
+        <h2 class="text-2xl font-bold text-ph-primary mb-4">Hitos Críticos y Proyectos Nuevos</h2>
+        <section class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8"> <!-- Cambiado a 1 columna para enfocar en el hito PFD -->
+
+            <!-- Card 4: Documentación Diagramas (Hito Crítico) -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-accent-warning">
+                <h3 class="text-2xl font-bold text-ph-primary mb-4">Hito Crítico: Documentación de Flujos</h3>
+
+                <div class="flex items-center justify-between mb-4">
+                    <p class="text-lg font-semibold text-gray-700">Diagramas de Flujo de Proceso - MEOSA</p>
+                    <div class="text-4xl font-extrabold text-ph-accent-warning" id="documentation-percentage">78%</div>
+                </div>
+
+                <!-- Barra de Progreso -->
+                <div class="w-full bg-gray-200 rounded-full h-4">
+                    <div id="documentation-progress" class="bg-ph-accent-warning h-4 rounded-full transition-all duration-700" style="width: 78%"></div>
+                </div>
+                <div class="flex justify-between text-sm mt-1 text-gray-600">
+                    <span>Avance</span>
+                    <span class="font-bold text-red-600">¡Vencimiento: 31/10/2025!</span>
+                </div>
+                <p class="mt-4 text-sm text-ph-secondary-gray">
+                    <span class="font-semibold text-ph-primary">Status:</span> En fase final. Foco en alcanzar el 100% de la meta esta semana para cumplir con el plazo.
+                </p>
+            </div>
+
+        </section>
+        
+        <!-- Sub-Sección: Compromiso Financiero PFD (Estratégico) -->
+        <h2 class="text-2xl font-bold text-ph-primary mb-4">Conciliación Financiera (Hito PFD)</h2>
+        <section class="mb-8">
+            <!-- Card 10: Facturación PFD Pendiente (ESTRATÉGICA) -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-accent-warning max-w-lg">
+                <h3 class="text-xl font-bold text-ph-primary mb-3">Estado de Facturación PFD (GEMA)</h3>
+                <div class="p-3 bg-ph-accent-warning/10 rounded-lg mb-4">
+                    <p class="text-lg font-semibold text-ph-primary">Propuesta Original: $99,840.00 MXN</p>
+                    <p class="text-xs text-ph-secondary-gray italic">ME25-003R2 Gestión Eficiente de Modelos Administrativos (GEMA)</p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center text-sm font-semibold p-2 bg-ph-bg rounded">
+                        <span class="text-ph-primary">Facturado Cohorte Septiembre:</span>
+                        <span class="text-ph-accent-success">$59,400.00 MXN</span>
+                    </div>
+                    <div class="flex justify-between items-center text-base font-bold p-3 bg-red-100 rounded border-2 border-red-500">
+                        <span class="text-red-600">Diferencia por Hacer (Octubre):</span>
+                        <span class="text-red-600">$40,440.00 MXN</span>
+                    </div>
+                    <p class="text-xs text-ph-secondary-gray mt-2 font-semibold">
+                        ¡Pago condicionado a la aprobación final del entregable (Visto Bueno) después del 31/10!
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lanzamiento de Proyecto Estratégico (GRAMOSA) - MOVED HERE -->
+        <h2 class="text-2xl font-bold text-ph-primary mb-4">Lanzamiento de Proyecto Estratégico</h2>
+        <section class="mb-8"> 
+            <!-- Card 5: Nuevo Proyecto GRAMOSA (Kickoff) - MOVIDO -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-accent-success max-w-lg">
+                <h3 class="text-2xl font-bold text-ph-primary mb-4">Lanzamiento de Proyecto: Consultoría</h3>
+
+                <p class="text-lg font-semibold text-ph-accent-success">Desarrollo de Ingeniería Básica+ (GRAMOSA)</p>
+                <p class="text-sm text-ph-secondary-gray mb-4">Personal Acompañado: Ingeniería MEOSA</p>
+
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="font-semibold text-ph-primary">Inicio Oficial:</p>
+                            <p>27/10/2025 (Esta Semana)</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-ph-primary">Duración Proyectada:</p>
+                            <p>4 Meses (Finaliza Enero 2026)</p>
+                        </div>
+                    </div>
+
+                    <!-- Progreso del Proyecto -->
+                    <div class="p-3 bg-ph-accent-success/10 rounded-lg">
+                        <div class="flex items-center justify-between text-sm mb-2">
+                            <span class="font-bold text-ph-accent-success">Progreso Inicial</span>
+                            <span class="font-bold text-ph-accent-success" id="gramosa-percentage">5%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div id="gramosa-progress" class="bg-ph-accent-success h-3 rounded-full transition-all duration-700" style="width: 5%"></div>
+                        </div>
+                        <p class="mt-2 text-xs text-ph-secondary-gray">
+                            Foco Semanal: Kickoff, Definición de Responsables y Orientación de Alcance.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Sección 5: Próximos Pasos Estratégicos -->
+        <h2 class="text-2xl font-bold text-ph-primary mb-4">Próximos Pasos Estratégicos y Divulgación</h2>
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+            <!-- Card 6: Plan de Divulgación de PFDs (REVISADO) -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
+                <h3 class="text-xl font-bold text-ph-primary mb-3">1. Flujo de Adopción de Diagramas de Proceso (PFDs)</h3>
+
+                <div class="p-3 bg-ph-primary/10 rounded-lg mb-3">
+                    <p class="font-semibold text-ph-primary">Hito: Finalización Documentación (31/10/2025)</p>
+                </div>
+
+                <ol class="list-decimal pl-5 text-sm space-y-2 text-ph-secondary-gray">
+                    <li class="font-bold text-ph-primary">Revisión del Cliente (Felipe Medrano)</li>
+                    <p class="ml-2 text-xs text-ph-secondary-gray italic">Disponibilidad de los documentos finalizados para su *revisión y validación* por parte del cliente.</p>
+                    <li class="font-bold text-ph-primary">Correcciones y Ajustes</li>
+                    <p class="ml-2 text-xs text-ph-secondary-gray italic">De ser necesario, se realizarán correcciones con el apoyo de **Pedro Herrera** y **Alfredo Luna** (Creadores de PFDs).</p>
+                    <li class="font-bold text-ph-primary">Preparación de Divulgación Interna</li>
+                    <p class="ml-2 text-xs text-ph-secondary-gray italic">Definir fecha de lanzamiento y capacitación para el personal clave (posterior a la aprobación final).</p>
+                </ol>
+            </div>
+
+            <!-- Card 7: Divulgación Avance Póliza SuKarne -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
+                <h3 class="text-xl font-bold text-ph-primary mb-3">2. Capitalización de Proyectos Estratégicos</h3>
+
+                <div class="p-3 bg-ph-primary/10 rounded-lg mb-3">
+                    <p class="font-semibold text-ph-primary">Foco: Póliza de Mantenimiento SuKarne</p>
+                </div>
+
+                <ul class="list-disc pl-5 text-sm space-y-2 text-ph-secondary-gray">
+                    <li>**Objetivo:** Transmitir al cliente el éxito y los resultados tangibles de la póliza de mantenimiento.</li>
+                    <li>**Plan de Divulgación:** **Evento/Reunión Ejecutiva en Noviembre 2025** para presentar formalmente los avances y métricas de desempeño.</li>
+                    <li>**Acción Sugerida:** Preparar una presentación de alto impacto (resumen ejecutivo) que destaque la eficiencia operativa lograda y el valor entregado.</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <!-- Sección 6: Gestión Financiera y Acuerdos de Pago (No Contractual Operacional) -->
+        <h2 class="text-2xl font-bold text-ph-primary mb-4">Gestión de Acuerdos de Pago (Anticipo y Préstamo)</h2>
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Card 8: Amortización de Anticipo -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-accent-success">
+                <h3 class="text-xl font-bold text-ph-primary mb-3">Amortización de Anticipo (Acuerdo)</h3>
+                <div class="p-3 bg-ph-accent-success/10 rounded-lg mb-4">
+                    <p class="text-lg font-semibold text-ph-accent-success">Saldo Anticipo a Amortizar: $99,680 MXN</p>
+                    <p class="text-xs text-ph-secondary-gray italic">Esquema incremental independiente a las horas generadas.</p>
+                </div>
+
+                <table class="w-full text-sm table-custom border-collapse">
+                    <thead>
+                        <tr class="bg-ph-primary text-ph-white rounded-t-lg">
+                            <th class="rounded-tl-lg">Mes</th>
+                            <th>Monto Amortizado</th>
+                            <th class="rounded-tr-lg">Estatus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-200">
+                            <td class="font-semibold">Octubre 2025</td>
+                            <td class="text-ph-primary">$20,000 MXN</td>
+                            <td class="text-ph-accent-success font-bold">Definido</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 bg-gray-50">
+                            <td class="font-semibold">Noviembre 2025</td>
+                            <td class="text-ph-primary">$35,000 MXN</td>
+                            <td class="text-ph-accent-success font-bold">Definido</td>
+                        </tr>
+                        <tr class="border-b border-gray-200">
+                            <td class="font-semibold">Diciembre 2025</td>
+                            <td class="text-ph-primary">$44,680 MXN</td>
+                            <td class="text-ph-accent-success font-bold">Definido</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Card 9: Préstamo Personal -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
+                <h3 class="text-xl font-bold text-ph-primary mb-3">Préstamo Personal (Plan de Pagos)</h3>
+                <div class="p-3 bg-ph-primary/10 rounded-lg mb-4">
+                    <p class="text-lg font-semibold text-ph-primary">Manejo y Clarificación</p>
+                    <p class="text-xs text-ph-secondary-gray italic">Plan de pagos acordado de Octubre 2025 a Marzo 2026.</p>
+                </div>
+
+                <table class="w-full text-sm table-custom border-collapse">
+                    <thead>
+                        <tr class="bg-ph-primary text-ph-white">
+                            <th>Mes</th>
+                            <th>Monto a Pagar</th>
+                            <th>No. de Pagos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-gray-200">
+                            <td class="font-semibold">Octubre 2025</td>
+                            <td class="text-ph-primary">$7,500 MXN</td>
+                            <td class="text-center">1</td>
+                        </tr>
+                        <tr class="border-b border-gray-200 bg-gray-50">
+                            <td class="font-semibold">Noviembre 2025 - Marzo 2026</td>
+                            <td class="text-ph-primary">$6,500 MXN</td>
+                            <td class="text-center">5</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="mt-4 text-xs text-ph-secondary-gray">
+                    Nota: El plan considera 1 pago inicial de $7,500 y 5 pagos subsiguientes de $6,500 MXN.
+                </p>
+            </div>
+
+        </section>
+
+    </div>
+
+    <script>
+        // Datos de Proyección de Costos (Recalculados con 3h/semana para Edson Guzmán)
+        const investmentData = {
+            // Octubre (21h total): 8h Germán + 8h Edson + 5h Johan (21 * 900)
+            oct: { cost: 18900, max: 31500 },
+            // Noviembre (32h total): 16h Germán + 12h Edson + 4h Johan (32 * 900)
+            nov: { cost: 28800, max: 31500 },
+            // Diciembre (35h total): 18h Germán + 13h Edson + 4h Johan (35 * 900)
+            dic: { cost: 31500, max: 31500 }
+        };
+
+        // Función para inicializar la información y hacerla dinámica
+        document.addEventListener('DOMContentLoaded', () => {
+            // ------------------------------------
+            // 1. Métricas de Mentoría (Actualizadas)
+            // ------------------------------------
+            const totalPlannedHours = 88;
+            const totalCompletedHours = 11;
+            const remainingHours = totalPlannedHours - totalCompletedHours;
+            const totalInvestmentMXN = 79200;
+
+            // Actualizar métricas de Mentoría
+            document.getElementById('total-planned-hours').textContent = totalPlannedHours;
+            document.getElementById('total-completed-hours').textContent = totalCompletedHours;
+            document.getElementById('remaining-hours').textContent = remainingHours;
+
+            // ------------------------------------
+            // 2. Inversión Total (Actualizada)
+            // ------------------------------------
+            const totalInvestmentElement = document.getElementById('total-investment');
+            // Formatear a pesos mexicanos con separador de miles
+            totalInvestmentElement.textContent = `$${totalInvestmentMXN.toLocaleString('es-MX')}`;
+
+            // ------------------------------------
+            // 3. Proyección de Costos Mensual (Gráfico de Barras)
+            // ------------------------------------
+            const maxCost = 31500; // El costo de Diciembre es el máximo para escalar las barras.
+
+            const updateMonthlyBars = () => {
+                Object.keys(investmentData).forEach(monthKey => {
+                    const data = investmentData[monthKey];
+                    const barId = `bar-${monthKey}`;
+                    const barElement = document.getElementById(barId);
+
+                    if (barElement) {
+                        // Calcular altura como porcentaje del costo máximo
+                        const percentage = (data.cost / maxCost) * 100;
+                        barElement.style.height = `${percentage}%`;
+                    }
+                });
+            };
+
+            // ------------------------------------
+            // 4. Hitos Críticos y Proyectos (Barras de Progreso)
+            // ------------------------------------
+
+            // Documentación Diagramas (78%)
+            const docProgress = 78;
+            const docProgressBar = document.getElementById('documentation-progress');
+            const docPercentageText = document.getElementById('documentation-percentage');
+            docProgressBar.style.width = `${docProgress}%`;
+            docPercentageText.textContent = `${docProgress}%`;
+
+            // Consultoría GRAMOSA (5% - Kickoff)
+            const gramosaProgress = 5;
+            const gramosaProgressBar = document.getElementById('gramosa-progress');
+            const gramosaPercentageText = document.getElementById('gramosa-percentage');
+            gramosaProgressBar.style.width = `${gramosaProgress}%`;
+            gramosaPercentageText.textContent = `${gramosaProgress}%`;
+
+            // Ejecutar la actualización de barras mensuales
+            updateMonthlyBars();
+        });
+    </script>
+</body>
+</html>
