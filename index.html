@@ -57,7 +57,7 @@
                 Dashboard de Gestión de Servicios
             </h1>
             <p class="mt-2 text-gray-600">
-                <span class="font-semibold">Cliente:</span> Felipe Medrano, MEOSA | Avance semanal presentado el Sábado <span class="font-bold text-ph-primary">25/10/2025</span>.
+                <span class="font-semibold">Cliente:</span> Felipe Medrano, MEOSA | Avance semanal presentado el Sábado <span class="font-bold text-ph-primary">31/10/2025</span>. <!-- FECHA ACTUALIZADA -->
             </p>
         </header>
 
@@ -72,11 +72,11 @@
                         <p class="text-sm opacity-80 mt-1">Horas Totales Proyectadas</p>
                     </div>
                     <div class="p-4 bg-ph-accent-success text-ph-white rounded-lg">
-                        <p class="text-4xl font-extrabold" id="total-completed-hours">11</p>
+                        <p class="text-4xl font-extrabold" id="total-completed-hours">29</p> <!-- TOTAL ACTUALIZADO: 11 + 8 + 6 + 4 = 29 -->
                         <p class="text-sm opacity-80 mt-1">Horas Ejecutadas (Acumulado)</p>
                     </div>
                     <div class="p-4 bg-gray-200 text-ph-primary rounded-lg">
-                        <p class="text-4xl font-extrabold" id="remaining-hours">77</p>
+                        <p class="text-4xl font-extrabold" id="remaining-hours">59</p> <!-- RESTANTES ACTUALIZADO: 88 - 29 = 59 -->
                         <p class="text-sm mt-1">Horas Restantes</p>
                     </div>
                 </div>
@@ -108,37 +108,49 @@
                         <p class="text-5xl font-extrabold text-ph-accent-success mt-2" id="total-investment">$79,200</p>
                         <p class="text-sm text-gray-500">MXN</p>
                     </div>
-                    <!-- Gráfico Mensual -->
+                    <!-- Gráfico Mensual (ACTUALIZADO CON COSTO REAL DE OCTUBRE) -->
                     <div class="flex justify-around items-end h-full">
                         <!-- Octubre -->
-                        <div class="progress-bar-vertical" data-month="Oct" data-cost="18900">
-                            <div class="bar-fill bg-ph-accent-warm" id="bar-oct" style="height: 0%"></div>
-                            <span class="text-xs font-semibold mt-1">Oct ($18.9k)</span>
+                        <div class="progress-bar-vertical" data-month="Oct" data-cost="26100"> <!-- COSTO REAL ACTUALIZADO: 29 hrs * $900 -->
+                            <div class="bar-fill bg-ph-accent-warning" id="bar-oct" style="height: 0%"></div> <!-- Color de alerta/definitivo -->
+                            <span class="text-xs font-semibold mt-1">Oct ($26.1k)</span>
                         </div>
-                        <!-- Noviembre -->
+                        <!-- Noviembre (Proyección se mantiene) -->
                         <div class="progress-bar-vertical" data-month="Nov" data-cost="28800">
                             <div class="bar-fill bg-ph-accent-warm" id="bar-nov" style="height: 0%"></div>
                             <span class="text-xs font-semibold mt-1">Nov ($28.8k)</span>
                         </div>
-                        <!-- Diciembre -->
+                        <!-- Diciembre (Proyección se mantiene) -->
                         <div class="progress-bar-vertical" data-month="Dic" data-cost="31500">
                             <div class="bar-fill bg-ph-accent-warm" id="bar-dic" style="height: 0%"></div>
                             <span class="text-xs font-semibold mt-1">Dic ($31.5k)</span>
                         </div>
                     </div>
                 </div>
+                <p class="mt-4 text-xs text-ph-secondary-gray italic">
+                    **Nota:** El costo de Octubre es **definitivo** y refleja 29 horas ejecutadas (incl. 4 horas flexibles). Noviembre y Diciembre mantienen la proyección inicial.
+                </p>
             </div>
 
-            <!-- Card de Paquete Flexible -->
-            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-red-500">
-                <h2 class="text-xl font-bold text-red-500 mb-4">Paquete Flexible Q4</h2>
+            <!-- Card de Paquete Flexible (ACTUALIZADO CON USO) -->
+            <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
+                <h2 class="text-xl font-bold text-ph-primary mb-4">Paquete Flexible Q4 (Usado)</h2>
                 <p class="text-lg font-semibold text-gray-800">Horas de Atención Adicional</p>
-                <div class="mt-2 p-3 bg-red-500 text-ph-white rounded-lg text-center">
-                    <p class="text-sm opacity-90">Costo por Hora de Servicio Adicional</p>
-                    <p class="text-3xl font-extrabold mt-1">$900 MXN</p>
+                
+                <div class="mt-2 p-3 bg-ph-primary text-ph-white rounded-lg text-center">
+                    <p class="text-sm opacity-90">Horas Usadas (Comfosa - Octubre)</p>
+                    <p class="text-3xl font-extrabold mt-1">4 Horas</p>
                 </div>
-                <p class="mt-3 text-sm text-gray-600">
-                    Disponibilidad para atender cualquier solicitud o proyecto no planeado en este último trimestre.
+
+                <p class="mt-3 text-sm text-gray-600 font-semibold">
+                    Detalle:
+                </p>
+                <ul class="list-disc pl-5 text-xs text-ph-secondary-gray">
+                    <li>Sesiones de trabajo con **Victor Murrieta**.</li>
+                    <li>Ajuste de cronograma y seguimiento a actividades de **Humberto**.</li>
+                </ul>
+                <p class="mt-3 text-xs text-gray-500 italic">
+                    El costo por hora de servicio adicional es de $900 MXN.
                 </p>
             </div>
         </section>
@@ -158,7 +170,7 @@
                     <p><span class="font-semibold">Carga Semanal:</span> 4 Horas (2h Lun / 2h Vie)</p>
                     <div class="p-3 bg-ph-bg rounded-lg mt-3">
                         <p class="font-bold text-ph-primary">Progreso:</p>
-                        <p class="text-2xl font-extrabold text-ph-accent-success">4/44 Horas</p>
+                        <p class="text-2xl font-extrabold text-ph-accent-success">12/44 Horas</p>
                     </div>
                 </div>
             </div>
@@ -174,7 +186,7 @@
                     <p><span class="font-semibold">Carga Semanal:</span> 3 Horas (1h Lun / 2h Vie)</p>
                     <div class="p-3 bg-ph-bg rounded-lg mt-3">
                         <p class="font-bold text-ph-primary">Progreso:</p>
-                        <p class="text-2xl font-extrabold text-ph-accent-success">3/31 Horas</p>
+                        <p class="text-2xl font-extrabold text-ph-accent-success">9/31 Horas</p>
                     </div>
                 </div>
             </div>
@@ -207,19 +219,19 @@
 
                 <div class="flex items-center justify-between mb-4">
                     <p class="text-lg font-semibold text-gray-700">Diagramas de Flujo de Proceso - MEOSA</p>
-                    <div class="text-4xl font-extrabold text-ph-accent-warning" id="documentation-percentage">78%</div>
+                    <div class="text-4xl font-extrabold text-ph-accent-warning" id="documentation-percentage">95%</div>
                 </div>
 
                 <!-- Barra de Progreso -->
                 <div class="w-full bg-gray-200 rounded-full h-4">
-                    <div id="documentation-progress" class="bg-ph-accent-warning h-4 rounded-full transition-all duration-700" style="width: 78%"></div>
+                    <div id="documentation-progress" class="bg-ph-accent-warning h-4 rounded-full transition-all duration-700" style="width: 95%"></div>
                 </div>
                 <div class="flex justify-between text-sm mt-1 text-gray-600">
                     <span>Avance</span>
                     <span class="font-bold text-red-600">¡Vencimiento: 31/10/2025!</span>
                 </div>
                 <p class="mt-4 text-sm text-ph-secondary-gray">
-                    <span class="font-semibold text-ph-primary">Status:</span> En fase final. Foco en alcanzar el 100% de la meta esta semana para cumplir con el plazo.
+                    <span class="font-semibold text-ph-primary">Status:</span> En fase final, al 95%. Se requiere Visto Bueno y gestión de correcciones post-revisión.
                 </p>
             </div>
 
@@ -278,13 +290,13 @@
                     <div class="p-3 bg-ph-accent-success/10 rounded-lg">
                         <div class="flex items-center justify-between text-sm mb-2">
                             <span class="font-bold text-ph-accent-success">Progreso Inicial</span>
-                            <span class="font-bold text-ph-accent-success" id="gramosa-percentage">5%</span>
+                            <span class="font-bold text-ph-accent-success" id="gramosa-percentage">6%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div id="gramosa-progress" class="bg-ph-accent-success h-3 rounded-full transition-all duration-700" style="width: 5%"></div>
+                            <div id="gramosa-progress" class="bg-ph-accent-success h-3 rounded-full transition-all duration-700" style="width: 6%"></div>
                         </div>
                         <p class="mt-2 text-xs text-ph-secondary-gray">
-                            Foco Semanal: Kickoff, Definición de Responsables y Orientación de Alcance.
+                            Avance del 1% post-Kickoff en Orientación de Alcance y Recolección de Información.
                         </p>
                     </div>
                 </div>
@@ -305,10 +317,13 @@
 
                 <ol class="list-decimal pl-5 text-sm space-y-2 text-ph-secondary-gray">
                     <li class="font-bold text-ph-primary">Revisión del Cliente (Felipe Medrano)</li>
-                    <p class="ml-2 text-xs text-ph-secondary-gray italic">Disponibilidad de los documentos finalizados para su *revisión y validación* por parte del cliente.</p>
-                    <li class="font-bold text-ph-primary">Correcciones y Ajustes</li>
-                    <p class="ml-2 text-xs text-ph-secondary-gray italic">De ser necesario, se realizarán correcciones con el apoyo de **Pedro Herrera** y **Alfredo Luna** (Creadores de PFDs).</p>
+                    <!-- ACTUALIZADO -->
+                    <p class="ml-2 text-xs text-ph-secondary-gray italic">Periodo de revisión y validación de los documentos finalizados: **06/11/2025 al 13/11/2025**.</p>
+                    <li class="font-bold text-ph-primary">Plan de Divulgación y Correcciones</li>
+                    <!-- ACTUALIZADO -->
+                    <p class="ml-2 text-xs text-ph-secondary-gray italic">Proponer reunión para la definición del plan de divulgación para el **14/11/2025** y recepción de correcciones.</p>
                     <li class="font-bold text-ph-primary">Preparación de Divulgación Interna</li>
+                    <!-- MANTENIDO -->
                     <p class="ml-2 text-xs text-ph-secondary-gray italic">Definir fecha de lanzamiento y capacitación para el personal clave (posterior a la aprobación final).</p>
                 </ol>
             </div>
@@ -384,6 +399,7 @@
                             <th>Mes</th>
                             <th>Monto a Pagar</th>
                             <th>No. de Pagos</th>
+                            <th>Estatus</th> <!-- NUEVA COLUMNA -->
                         </tr>
                     </thead>
                     <tbody>
@@ -391,11 +407,13 @@
                             <td class="font-semibold">Octubre 2025</td>
                             <td class="text-ph-primary">$7,500 MXN</td>
                             <td class="text-center">1</td>
+                            <td class="text-ph-accent-success font-bold">Realizado</td> <!-- ACTUALIZADO -->
                         </tr>
                         <tr class="border-b border-gray-200 bg-gray-50">
                             <td class="font-semibold">Noviembre 2025 - Marzo 2026</td>
                             <td class="text-ph-primary">$6,500 MXN</td>
                             <td class="text-center">5</td>
+                            <td>Pendiente</td>
                         </tr>
                     </tbody>
                 </table>
@@ -409,13 +427,13 @@
     </div>
 
     <script>
-        // Datos de Proyección de Costos (Recalculados con 3h/semana para Edson Guzmán)
+        // Datos de Proyección de Costos (ACTUALIZADOS)
         const investmentData = {
-            // Octubre (21h total): 8h Germán + 8h Edson + 5h Johan (21 * 900)
-            oct: { cost: 18900, max: 31500 },
-            // Noviembre (32h total): 16h Germán + 12h Edson + 4h Johan (32 * 900)
-            nov: { cost: 28800, max: 31500 },
-            // Diciembre (35h total): 18h Germán + 13h Edson + 4h Johan (35 * 900)
+            // Octubre: COSTO REAL (29 hrs * $900 = $26,100)
+            oct: { cost: 26100, max: 31500 }, // ACTUALIZADO COSTO REAL
+            // Noviembre: PROYECCIÓN (32 hrs * $900 = $28,800)
+            nov: { cost: 28800, max: 31500 }, 
+            // Diciembre: PROYECCIÓN (35 hrs * $900 = $31,500)
             dic: { cost: 31500, max: 31500 }
         };
 
@@ -425,7 +443,7 @@
             // 1. Métricas de Mentoría (Actualizadas)
             // ------------------------------------
             const totalPlannedHours = 88;
-            const totalCompletedHours = 11;
+            const totalCompletedHours = 29; 
             const remainingHours = totalPlannedHours - totalCompletedHours;
             const totalInvestmentMXN = 79200;
 
@@ -456,6 +474,12 @@
                         // Calcular altura como porcentaje del costo máximo
                         const percentage = (data.cost / maxCost) * 100;
                         barElement.style.height = `${percentage}%`;
+                        
+                        // Cambiar color de Octubre para destacar que es el costo real/cerrado
+                        if (monthKey === 'oct') {
+                             barElement.classList.add('bg-ph-accent-warning');
+                             barElement.classList.remove('bg-ph-accent-warm');
+                        }
                     }
                 });
             };
@@ -464,15 +488,15 @@
             // 4. Hitos Críticos y Proyectos (Barras de Progreso)
             // ------------------------------------
 
-            // Documentación Diagramas (78%)
-            const docProgress = 78;
+            // Documentación Diagramas (95%)
+            const docProgress = 95; 
             const docProgressBar = document.getElementById('documentation-progress');
             const docPercentageText = document.getElementById('documentation-percentage');
             docProgressBar.style.width = `${docProgress}%`;
             docPercentageText.textContent = `${docProgress}%`;
 
-            // Consultoría GRAMOSA (5% - Kickoff)
-            const gramosaProgress = 5;
+            // Consultoría GRAMOSA (6% - Kickoff)
+            const gramosaProgress = 6; 
             const gramosaProgressBar = document.getElementById('gramosa-progress');
             const gramosaPercentageText = document.getElementById('gramosa-percentage');
             gramosaProgressBar.style.width = `${gramosaProgress}%`;
