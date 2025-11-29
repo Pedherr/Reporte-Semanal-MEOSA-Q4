@@ -57,7 +57,7 @@
                 Dashboard de Gestión de Servicios
             </h1>
             <p class="mt-2 text-gray-600">
-                <span class="font-semibold">Cliente:</span> Felipe Medrano, MEOSA | Avance semanal presentado el Sábado <span class="font-bold text-ph-primary">22/11/2025</span>. <!-- FECHA ACTUALIZADA -->
+                <span class="font-semibold">Cliente:</span> Felipe Medrano, MEOSA | Avance semanal presentado el Sábado <span class="font-bold text-ph-primary">29/11/2025</span>. <!-- FECHA ACTUALIZADA -->
             </p>
         </header>
 
@@ -72,11 +72,11 @@
                         <p class="text-sm opacity-80 mt-1">Horas Totales Proyectadas</p>
                     </div>
                     <div class="p-4 bg-ph-accent-success text-ph-white rounded-lg">
-                        <p class="text-4xl font-extrabold" id="total-completed-hours">51</p> <!-- TOTAL ACTUALIZADO: 50 + 1 = 51 -->
+                        <p class="text-4xl font-extrabold" id="total-completed-hours">61</p> <!-- TOTAL ACTUALIZADO: 51 + 10 = 61 -->
                         <p class="text-sm opacity-80 mt-1">Horas Ejecutadas (Acumulado)</p>
                     </div>
                     <div class="p-4 bg-gray-200 text-ph-primary rounded-lg">
-                        <p class="text-4xl font-extrabold" id="remaining-hours">37</p> <!-- RESTANTES ACTUALIZADO: 88 - 51 = 37 -->
+                        <p class="text-4xl font-extrabold" id="remaining-hours">27</p> <!-- RESTANTES ACTUALIZADO: 88 - 61 = 27 -->
                         <p class="text-sm mt-1">Horas Restantes</p>
                     </div>
                 </div>
@@ -108,45 +108,45 @@
                         <p class="text-5xl font-extrabold text-ph-accent-success mt-2" id="total-investment">$79,200</p>
                         <p class="text-sm text-gray-500">MXN</p>
                     </div>
-                    <!-- Gráfico Mensual (ACTUALIZADO CON COSTO REAL DE OCTUBRE Y ACUMULADO NOVIEMBRE) -->
+                    <!-- Gráfico Mensual (ACTUALIZADO CON COSTO REAL DE OCTUBRE Y NOVIEMBRE, DICIEMBRE EN 0) -->
                     <div class="flex justify-around items-end h-full">
                         <!-- Octubre (Congelado y en Verde) -->
                         <div class="progress-bar-vertical" data-month="Oct" data-cost="26100"> 
                             <div class="bar-fill bg-ph-accent-success" id="bar-oct" style="height: 0%"></div> <!-- Color Verde para Cerrado -->
                             <span class="text-xs font-semibold mt-1">Oct ($26.1k)</span>
                         </div>
-                        <!-- Noviembre (Acumulado Real en Amarillo) -->
-                        <div class="progress-bar-vertical" data-month="Nov" data-cost="19800"> <!-- ACTUALIZADO: 22 horas ejecutadas en Nov x $900 = $19,800 -->
-                            <div class="bar-fill bg-ph-accent-warning" id="bar-nov" style="height: 0%"></div> <!-- Color Amarillo para Acumulado -->
-                            <span class="text-xs font-semibold mt-1">Nov ($19.8k)</span> <!-- ACTUALIZADO TEXTO -->
+                        <!-- Noviembre (Costo Definitivo en Verde) -->
+                        <div class="progress-bar-vertical" data-month="Nov" data-cost="28800"> 
+                            <div class="bar-fill bg-ph-accent-warning" id="bar-nov" style="height: 0%"></div> <!-- Color actualizado en script -->
+                            <span class="text-xs font-semibold mt-1">Nov ($28.8k)</span> <!-- ACTUALIZADO TEXTO -->
                         </div>
-                        <!-- Diciembre (Proyección se mantiene en Gris) -->
-                        <div class="progress-bar-vertical" data-month="Dic" data-cost="31500">
-                            <div class="bar-fill bg-ph-secondary-gray" id="bar-dic" style="height: 0%"></div> <!-- Color Gris para Proyección -->
-                            <span class="text-xs font-semibold mt-1">Dic ($31.5k)</span>
+                        <!-- Diciembre (Reset a 0) -->
+                        <div class="progress-bar-vertical" data-month="Dic" data-cost="0">
+                            <div class="bar-fill bg-ph-secondary-gray" id="bar-dic" style="height: 0%"></div> <!-- Color Gris para Acumulado -->
+                            <span class="text-xs font-semibold mt-1">Dic ($0.0k)</span>
                         </div>
                     </div>
                 </div>
                 <p class="mt-4 text-xs text-ph-secondary-gray italic">
-                    **Nota:** Octubre es **costo definitivo (29h)**. Noviembre refleja el **costo acumulado real (22h)** a la fecha.
+                    **Nota:** Octubre y Noviembre reflejan **costo definitivo (29h y 32h)**. Diciembre se ha reseteado a $0 para comenzar la acumulación semanal.
                 </p>
             </div>
 
-            <!-- Card de Paquete Flexible (ACTUALIZADO CON USO) -->
+            <!-- Card de Paquete Flexible (SIN CAMBIOS) -->
             <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
                 <h2 class="text-xl font-bold text-ph-primary mb-4">Paquete Flexible Q4 (Usado)</h2>
                 <p class="text-lg font-semibold text-gray-800">Horas de Atención Adicional</p>
                 
                 <div class="mt-2 p-3 bg-ph-primary text-ph-white rounded-lg text-center">
                     <p class="text-sm opacity-90">Horas Usadas (Comfosa / Agroalimentos - Acumulado)</p>
-                    <p class="text-3xl font-extrabold mt-1">10 Horas</p> <!-- ACTUALIZADO: 9 + 1 = 10 -->
+                    <p class="text-3xl font-extrabold mt-1">10 Horas</p> <!-- SIN CAMBIOS -->
                 </div>
 
                 <p class="mt-3 text-sm text-gray-600 font-semibold">
-                    Detalle de Horas (Semana 22/11):
+                    Detalle de Horas (Acumulado):
                 </p>
                 <ul class="list-disc pl-5 text-xs text-ph-secondary-gray">
-                    <li>**1 Hora** (Viernes 21): Sesión de trabajo con Jesús Martínez (respuesta al cliente y justificación de retraso de entrega). <!-- NUEVO DETALLE -->
+                    <li>**1 Hora** (Viernes 21): Sesión de trabajo con Jesús Martínez (respuesta al cliente y justificación de retraso de entrega).
                     <li>5 Horas previas: Organización de reportes técnicos de Agroalimentos de Puebla Roladoras.</li> 
                     <li>4 Horas previas (Octubre): Sesiones con Victor Murrieta y Humberto (Comfosa).</li>
                 </ul>
@@ -156,7 +156,7 @@
             </div>
         </section>
 
-        <!-- Sección 3: Detalle de Mentorías -->
+        <!-- Sección 3: Detalle de Mentorías (SIN CAMBIOS) -->
         <h2 class="text-2xl font-bold text-ph-primary mb-4">Detalle de Acompañamientos Individuales</h2>
         <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
 
@@ -171,7 +171,7 @@
                     <p><span class="font-semibold">Carga Semanal:</span> 4 Horas (2h Lun / 2h Vie)</p>
                     <div class="p-3 bg-ph-bg rounded-lg mt-3">
                         <p class="font-bold text-ph-primary">Progreso:</p>
-                        <p class="text-2xl font-extrabold text-ph-accent-success">24/44 Horas</p> <!-- SIN CAMBIOS -->
+                        <p class="text-2xl font-extrabold text-ph-accent-success">30/44 Horas</p> <!-- ACTUALIZADO: 24 + 6 = 30 -->
                     </div>
                 </div>
             </div>
@@ -187,7 +187,7 @@
                     <p><span class="font-semibold">Carga Semanal:</span> 3 Horas (1h Lun / 2h Vie)</p>
                     <div class="p-3 bg-ph-bg rounded-lg mt-3">
                         <p class="font-bold text-ph-primary">Progreso:</p>
-                        <p class="text-2xl font-extrabold text-ph-accent-success">11/31 Horas</p> <!-- SIN CAMBIOS -->
+                        <p class="text-2xl font-extrabold text-ph-accent-success">15/31 Horas</p> <!-- ACTUALIZADO: 11 + 4 = 15 -->
                     </div>
                 </div>
             </div>
@@ -210,7 +210,7 @@
             </div>
         </section>
 
-        <!-- Sección 4: Hitos Críticos y Proyectos Nuevos -->
+        <!-- Sección 4: Hitos Críticos y Proyectos Nuevos (SIN CAMBIOS) -->
         <h2 class="text-2xl font-bold text-ph-primary mb-4">Hitos Críticos y Proyectos Nuevos</h2>
         <section class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-8">
 
@@ -220,25 +220,25 @@
 
                 <div class="flex items-center justify-between mb-4">
                     <p class="text-lg font-semibold text-gray-700">Diagramas de Flujo de Proceso - MEOSA</p>
-                    <div class="text-4xl font-extrabold text-ph-accent-success" id="documentation-percentage">100%</div> <!-- A 100% -->
+                    <div class="text-4xl font-extrabold text-ph-accent-success" id="documentation-percentage">100%</div> <!-- SIN CAMBIOS -->
                 </div>
 
                 <!-- Barra de Progreso -->
                 <div class="w-full bg-gray-200 rounded-full h-4">
-                    <div id="documentation-progress" class="bg-ph-accent-success h-4 rounded-full transition-all duration-700" style="width: 100%"></div> <!-- A 100% -->
+                    <div id="documentation-progress" class="bg-ph-accent-success h-4 rounded-full transition-all duration-700" style="width: 100%"></div> <!-- SIN CAMBIOS -->
                 </div>
                 <div class="flex justify-between text-sm mt-1 text-gray-600">
                     <span>Avance</span>
-                    <span class="font-bold text-ph-accent-success">Entregado: 13/11/2025</span> <!-- FECHA DE ENTREGA -->
+                    <span class="font-bold text-ph-accent-success">Entregado: 13/11/2025</span>
                 </div>
                 <p class="mt-4 text-sm text-ph-secondary-gray">
-                    <span class="font-semibold text-ph-primary">Status:</span> Documentación finalizada y entregada. Iniciando fase de revisión del cliente.
+                    <span class="font-semibold text-ph-primary">Status:</span> Documentación finalizada y entregada. Cliente aún no revisa todos los documentos.
                 </p>
             </div>
 
         </section>
         
-        <!-- Sub-Sección: Compromiso Financiero PFD (Estratégico) -->
+        <!-- Sub-Sección: Compromiso Financiero PFD (Estratégico) (SIN CAMBIOS) -->
         <h2 class="text-2xl font-bold text-ph-primary mb-4">Conciliación Financiera (Hito PFD)</h2>
         <section class="mb-8">
             <!-- Card 10: Facturación PFD Pendiente (ESTRATÉGICA) -->
@@ -265,7 +265,7 @@
             </div>
         </section>
 
-        <!-- Lanzamiento de Proyecto Estratégico (GRAMOSA) - MOVED HERE -->
+        <!-- Lanzamiento de Proyecto Estratégico (GRAMOSA) - MOVIDO Y SIN CAMBIOS -->
         <h2 class="text-2xl font-bold text-ph-primary mb-4">Lanzamiento de Proyecto Estratégico</h2>
         <section class="mb-8"> 
             <!-- Card 5: Nuevo Proyecto GRAMOSA (Kickoff) - MOVIDO -->
@@ -273,32 +273,32 @@
                 <h3 class="text-2xl font-bold text-ph-primary mb-4">Lanzamiento de Proyecto: Consultoría</h3>
 
                 <p class="text-lg font-semibold text-ph-accent-success">Desarrollo de Ingeniería Básica+ (GRAMOSA)</p>
-                <p class="text-sm text-ph-secondary-gray mb-4">Involucrados: Su equipo y **Ing. Ovidio Briceño**</p> <!-- CORREGIDO: Ing. Ovidio Briceño -->
+                <p class="text-sm text-ph-secondary-gray mb-4">Involucrados: Su equipo y **Ing. Ovidio Briceño**</p>
 
                 <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <p class="font-semibold text-ph-primary">Inicio Oficial:</p>
-                            <p>27/10/2025</p> <!-- CORREGIDO A 27/10/2025 -->
+                            <p>27/10/2025</p>
                         </div>
                         <div>
                             <p class="font-semibold text-ph-primary">Duración Proyectada:</p>
-                            <p>~4 Meses (Finaliza 27/02/2026)</p> <!-- CORREGIDO: 4 MESES / 27/02/2026 -->
+                            <p>~4 Meses (Finaliza 27/02/2026)</p>
                         </div>
                     </div>
                     <div class="p-3 bg-ph-bg rounded-lg">
                         <p class="font-semibold text-ph-primary">Total HH Planificadas:</p>
-                        <p class="text-lg font-bold">256 Horas (128 c/u)</p> <!-- NUEVO DATO -->
+                        <p class="text-lg font-bold">256 Horas (128 c/u)</p>
                     </div>
 
                     <!-- Progreso del Proyecto -->
-                    <div class="p-3 bg-ph-accent-warning/20 rounded-lg border border-ph-accent-warning"> <!-- Fondo amarillo/warning -->
+                    <div class="p-3 bg-ph-accent-warning/20 rounded-lg border border-ph-accent-warning">
                         <div class="flex items-center justify-between text-sm mb-2">
-                            <span class="font-bold text-ph-primary">Progreso Acumulado</span> <!-- TEXTO AJUSTADO -->
-                            <span class="font-bold text-ph-primary" id="gramosa-percentage">18.75%</span> <!-- NUEVO AVANCE -->
+                            <span class="font-bold text-ph-primary">Progreso Acumulado</span>
+                            <span class="font-bold text-ph-primary" id="gramosa-percentage">25.00%</span> <!-- ACTUALIZADO: 48 + 16 = 64/256 = 25.00% -->
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div id="gramosa-progress" class="bg-ph-accent-warning h-3 rounded-full transition-all duration-700" style="width: 18.75%"></div> <!-- BARRA AJUSTADA -->
+                            <div id="gramosa-progress" class="bg-ph-accent-warning h-3 rounded-full transition-all duration-700" style="width: 25.00%"></div> <!-- BARRA AJUSTADA -->
                         </div>
                         <p class="mt-2 text-xs font-bold text-red-700">
                             **Alerta:** Pendiente alineación con terceros de estructura para continuar el avance.
@@ -308,11 +308,11 @@
             </div>
         </section>
         
-        <!-- Sección 5: Próximos Pasos Estratégicos -->
+        <!-- Sección 5: Próximos Pasos Estratégicos (SIN CAMBIOS) -->
         <h2 class="text-2xl font-bold text-ph-primary mb-4">Próximos Pasos Estratégicos y Divulgación</h2>
         <section class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-            <!-- Card 6: Plan de Divulgación de PFDs (ACTUALIZADO) -->
+            <!-- Card 6: Plan de Divulgación de PFDs (SIN CAMBIOS) -->
             <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
                 <h3 class="text-xl font-bold text-ph-primary mb-3">1. Flujo de Adopción de Diagramas de Proceso (PFDs)</h3>
 
@@ -322,15 +322,12 @@
 
                 <ol class="list-decimal pl-5 text-sm space-y-2 text-ph-secondary-gray">
                     <li class="font-bold text-ph-primary">Revisión del Cliente (Felipe Medrano)</li>
-                    <!-- ACTUALIZADO EL ESTATUS -->
                     <p class="ml-2 text-xs text-ph-secondary-gray italic">Periodo de revisión y validación de los documentos: **13/11/2025 al 18/11/2025**.</p>
-                    <p class="ml-2 text-xs font-bold text-ph-accent-warning">Estatus: Vencido. Esperando feedback final para correcciones.</p>
+                    <p class="ml-2 text-xs font-bold text-ph-accent-warning">Estatus: Vencido. El cliente aún no revisa todos los documentos. (A la espera de feedback final para correcciones).</p>
                     <li class="font-bold text-ph-primary">Plan de Divulgación y Correcciones</li>
-                    <!-- ACTUALIZADO EL ESTATUS -->
                     <p class="ml-2 text-xs text-ph-secondary-gray italic">Se define la fecha para la reunión de Plan de Divulgación: **18/11/2025**.</p>
                     <p class="ml-2 text-xs font-bold text-ph-accent-warning">Estatus: Pendiente de confirmación post-revisión.</p>
                     <li class="font-bold text-ph-primary">Preparación de Divulgación Interna</li>
-                    <!-- SIN CAMBIOS -->
                     <p class="ml-2 text-xs text-ph-secondary-gray italic">Definir fecha de lanzamiento y capacitación para el personal clave (posterior a la aprobación final).</p>
                 </ol>
             </div>
@@ -392,7 +389,7 @@
                 </table>
             </div>
 
-            <!-- Card 9: Préstamo Personal -->
+            <!-- Card 9: Préstamo Personal (SIN CAMBIOS) -->
             <div class="bg-ph-white p-6 rounded-xl shadow-lg border-l-4 border-ph-primary">
                 <h3 class="text-xl font-bold text-ph-primary mb-3">Préstamo Personal (Plan de Pagos)</h3>
                 <div class="p-3 bg-ph-primary/10 rounded-lg mb-4">
@@ -435,26 +432,34 @@
 
     <script>
         // --- CÁLCULOS PARA NOVIEMBRE ---
-        // Horas ejecutadas en la semana (17/11 - 21/11)
-        const weeklyHoursNov = 6; // 4 (Germán) + 1 (Edson) + 1 (Johan)
-        // Hora flexible adicional (21/11)
-        const flexibleHourAdded = 1;
-        
         // Horas reales de Octubre = 29 horas.
-        // Horas totales ejecutadas a 15/11/2025 = 44 horas.
-        // Horas reales de Noviembre al 15/11/2025 = 44 - 29 = 15 horas.
-        // Horas reales de Noviembre al 22/11/2025 = 15 (previas) + 6 (semana) + 1 (flexible adicional) = 22 horas.
-        const hoursExecutedNov = 22; // ACTUALIZADO A 22
-        const costExecutedNov = hoursExecutedNov * 900; // 22 horas * $900 = $19,800
+        // Horas ejecutadas a 22/11/2025 = 51 horas.
+        
+        // Horas añadidas esta semana (24/11 - 28/11):
+        const hoursAddedThisWeek = 10; // 6 (Germán) + 4 (Edson)
+        
+        // Totales de Mentoría
+        const totalPlannedHours = 88;
+        const totalCompletedHours = 51 + hoursAddedThisWeek; // 61 horas
+        const remainingHours = totalPlannedHours - totalCompletedHours;
 
-        // Datos de Proyección de Costos (ACTUALIZADOS CON COSTO REAL ACUMULADO DE NOVIEMBRE)
+        // Horas de Noviembre ejecutadas a 22/11 = 22 horas
+        const hoursExecutedNovPrevious = 22;
+        // Horas ejecutadas en Noviembre al 29/11 = 22 + 10 = 32 horas
+        const hoursExecutedNov = hoursExecutedNovPrevious + hoursAddedThisWeek; // 32
+        const costExecutedNov = hoursExecutedNov * 900; // 32 horas * $900 = $28,800
+
+        // Definimos el costo de Noviembre como la nueva base máxima de consolidación
+        const maxConsolidatedCost = costExecutedNov; // $28,800
+
+        // Datos de Proyección de Costos (ACTUALIZADOS CON COSTO REAL ACUMULADO DE NOVIEMBRE Y DICIEMBRE EN 0)
         const investmentData = {
-            // Octubre: COSTO REAL (29 hrs * $900 = $26,100)
-            oct: { cost: 26100, max: 31500 }, 
-            // Noviembre: COSTO ACUMULADO REAL (22 hrs * $900 = $19,800)
-            nov: { cost: costExecutedNov, max: 31500 }, // $19,800
-            // Diciembre: PROYECCIÓN (35 hrs * $900 = $31,500)
-            dic: { cost: 31500, max: 31500 }
+            // Octubre: COSTO DEFINITIVO (29 hrs * $900 = $26,100)
+            oct: { cost: 26100, max: maxConsolidatedCost }, 
+            // Noviembre: COSTO DEFINITIVO (32 hrs * $900 = $28,800)
+            nov: { cost: costExecutedNov, max: maxConsolidatedCost }, 
+            // Diciembre: RESET A PROYECCIÓN 0 (Inicia acumulación semanal)
+            dic: { cost: 0, max: maxConsolidatedCost }      
         };
 
         // Función para inicializar la información y hacerla dinámica
@@ -462,9 +467,7 @@
             // ------------------------------------
             // 1. Métricas de Mentoría (Actualizadas)
             // ------------------------------------
-            const totalPlannedHours = 88;
-            const totalCompletedHours = 51; // ACTUALIZADO A 51
-            const remainingHours = totalPlannedHours - totalCompletedHours;
+            
             const totalInvestmentMXN = 79200;
 
             // Actualizar métricas de Mentoría
@@ -481,7 +484,7 @@
             // ------------------------------------
             // 3. Proyección de Costos Mensual (Gráfico de Barras)
             // ------------------------------------
-            const maxCost = 31500; // El costo de Diciembre es el máximo para escalar las barras.
+            const maxCost = maxConsolidatedCost; // El costo de Noviembre es el nuevo máximo para escalar las barras.
 
             const updateMonthlyBars = () => {
                 Object.keys(investmentData).forEach(monthKey => {
@@ -497,18 +500,18 @@
                         barElement.classList.remove('bg-ph-accent-warning', 'bg-ph-accent-success', 'bg-ph-secondary-gray', 'bg-ph-accent-warm');
 
                         // Aplicar colores según el nuevo requerimiento
-                        if (monthKey === 'oct') {
-                             barElement.classList.add('bg-ph-accent-success'); // Octubre Cerrado (Verde)
-                        } else if (monthKey === 'nov') {
-                             barElement.classList.add('bg-ph-accent-warning'); // Noviembre Acumulado (Amarillo)
+                        if (monthKey === 'oct' || monthKey === 'nov') {
+                             barElement.classList.add('bg-ph-accent-success'); // Octubre y Noviembre CERRADOS (Verde)
                         } else if (monthKey === 'dic') {
-                             barElement.classList.add('bg-ph-secondary-gray'); // Diciembre Proyectado (Gris/Negro)
+                             barElement.classList.add('bg-ph-secondary-gray'); // Diciembre RESETEADO (Gris)
                         }
                     }
                 });
 
-                // Actualizar las etiquetas de costo en el HTML con el nuevo valor de Noviembre
+                // Actualizar las etiquetas de costo en el HTML
+                document.querySelector('[data-month="Oct"] span').textContent = `Oct ($${(investmentData.oct.cost / 1000).toFixed(1)}k)`;
                 document.querySelector('[data-month="Nov"] span').textContent = `Nov ($${(costExecutedNov / 1000).toFixed(1)}k)`;
+                document.querySelector('[data-month="Dic"] span').textContent = `Dic ($${(investmentData.dic.cost / 1000).toFixed(1)}k)`;
             };
 
             // ------------------------------------
@@ -522,8 +525,8 @@
             docProgressBar.style.width = `${docProgress}%`;
             docPercentageText.textContent = `${docProgress}%`;
 
-            // Consultoría GRAMOSA (18.75% - con alerta)
-            const gramosaProgress = 18.75; 
+            // Consultoría GRAMOSA (25.00% - con alerta)
+            const gramosaProgress = 25.00; 
             const gramosaProgressBar = document.getElementById('gramosa-progress');
             const gramosaPercentageText = document.getElementById('gramosa-percentage');
             gramosaProgressBar.style.width = `${gramosaProgress}%`;
