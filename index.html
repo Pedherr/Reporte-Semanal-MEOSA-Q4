@@ -1,657 +1,594 @@
-import React, { useState } from 'react';
-import { 
-  Briefcase, 
-  Target, 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  Layout, 
-  Users, 
-  FileText, 
-  ChevronRight, 
-  ArrowRight,
-  Shield,
-  Activity,
-  XCircle,
-  Menu,
-  X,
-  Calendar,
-  Building2
-} from 'lucide-react';
-
-// --- Configuration ---
-const LAST_UPDATED = "07 de Enero, 2026"; // Fecha de corte
-
-// --- Data Structure ---
-
-const portfolioData = {
-  strategic: [
-    {
-      id: 'adm-tanques',
-      client: 'ADM',
-      title: 'Documentación Tanques',
-      status: 'Propuesta Enviada',
-      priority: 'Alta',
-      objective: 'Documentación técnica completa para operación/mantenimiento/seguridad.',
-      note: 'Definir alcance exacto, estándar de entregables y acceso a info.',
-      icon: FileText
-    },
-    {
-      id: 'adm-planos',
-      client: 'ADM',
-      title: 'Levantamiento Planos',
-      status: 'Propuesta Enviada',
-      priority: 'Alta',
-      objective: 'Levantamiento + planos base confiables para ingeniería/operación.',
-      note: 'Definir metodología, formato de planos y entregables.',
-      icon: Layout
-    },
-    {
-      id: 'sukarne-uni',
-      client: 'SuKarne',
-      title: 'Universidad SK',
-      status: 'En Construcción',
-      priority: 'Media-Alta',
-      objective: 'Paquete de colaboración/soporte (competencias MEOSA + formativo).',
-      note: 'Alinear alcance, módulos, formato y gobierno.',
-      icon: Users
-    }
-  ],
-  approved: [
-    {
-      id: 'gramosa',
-      client: 'GRAMOSA',
-      title: 'Ingeniería',
-      status: 'En Ejecución',
-      deadline: 'Feb 2026',
-      objective: 'Cierre limpio del proyecto de ingeniería.',
-      note: 'Control de avance, hitos y riesgos para cierre.',
-      icon: CheckCircle
-    }
-  ],
-  recurring: [
-    {
-      id: 'sukarne-poliza',
-      client: 'SuKarne',
-      title: 'Póliza',
-      status: 'Activo',
-      model: 'HH Consumidas',
-      note: 'Necesario tablero simple (HH vs Entregables).',
-      icon: Shield
-    },
-    {
-      id: 'meosa-pfd',
-      client: 'MEOSA',
-      title: 'Proyecto PFD',
-      status: 'En Avance',
-      model: 'Paquete Cerrado',
-      note: 'Priorizar procesos y control de versiones.',
-      icon: Activity
-    },
-    {
-      id: 'mentorias',
-      client: 'MEOSA',
-      title: 'Mentorías Internas',
-      status: 'Continuo',
-      model: 'Fortalecimiento',
-      note: 'Reducir dependencia y desarrollar implementación PFD.',
-      icon: Users
-    }
-  ],
-  stopping: [
-    {
-      id: 'comfosa',
-      client: 'COMFOSA',
-      title: 'Cierre Operativo',
-      status: 'Baja a Cero',
-      note: 'PH ya no ejecuta. Queda como mentoría/seguimiento indirecto a Edson.',
-      icon: XCircle
-    }
-  ]
-};
-
-const modelsData = [
-  { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos + Pagos', example: 'GRAMOSA', color: 'bg-emerald-500' },
-  { type: 'Cotizado', desc: 'Pendiente de Cierre', example: 'ADM (Tanques/Planos)', color: 'bg-blue-500' },
-  { type: 'HH Consumidas', desc: 'Bolsa / Póliza / Soporte', example: 'SuKarne Póliza', color: 'bg-amber-500' },
-  { type: 'Paquete Cerrado', desc: 'Transferencia de Conocimiento', example: 'PFD Internos', color: 'bg-purple-500' },
-  { type: 'Mentoría', desc: 'Sesiones + Objetivos', example: 'Roles Internos (Edson, Germán, etc.)', color: 'bg-indigo-500' }
-];
-
-const alignmentPoints = [
-  { 
-    title: 'Enfoque 2026', 
-    text: 'Vender ingeniería multidisciplinaria por oportunidad (sin estándar fijo). MEOSA ejecuta, PH acompaña calidad/criterio.' 
-  },
-  { 
-    title: 'Margen Objetivo', 
-    text: '20% de utilidad sobre propuesta base (en proyectos 100% a cargo de PH).' 
-  },
-  { 
-    title: 'Autoridad Operativa', 
-    text: 'Directa en responsables de MEOSA. PH opera como mentoría activa y garante de orden.' 
-  },
-  { 
-    title: 'Modelo Comercial', 
-    text: 'Mediciones mensuales. MEOSA factura al cliente, PH factura a MEOSA (% participación).' 
-  },
-  { 
-    title: 'Recursos', 
-    text: 'No se requieren recursos adicionales. Solo participación del ciclo de mentorías.' 
-  },
-  { 
-    title: 'Ritmo de Seguimiento', 
-    text: '1:1 Semanal (Sábados). Dashboard interactivo de avances.' 
-  }
-];
-
-// --- Components ---
-
-// Simulated Logo Component
-const ClientLogo = ({ client, size = 'md' }) => {
-  const sizeClasses = size === 'sm' ? 'w-8 h-8 text-[10px]' : 'w-12 h-12 text-xs';
-  
-  let bgClass = 'bg-slate-200';
-  let textClass = 'text-slate-600';
-  let label = client;
-
-  // Brand Colors Simulation
-  if (client === 'ADM') {
-    bgClass = 'bg-[#005596]'; // ADM Blue
-    textClass = 'text-white';
-  } else if (client === 'SuKarne') {
-    bgClass = 'bg-[#E31837]'; // SuKarne Red
-    textClass = 'text-white'; // Yellow text usually, but white reads better small
-  } else if (client === 'GRAMOSA') {
-    bgClass = 'bg-[#00703C]'; // Greenish
-    textClass = 'text-white';
-  } else if (client === 'MEOSA') {
-    bgClass = 'bg-slate-700'; // MEOSA as Client Color (Dark Grey)
-    textClass = 'text-white font-bold';
-  } else if (client === 'COMFOSA') {
-    bgClass = 'bg-slate-300';
-    textClass = 'text-slate-500';
-  }
-
-  return (
-    <div className={`${sizeClasses} ${bgClass} ${textClass} rounded-lg flex items-center justify-center font-black shadow-sm tracking-tighter shrink-0 select-none overflow-hidden`}>
-      {label.substring(0, 3).toUpperCase()}
-    </div>
-  );
-};
-
-// Main PH Logo for Header
-const MainLogo = () => (
-  <div className="flex items-center gap-3">
-    <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg border border-slate-200">
-      <span className="font-black text-slate-900 tracking-tighter text-lg">PH</span>
-    </div>
-    <div className="hidden sm:flex flex-col border-l border-slate-700 pl-3">
-      <span className="font-bold text-lg tracking-tight leading-none text-white">Gestión Estratégica</span>
-      <span className="text-[10px] font-medium tracking-widest text-blue-400 uppercase">Cuenta: MEOSA 2026</span>
-    </div>
-    <div className="sm:hidden flex flex-col">
-       <span className="font-bold text-lg text-white">PH</span>
-    </div>
-  </div>
-);
-
-const Card = ({ children, className = '' }) => (
-  <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}`}>
-    {children}
-  </div>
-);
-
-const Badge = ({ children, color = 'blue' }) => {
-  const colors = {
-    blue: 'bg-blue-100 text-blue-800',
-    emerald: 'bg-emerald-100 text-emerald-800',
-    amber: 'bg-amber-100 text-amber-800',
-    red: 'bg-red-100 text-red-800',
-    purple: 'bg-purple-100 text-purple-800',
-    slate: 'bg-slate-100 text-slate-800',
-  };
-  return (
-    <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[color] || colors.blue}`}>
-      {children}
-    </span>
-  );
-};
-
-const SectionHeader = ({ title, subtitle }) => (
-  <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-2">
-    <div>
-      <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
-      {subtitle && <p className="text-slate-500 mt-1">{subtitle}</p>}
-    </div>
-    <div className="flex items-center gap-2 text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full self-start md:self-auto">
-      <Calendar className="w-3 h-3" />
-      Actualizado: {LAST_UPDATED}
-    </div>
-  </div>
-);
-
-// --- Main Views ---
-
-const ViewVision = () => (
-  <div className="space-y-6 animate-fadeIn">
-    <SectionHeader title="Visión Estratégica" subtitle="Alineación PH - MEOSA 2026" />
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEOSA 2026 | Dashboard Estratégico</title>
     
-    <div className="grid md:grid-cols-2 gap-6">
-      <Card className="border-l-4 border-l-blue-600">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-blue-50 rounded-lg text-blue-600">
-            <Target size={24} />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg text-slate-800 mb-2">Objetivo PH</h3>
-            <p className="text-slate-600 leading-relaxed">
-              Evolucionar la modalidad de trabajo para liderar 
-              <span className="font-semibold text-blue-700"> Proyectos + Ingeniería Estratégica </span> 
-              en la cuenta MEOSA, enfocándonos en clientes clave (ADM, SuKarne).
-            </p>
-          </div>
-        </div>
-      </Card>
-
-      <Card className="border-l-4 border-l-emerald-600">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
-            <TrendingUp size={24} />
-          </div>
-          <div>
-            <h3 className="font-bold text-lg text-slate-800 mb-2">Impacto en Negocio</h3>
-            <p className="text-slate-600 leading-relaxed">
-              Generar proyectos de <span className="font-semibold text-emerald-700">alto valor y escalables</span> 
-              donde PH garantiza la ejecución y MEOSA capitaliza la relación comercial y operativa.
-            </p>
-          </div>
-        </div>
-      </Card>
-    </div>
-
-    <div className="mt-8">
-      <h3 className="text-lg font-semibold text-slate-700 mb-4">Misión de la Reunión</h3>
-      <div className="bg-slate-900 text-white p-6 rounded-xl flex items-center gap-6 shadow-lg relative overflow-hidden">
-        {/* Decorative background element */}
-        <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-blue-500 opacity-20 rounded-full blur-2xl"></div>
-        
-        <div className="hidden md:block relative z-10">
-           <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center font-bold text-2xl shadow-lg border-4 border-slate-200 text-slate-900">
-             PH
-           </div>
-        </div>
-        <div className="relative z-10">
-          <p className="text-lg font-medium opacity-95 text-white">
-            "Definir las reglas de juego para escalar la operación 2026 sin perder control."
-          </p>
-          <div className="mt-3 flex flex-wrap gap-3 text-xs font-semibold text-blue-200">
-            <span className="bg-slate-800 px-2 py-1 rounded border border-slate-700">Liderazgo PH</span>
-            <span className="bg-slate-800 px-2 py-1 rounded border border-slate-700">Ejecución MEOSA</span>
-            <span className="bg-slate-800 px-2 py-1 rounded border border-slate-700">Gobernanza Clara</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const ViewPortfolio = () => (
-  <div className="space-y-8 animate-fadeIn">
-    <SectionHeader title="Portafolio de Cuentas" subtitle="Estado de proyectos gestionados por PH" />
-
-    {/* Estratégicos */}
-    <div>
-      <h3 className="flex items-center gap-2 text-lg font-bold text-blue-700 mb-4 border-b border-blue-100 pb-2">
-        <Target className="w-5 h-5" /> Frentes Estratégicos (Liderados 100% por PH)
-      </h3>
-      <div className="grid md:grid-cols-3 gap-4">
-        {portfolioData.strategic.map(item => (
-          <Card key={item.id} className="relative overflow-hidden hover:shadow-lg transition-all group">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500 group-hover:w-2 transition-all"></div>
-            <div className="flex justify-between items-start mb-4">
-              <ClientLogo client={item.client} />
-              <Badge color="blue">{item.status}</Badge>
-            </div>
-            <h4 className="font-bold text-slate-800 mb-1">{item.title}</h4>
-            <p className="text-xs text-blue-600 font-semibold mb-2 uppercase tracking-wide">Cliente: {item.client}</p>
-            <p className="text-sm text-slate-600 mb-3 line-clamp-3">{item.objective}</p>
-            <div className="bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100 mt-auto">
-              <span className="font-semibold text-slate-700">Acción PH:</span> {item.note}
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
-
-    {/* Aprobados & Recurrentes */}
-    <div className="grid md:grid-cols-2 gap-8">
-      <div>
-        <h3 className="flex items-center gap-2 text-lg font-bold text-emerald-700 mb-4 border-b border-emerald-100 pb-2">
-          <CheckCircle className="w-5 h-5" /> Aprobados / En Ejecución
-        </h3>
-        {portfolioData.approved.map(item => (
-          <Card key={item.id} className="mb-4 border-l-4 border-l-emerald-500 hover:shadow-md transition-all">
-            <div className="flex justify-between items-start mb-3">
-               <div className="flex items-center gap-3">
-                 <ClientLogo client={item.client} size="sm" />
-                 <div>
-                    <h4 className="font-bold text-slate-800 leading-tight">{item.title}</h4>
-                    <span className="text-xs text-emerald-600 font-semibold">Cliente: {item.client}</span>
-                 </div>
-               </div>
-               <Badge color="emerald">{item.deadline}</Badge>
-            </div>
-            <p className="text-sm text-slate-600 mb-2">{item.objective}</p>
-            <p className="text-xs text-slate-500 flex items-start gap-1">
-              <span className="text-amber-500">⚠</span> {item.note}
-            </p>
-          </Card>
-        ))}
-      </div>
-
-      <div>
-        <h3 className="flex items-center gap-2 text-lg font-bold text-amber-700 mb-4 border-b border-amber-100 pb-2">
-          <Clock className="w-5 h-5" /> Recurrentes (Soporte a MEOSA)
-        </h3>
-        <div className="space-y-3">
-          {portfolioData.recurring.map(item => (
-            <div key={item.id} className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex flex-col hover:border-amber-200 transition-colors">
-              <div className="flex justify-between items-center mb-2">
-                <div className="flex items-center gap-2">
-                   <ClientLogo client={item.client} size="sm" />
-                   <span className="font-bold text-slate-700 text-sm">{item.title}</span>
-                </div>
-                <Badge color="amber">{item.model}</Badge>
-              </div>
-              <span className="text-xs text-slate-500 pl-1">{item.note}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-
-    {/* Stopping */}
-    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 opacity-75 hover:opacity-100 transition-opacity">
-      <h3 className="flex items-center gap-2 text-sm font-bold text-slate-500 mb-3 border-b border-slate-200 pb-2">
-        <XCircle className="w-4 h-4" /> Desconexión Operativa PH
-      </h3>
-      {portfolioData.stopping.map(item => (
-        <div key={item.id} className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-             <ClientLogo client={item.client} size="sm" />
-             <span className="font-medium text-slate-700">{item.title}</span>
-          </div>
-          <span className="text-sm text-slate-500 text-right">{item.note}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-const ViewModels = () => (
-  <div className="space-y-8 animate-fadeIn">
-    <SectionHeader title="Modelos de Gestión" subtitle="Esquemas de trabajo PH - Cliente" />
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-       {modelsData.map((m, idx) => (
-         <div key={idx} className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-blue-300 transition-colors">
-            <div>
-              <div className={`h-1 w-10 ${m.color} rounded-full mb-3`}></div>
-              <h4 className="font-bold text-lg text-slate-800 mb-1">{m.type}</h4>
-              <p className="text-sm text-slate-500 mb-4">{m.desc}</p>
-            </div>
-            <div className="bg-slate-50 p-2 rounded text-xs font-mono text-slate-600 border border-slate-100">
-              Caso: {m.example}
-            </div>
-         </div>
-       ))}
-    </div>
+    <!-- Google Fonts (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
 
-    <Card className="bg-slate-900 text-white border-none relative overflow-hidden">
-      {/* Texture */}
-      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-slate-900 to-slate-900"></div>
-      
-      <div className="relative z-10">
-        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <Shield className="text-blue-400" /> Gobernanza PH (Reglas de Oro)
-        </h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-              <span className="text-slate-300">Sin cotización firmada no hay ejecución (Disciplina).</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-              <span className="text-slate-300">PH define el estándar de los entregables.</span>
-            </li>
-          </ul>
-          <ul className="space-y-3">
-            <li className="flex items-start gap-3">
-              <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-              <span className="text-slate-300">Todo cambio de alcance se documenta e impacta costo.</span>
-            </li>
-            <li className="flex items-start gap-3">
-              <div className="mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]"></div>
-              <span className="text-slate-300">Revisión de avance obligatoria (Sábados).</span>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </Card>
-  </div>
-);
+    <div id="root"></div>
 
-const ViewStrategy = () => (
-  <div className="space-y-8 animate-fadeIn">
-    <SectionHeader title="Alineación con Dirección" subtitle="Puntos clave a ratificar con Felipe" />
-
-    <div className="grid lg:grid-cols-2 gap-8">
-      {/* Alineaciones */}
-      <div>
-        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-          <Users className="text-blue-600" /> Acuerdos Comerciales
-        </h3>
-        <div className="space-y-3">
-          {alignmentPoints.map((point, i) => (
-            <div key={i} className="group cursor-pointer bg-white p-3 rounded-lg border border-transparent hover:border-blue-100 hover:shadow-sm transition-all">
-              <div className="flex items-baseline gap-2 mb-1">
-                <span className="text-blue-600 font-bold text-sm">0{i + 1}.</span>
-                <span className="font-bold text-slate-700 group-hover:text-blue-700 transition-colors">{point.title}</span>
-              </div>
-              <p className="text-sm text-slate-600 pl-6 border-l border-slate-200 ml-1.5 group-hover:border-blue-200">
-                {point.text}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Riesgos y Prioridades */}
-      <div className="space-y-6">
-        <Card className="border-red-100 bg-red-50/50">
-          <h3 className="text-md font-bold text-red-700 mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4" /> Riesgos de la Cuenta MEOSA
-          </h3>
-          <ul className="space-y-2 text-sm text-red-800">
-            <li>• Alcances ambiguos en campo (Cliente final pide más).</li>
-            <li>• Dependencia de información histórica de planta.</li>
-            <li>• Desalineación de expectativas vs. contrato.</li>
-          </ul>
-        </Card>
-
-        <Card className="bg-emerald-50/50 border-emerald-100">
-           <h3 className="text-md font-bold text-emerald-700 mb-3 flex items-center gap-2">
-            <Target className="w-4 h-4" /> Prioridades Tácticas (Q1 2026)
-          </h3>
-          <ul className="space-y-2 text-sm text-slate-700">
-            <li className="flex items-center gap-2">
-              <CheckCircle className="w-3 h-3 text-emerald-600" /> Cerrar Venta: ADM Tanques
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="w-3 h-3 text-emerald-600" /> Cerrar Venta: ADM Planos
-            </li>
-            <li className="flex items-center gap-2">
-              <CheckCircle className="w-3 h-3 text-emerald-600" /> Definir Modelo: SuKarne Universidad
-            </li>
-             <li className="flex items-center gap-2">
-              <CheckCircle className="w-3 h-3 text-emerald-600" /> Entregar: GRAMOSA (Feb)
-            </li>
-          </ul>
-        </Card>
-      </div>
-    </div>
-  </div>
-);
-
-const ViewAgenda = () => (
-  <div className="space-y-8 animate-fadeIn max-w-2xl mx-auto">
-    <SectionHeader title="Agenda de la Sesión" subtitle="Objetivo: Salir con decisiones tomadas" />
-
-    <div className="relative border-l-2 border-slate-200 ml-4 space-y-8">
-      {[
-        { time: '2 min', title: 'Contexto y Visión PH', desc: 'Objetivo estratégico 2026 para la cuenta.' },
-        { time: '10 min', title: 'Revisión del Portafolio', desc: 'Estatus ADM, SuKarne y GRAMOSA.' },
-        { time: '15 min', title: 'Frentes Críticos', desc: 'Profundizar en la estrategia de Tanques y Universidad.' },
-        { time: '10 min', title: 'Gobernanza y Dinero', desc: 'Confirmar modelos de cobro y reglas.' },
-        { time: '5 min', title: 'Cierre', desc: 'Lectura de acuerdos y siguientes pasos.' },
-      ].map((item, idx) => (
-        <div key={idx} className="relative pl-8">
-          <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-blue-500"></div>
-          <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-1">
-            <h4 className="font-bold text-slate-800 text-lg">{item.title}</h4>
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">{item.time}</span>
-          </div>
-          <p className="text-slate-500 text-sm">{item.desc}</p>
-        </div>
-      ))}
-    </div>
-
-    <div className="mt-8 pt-8 border-t border-slate-200">
-      <h3 className="font-bold text-slate-800 mb-4">Entregables de la Reunión</h3>
-      <div className="grid gap-3">
-        {['Lista de decisiones tomadas', 'Luz verde para propuestas ADM', 'Plan de cierre GRAMOSA validado', 'Acuerdo sobre esquema de pagos'].map((step, i) => (
-          <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100">
-             <div className="w-5 h-5 rounded-full border-2 border-slate-300"></div>
-             <span className="text-slate-700 font-medium">{step}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
-
-
-// --- Main App ---
-
-const Dashboard = () => {
-  const [activeTab, setActiveTab] = useState('vision');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const tabs = [
-    { id: 'vision', label: 'Visión', icon: Target },
-    { id: 'portfolio', label: 'Portafolio', icon: Briefcase },
-    { id: 'models', label: 'Modelos', icon: Layout },
-    { id: 'strategy', label: 'Alineación', icon: Users },
-    { id: 'agenda', label: 'Agenda', icon: Clock },
-  ];
-
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col">
-      
-      {/* Navbar */}
-      <header className="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20"> 
-            
-            {/* Logo Area */}
-            <div className="flex-shrink-0 cursor-pointer" onClick={() => setActiveTab('vision')}>
-              <MainLogo />
-            </div>
-            
-            {/* Desktop Tabs */}
-            <nav className="hidden md:flex space-x-1 ml-8">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2
-                    ${activeTab === tab.id 
-                      ? 'bg-slate-800 text-white shadow-inner border border-slate-700' 
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              ))}
-            </nav>
-
-            {/* Mobile Menu Button */}
-            <div className="md:hidden flex items-center gap-4">
-              <span className="text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded">2026</span>
-              <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 text-slate-300">
-                {isMenuOpen ? <X /> : <Menu />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Nav */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-slate-800 border-t border-slate-700">
-            {tabs.map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => { setActiveTab(tab.id); setIsMenuOpen(false); }}
-                className={`block w-full text-left px-4 py-3 text-base font-medium
-                  ${activeTab === tab.id ? 'bg-slate-900 text-white' : 'text-slate-300'}`}
-              >
-                <span className="flex items-center gap-3">
-                  <tab.icon className="w-5 h-5" /> {tab.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- React & ReactDOM (via ESM) -->
+    <script type="module">
+        import React, { useState } from 'https://esm.sh/react@18.2.0';
+        import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
         
-        {/* Dynamic Content */}
-        <div className="min-h-[500px]">
-          {activeTab === 'vision' && <ViewVision />}
-          {activeTab === 'portfolio' && <ViewPortfolio />}
-          {activeTab === 'models' && <ViewModels />}
-          {activeTab === 'strategy' && <ViewStrategy />}
-          {activeTab === 'agenda' && <ViewAgenda />}
-        </div>
+        // Import Lucide Icons via ESM
+        import { 
+            Briefcase, Target, TrendingUp, AlertTriangle, CheckCircle, Clock, 
+            Layout, Users, FileText, ChevronRight, ArrowRight, Shield, 
+            Activity, XCircle, Menu, X, Calendar, Building2 
+        } from 'https://esm.sh/lucide-react@0.263.1';
 
-      </main>
+        // --- Configuration ---
+        const LAST_UPDATED = "07 de Enero, 2026"; 
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 mt-auto">
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-4">
-            <p className="text-slate-500 text-sm font-medium">
-              PH | Proyectos Herrera
-            </p>
-            <span className="text-slate-300 text-xs">|</span>
-             <p className="text-slate-400 text-xs">
-              Dashboard de Cuenta: MEOSA
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
-            PH SYSTEM ACTIVE
-          </div>
-        </div>
-      </footer>
+        // --- Data ---
+        const portfolioData = {
+          strategic: [
+            {
+              id: 'adm-tanques',
+              client: 'ADM',
+              title: 'Documentación Tanques',
+              status: 'Propuesta Enviada',
+              priority: 'Alta',
+              objective: 'Documentación técnica completa para operación/mantenimiento/seguridad.',
+              note: 'Definir alcance exacto, estándar de entregables y acceso a info.',
+              icon: FileText
+            },
+            {
+              id: 'adm-planos',
+              client: 'ADM',
+              title: 'Levantamiento Planos',
+              status: 'Propuesta Enviada',
+              priority: 'Alta',
+              objective: 'Levantamiento + planos base confiables para ingeniería/operación.',
+              note: 'Definir metodología, formato de planos y entregables.',
+              icon: Layout
+            },
+            {
+              id: 'sukarne-uni',
+              client: 'SuKarne',
+              title: 'Universidad SK',
+              status: 'En Construcción',
+              priority: 'Media-Alta',
+              objective: 'Paquete de colaboración/soporte (competencias MEOSA + formativo).',
+              note: 'Alinear alcance, módulos, formato y gobierno.',
+              icon: Users
+            }
+          ],
+          approved: [
+            {
+              id: 'gramosa',
+              client: 'GRAMOSA',
+              title: 'Ingeniería',
+              status: 'En Ejecución',
+              deadline: 'Feb 2026',
+              objective: 'Cierre limpio del proyecto de ingeniería.',
+              note: 'Control de avance, hitos y riesgos para cierre.',
+              icon: CheckCircle
+            }
+          ],
+          recurring: [
+            {
+              id: 'sukarne-poliza',
+              client: 'SuKarne',
+              title: 'Póliza',
+              status: 'Activo',
+              model: 'HH Consumidas',
+              note: 'Necesario tablero simple (HH vs Entregables).',
+              icon: Shield
+            },
+            {
+              id: 'meosa-pfd',
+              client: 'MEOSA',
+              title: 'Proyecto PFD',
+              status: 'En Avance',
+              model: 'Paquete Cerrado',
+              note: 'Priorizar procesos y control de versiones.',
+              icon: Activity
+            },
+            {
+              id: 'mentorias',
+              client: 'MEOSA',
+              title: 'Mentorías Internas',
+              status: 'Continuo',
+              model: 'Fortalecimiento',
+              note: 'Reducir dependencia y desarrollar implementación PFD.',
+              icon: Users
+            }
+          ],
+          stopping: [
+            {
+              id: 'comfosa',
+              client: 'COMFOSA',
+              title: 'Cierre Operativo',
+              status: 'Baja a Cero',
+              note: 'PH ya no ejecuta. Queda como mentoría/seguimiento indirecto a Edson.',
+              icon: XCircle
+            }
+          ]
+        };
 
-    </div>
-  );
-};
+        const modelsData = [
+          { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos + Pagos', example: 'GRAMOSA', color: 'bg-emerald-500' },
+          { type: 'Cotizado', desc: 'Pendiente de Cierre', example: 'ADM (Tanques/Planos)', color: 'bg-blue-500' },
+          { type: 'HH Consumidas', desc: 'Bolsa / Póliza / Soporte', example: 'SuKarne Póliza', color: 'bg-amber-500' },
+          { type: 'Paquete Cerrado', desc: 'Transferencia de Conocimiento', example: 'PFD Internos', color: 'bg-purple-500' },
+          { type: 'Mentoría', desc: 'Sesiones + Objetivos', example: 'Roles Internos (Edson, Germán, etc.)', color: 'bg-indigo-500' }
+        ];
 
-export default Dashboard;
+        const alignmentPoints = [
+          { 
+            title: 'Enfoque 2026', 
+            text: 'Vender ingeniería multidisciplinaria por oportunidad (sin estándar fijo). MEOSA ejecuta, PH acompaña calidad/criterio.' 
+          },
+          { 
+            title: 'Margen Objetivo', 
+            text: '20% de utilidad sobre propuesta base (en proyectos 100% a cargo de PH).' 
+          },
+          { 
+            title: 'Autoridad Operativa', 
+            text: 'Directa en responsables de MEOSA. PH opera como mentoría activa y garante de orden.' 
+          },
+          { 
+            title: 'Modelo Comercial', 
+            text: 'Mediciones mensuales. MEOSA factura al cliente, PH factura a MEOSA (% participación).' 
+          },
+          { 
+            title: 'Recursos', 
+            text: 'No se requieren recursos adicionales. Solo participación del ciclo de mentorías.' 
+          },
+          { 
+            title: 'Ritmo de Seguimiento', 
+            text: '1:1 Semanal (Sábados). Dashboard interactivo de avances.' 
+          }
+        ];
+
+        // --- Components ---
+
+        const ClientLogo = ({ client, size = 'md' }) => {
+          const sizeClasses = size === 'sm' ? 'w-8 h-8 text-[10px]' : 'w-12 h-12 text-xs';
+          
+          let bgClass = 'bg-slate-200';
+          let textClass = 'text-slate-600';
+          let label = client;
+
+          if (client === 'ADM') {
+            bgClass = 'bg-[#005596]'; 
+            textClass = 'text-white';
+          } else if (client === 'SuKarne') {
+            bgClass = 'bg-[#E31837]'; 
+            textClass = 'text-white'; 
+          } else if (client === 'GRAMOSA') {
+            bgClass = 'bg-[#00703C]'; 
+            textClass = 'text-white';
+          } else if (client === 'MEOSA') {
+            bgClass = 'bg-slate-700'; 
+            textClass = 'text-white font-bold';
+          } else if (client === 'COMFOSA') {
+            bgClass = 'bg-slate-300';
+            textClass = 'text-slate-500';
+          }
+
+          return React.createElement(
+            'div',
+            { className: `${sizeClasses} ${bgClass} ${textClass} rounded-lg flex items-center justify-center font-black shadow-sm tracking-tighter shrink-0 select-none overflow-hidden` },
+            label.substring(0, 3).toUpperCase()
+          );
+        };
+
+        const MainLogo = () => React.createElement(
+          'div',
+          { className: "flex items-center gap-3" },
+          React.createElement('div', { className: "w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg border border-slate-200" },
+            React.createElement('span', { className: "font-black text-slate-900 tracking-tighter text-lg" }, "PH")
+          ),
+          React.createElement('div', { className: "hidden sm:flex flex-col border-l border-slate-700 pl-3" },
+            React.createElement('span', { className: "font-bold text-lg tracking-tight leading-none text-white" }, "Gestión Estratégica"),
+            React.createElement('span', { className: "text-[10px] font-medium tracking-widest text-blue-400 uppercase" }, "Cuenta: MEOSA 2026")
+          ),
+          React.createElement('div', { className: "sm:hidden flex flex-col" },
+             React.createElement('span', { className: "font-bold text-lg text-white" }, "PH")
+          )
+        );
+
+        const Card = ({ children, className = '' }) => React.createElement(
+          'div',
+          { className: `bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}` },
+          children
+        );
+
+        const Badge = ({ children, color = 'blue' }) => {
+          const colors = {
+            blue: 'bg-blue-100 text-blue-800',
+            emerald: 'bg-emerald-100 text-emerald-800',
+            amber: 'bg-amber-100 text-amber-800',
+            red: 'bg-red-100 text-red-800',
+            purple: 'bg-purple-100 text-purple-800',
+            slate: 'bg-slate-100 text-slate-800',
+          };
+          return React.createElement(
+            'span',
+            { className: `px-2.5 py-0.5 rounded-full text-xs font-medium ${colors[color] || colors.blue}` },
+            children
+          );
+        };
+
+        const SectionHeader = ({ title, subtitle }) => React.createElement(
+          'div',
+          { className: "mb-6 flex flex-col md:flex-row md:items-end md:justify-between gap-2" },
+          React.createElement('div', null,
+            React.createElement('h2', { className: "text-2xl font-bold text-slate-800" }, title),
+            subtitle && React.createElement('p', { className: "text-slate-500 mt-1" }, subtitle)
+          ),
+          React.createElement('div', { className: "flex items-center gap-2 text-xs font-medium text-slate-400 bg-slate-100 px-3 py-1.5 rounded-full self-start md:self-auto" },
+            React.createElement(Calendar, { className: "w-3 h-3" }),
+            `Actualizado: ${LAST_UPDATED}`
+          )
+        );
+
+        // --- Views ---
+
+        const ViewVision = () => React.createElement('div', { className: "space-y-6 animate-fadeIn" },
+            React.createElement(SectionHeader, { title: "Visión Estratégica", subtitle: "Alineación PH - MEOSA 2026" }),
+            React.createElement('div', { className: "grid md:grid-cols-2 gap-6" },
+                React.createElement(Card, { className: "border-l-4 border-l-blue-600" },
+                    React.createElement('div', { className: "flex items-start gap-4" },
+                        React.createElement('div', { className: "p-3 bg-blue-50 rounded-lg text-blue-600" }, React.createElement(Target, { size: 24 })),
+                        React.createElement('div', null,
+                            React.createElement('h3', { className: "font-bold text-lg text-slate-800 mb-2" }, "Objetivo PH"),
+                            React.createElement('p', { className: "text-slate-600 leading-relaxed" },
+                                "Evolucionar la modalidad de trabajo para liderar ",
+                                React.createElement('span', { className: "font-semibold text-blue-700" }, "Proyectos + Ingeniería Estratégica"),
+                                " en la cuenta MEOSA, enfocándonos en clientes clave (ADM, SuKarne)."
+                            )
+                        )
+                    )
+                ),
+                React.createElement(Card, { className: "border-l-4 border-l-emerald-600" },
+                    React.createElement('div', { className: "flex items-start gap-4" },
+                        React.createElement('div', { className: "p-3 bg-emerald-50 rounded-lg text-emerald-600" }, React.createElement(TrendingUp, { size: 24 })),
+                        React.createElement('div', null,
+                            React.createElement('h3', { className: "font-bold text-lg text-slate-800 mb-2" }, "Impacto en Negocio"),
+                            React.createElement('p', { className: "text-slate-600 leading-relaxed" },
+                                "Generar proyectos de ",
+                                React.createElement('span', { className: "font-semibold text-emerald-700" }, "alto valor y escalables"),
+                                " donde PH garantiza la ejecución y MEOSA capitaliza la relación comercial y operativa."
+                            )
+                        )
+                    )
+                )
+            ),
+            React.createElement('div', { className: "mt-8" },
+                React.createElement('h3', { className: "text-lg font-semibold text-slate-700 mb-4" }, "Misión de la Reunión"),
+                React.createElement('div', { className: "bg-slate-900 text-white p-6 rounded-xl flex items-center gap-6 shadow-lg relative overflow-hidden" },
+                    React.createElement('div', { className: "absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-blue-500 opacity-20 rounded-full blur-2xl" }),
+                    React.createElement('div', { className: "hidden md:block relative z-10" },
+                        React.createElement('div', { className: "w-16 h-16 rounded-full bg-white flex items-center justify-center font-bold text-2xl shadow-lg border-4 border-slate-200 text-slate-900" }, "PH")
+                    ),
+                    React.createElement('div', { className: "relative z-10" },
+                        React.createElement('p', { className: "text-lg font-medium opacity-95 text-white" }, "\"Definir las reglas de juego para escalar la operación 2026 sin perder control.\""),
+                        React.createElement('div', { className: "mt-3 flex flex-wrap gap-3 text-xs font-semibold text-blue-200" },
+                            React.createElement('span', { className: "bg-slate-800 px-2 py-1 rounded border border-slate-700" }, "Liderazgo PH"),
+                            React.createElement('span', { className: "bg-slate-800 px-2 py-1 rounded border border-slate-700" }, "Ejecución MEOSA"),
+                            React.createElement('span', { className: "bg-slate-800 px-2 py-1 rounded border border-slate-700" }, "Gobernanza Clara")
+                        )
+                    )
+                )
+            )
+        );
+
+        const ViewPortfolio = () => React.createElement('div', { className: "space-y-8 animate-fadeIn" },
+            React.createElement(SectionHeader, { title: "Portafolio de Cuentas", subtitle: "Estado de proyectos gestionados por PH" }),
+            React.createElement('div', null,
+                React.createElement('h3', { className: "flex items-center gap-2 text-lg font-bold text-blue-700 mb-4 border-b border-blue-100 pb-2" },
+                    React.createElement(Target, { className: "w-5 h-5" }),
+                    " Frentes Estratégicos (Liderados 100% por PH)"
+                ),
+                React.createElement('div', { className: "grid md:grid-cols-3 gap-4" },
+                    portfolioData.strategic.map(item => React.createElement(Card, { key: item.id, className: "relative overflow-hidden hover:shadow-lg transition-all group" },
+                        React.createElement('div', { className: "absolute top-0 left-0 w-1.5 h-full bg-blue-500 group-hover:w-2 transition-all" }),
+                        React.createElement('div', { className: "flex justify-between items-start mb-4" },
+                            React.createElement(ClientLogo, { client: item.client }),
+                            React.createElement(Badge, { color: "blue" }, item.status)
+                        ),
+                        React.createElement('h4', { className: "font-bold text-slate-800 mb-1" }, item.title),
+                        React.createElement('p', { className: "text-xs text-blue-600 font-semibold mb-2 uppercase tracking-wide" }, `Cliente: ${item.client}`),
+                        React.createElement('p', { className: "text-sm text-slate-600 mb-3 line-clamp-3" }, item.objective),
+                        React.createElement('div', { className: "bg-slate-50 p-2 rounded text-xs text-slate-500 border border-slate-100 mt-auto" },
+                            React.createElement('span', { className: "font-semibold text-slate-700" }, "Acción PH: "),
+                            item.note
+                        )
+                    ))
+                )
+            ),
+            React.createElement('div', { className: "grid md:grid-cols-2 gap-8" },
+                React.createElement('div', null,
+                    React.createElement('h3', { className: "flex items-center gap-2 text-lg font-bold text-emerald-700 mb-4 border-b border-emerald-100 pb-2" },
+                        React.createElement(CheckCircle, { className: "w-5 h-5" }),
+                        " Aprobados / En Ejecución"
+                    ),
+                    portfolioData.approved.map(item => React.createElement(Card, { key: item.id, className: "mb-4 border-l-4 border-l-emerald-500 hover:shadow-md transition-all" },
+                        React.createElement('div', { className: "flex justify-between items-start mb-3" },
+                            React.createElement('div', { className: "flex items-center gap-3" },
+                                React.createElement(ClientLogo, { client: item.client, size: "sm" }),
+                                React.createElement('div', null,
+                                    React.createElement('h4', { className: "font-bold text-slate-800 leading-tight" }, item.title),
+                                    React.createElement('span', { className: "text-xs text-emerald-600 font-semibold" }, `Cliente: ${item.client}`)
+                                )
+                            ),
+                            React.createElement(Badge, { color: "emerald" }, item.deadline)
+                        ),
+                        React.createElement('p', { className: "text-sm text-slate-600 mb-2" }, item.objective),
+                        React.createElement('p', { className: "text-xs text-slate-500 flex items-start gap-1" },
+                            React.createElement('span', { className: "text-amber-500" }, "⚠"),
+                            item.note
+                        )
+                    ))
+                ),
+                React.createElement('div', null,
+                    React.createElement('h3', { className: "flex items-center gap-2 text-lg font-bold text-amber-700 mb-4 border-b border-amber-100 pb-2" },
+                        React.createElement(Clock, { className: "w-5 h-5" }),
+                        " Recurrentes (Soporte a MEOSA)"
+                    ),
+                    React.createElement('div', { className: "space-y-3" },
+                        portfolioData.recurring.map(item => React.createElement('div', { key: item.id, className: "bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex flex-col hover:border-amber-200 transition-colors" },
+                            React.createElement('div', { className: "flex justify-between items-center mb-2" },
+                                React.createElement('div', { className: "flex items-center gap-2" },
+                                    React.createElement(ClientLogo, { client: item.client, size: "sm" }),
+                                    React.createElement('span', { className: "font-bold text-slate-700 text-sm" }, item.title)
+                                ),
+                                React.createElement(Badge, { color: "amber" }, item.model)
+                            ),
+                            React.createElement('span', { className: "text-xs text-slate-500 pl-1" }, item.note)
+                        ))
+                    )
+                )
+            ),
+            React.createElement('div', { className: "bg-slate-50 p-4 rounded-xl border border-slate-200 opacity-75 hover:opacity-100 transition-opacity" },
+                React.createElement('h3', { className: "flex items-center gap-2 text-sm font-bold text-slate-500 mb-3 border-b border-slate-200 pb-2" },
+                    React.createElement(XCircle, { className: "w-4 h-4" }),
+                    " Desconexión Operativa PH"
+                ),
+                portfolioData.stopping.map(item => React.createElement('div', { key: item.id, className: "flex items-center justify-between gap-4" },
+                    React.createElement('div', { className: "flex items-center gap-2" },
+                        React.createElement(ClientLogo, { client: item.client, size: "sm" }),
+                        React.createElement('span', { className: "font-medium text-slate-700" }, item.title)
+                    ),
+                    React.createElement('span', { className: "text-sm text-slate-500 text-right" }, item.note)
+                ))
+            )
+        );
+
+        const ViewModels = () => React.createElement('div', { className: "space-y-8 animate-fadeIn" },
+            React.createElement(SectionHeader, { title: "Modelos de Gestión", subtitle: "Esquemas de trabajo PH - Cliente" }),
+            React.createElement('div', { className: "grid grid-cols-1 md:grid-cols-3 gap-4 mb-8" },
+                modelsData.map((m, idx) => React.createElement('div', { key: idx, className: "bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between hover:border-blue-300 transition-colors" },
+                    React.createElement('div', null,
+                        React.createElement('div', { className: `h-1 w-10 ${m.color} rounded-full mb-3` }),
+                        React.createElement('h4', { className: "font-bold text-lg text-slate-800 mb-1" }, m.type),
+                        React.createElement('p', { className: "text-sm text-slate-500 mb-4" }, m.desc)
+                    ),
+                    React.createElement('div', { className: "bg-slate-50 p-2 rounded text-xs font-mono text-slate-600 border border-slate-100" },
+                        `Caso: ${m.example}`
+                    )
+                ))
+            ),
+            React.createElement(Card, { className: "bg-slate-900 text-white border-none relative overflow-hidden" },
+                React.createElement('div', { className: "absolute inset-0 opacity-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-400 via-slate-900 to-slate-900" }),
+                React.createElement('div', { className: "relative z-10" },
+                    React.createElement('h3', { className: "text-xl font-bold mb-4 flex items-center gap-2" },
+                        React.createElement(Shield, { className: "text-blue-400" }),
+                        " Gobernanza PH (Reglas de Oro)"
+                    ),
+                    React.createElement('div', { className: "grid md:grid-cols-2 gap-6" },
+                        React.createElement('ul', { className: "space-y-3" },
+                            React.createElement('li', { className: "flex items-start gap-3" },
+                                React.createElement('div', { className: "mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" }),
+                                React.createElement('span', { className: "text-slate-300" }, "Sin cotización firmada no hay ejecución (Disciplina).")
+                            ),
+                            React.createElement('li', { className: "flex items-start gap-3" },
+                                React.createElement('div', { className: "mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" }),
+                                React.createElement('span', { className: "text-slate-300" }, "PH define el estándar de los entregables.")
+                            )
+                        ),
+                        React.createElement('ul', { className: "space-y-3" },
+                            React.createElement('li', { className: "flex items-start gap-3" },
+                                React.createElement('div', { className: "mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" }),
+                                React.createElement('span', { className: "text-slate-300" }, "Todo cambio de alcance se documenta e impacta costo.")
+                            ),
+                            React.createElement('li', { className: "flex items-start gap-3" },
+                                React.createElement('div', { className: "mt-1 w-1.5 h-1.5 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.8)]" }),
+                                React.createElement('span', { className: "text-slate-300" }, "Revisión de avance obligatoria (Sábados).")
+                            )
+                        )
+                    )
+                )
+            )
+        );
+
+        const ViewStrategy = () => React.createElement('div', { className: "space-y-8 animate-fadeIn" },
+            React.createElement(SectionHeader, { title: "Alineación con Dirección", subtitle: "Puntos clave a ratificar con Felipe" }),
+            React.createElement('div', { className: "grid lg:grid-cols-2 gap-8" },
+                React.createElement('div', null,
+                    React.createElement('h3', { className: "text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" },
+                        React.createElement(Users, { className: "text-blue-600" }),
+                        " Acuerdos Comerciales"
+                    ),
+                    React.createElement('div', { className: "space-y-3" },
+                        alignmentPoints.map((point, i) => React.createElement('div', { key: i, className: "group cursor-pointer bg-white p-3 rounded-lg border border-transparent hover:border-blue-100 hover:shadow-sm transition-all" },
+                            React.createElement('div', { className: "flex items-baseline gap-2 mb-1" },
+                                React.createElement('span', { className: "text-blue-600 font-bold text-sm" }, `0${i + 1}.`),
+                                React.createElement('span', { className: "font-bold text-slate-700 group-hover:text-blue-700 transition-colors" }, point.title)
+                            ),
+                            React.createElement('p', { className: "text-sm text-slate-600 pl-6 border-l border-slate-200 ml-1.5 group-hover:border-blue-200" }, point.text)
+                        ))
+                    )
+                ),
+                React.createElement('div', { className: "space-y-6" },
+                    React.createElement(Card, { className: "border-red-100 bg-red-50/50" },
+                        React.createElement('h3', { className: "text-md font-bold text-red-700 mb-3 flex items-center gap-2" },
+                            React.createElement(AlertTriangle, { className: "w-4 h-4" }),
+                            " Riesgos de la Cuenta MEOSA"
+                        ),
+                        React.createElement('ul', { className: "space-y-2 text-sm text-red-800" },
+                            React.createElement('li', null, "• Alcances ambiguos en campo (Cliente final pide más)."),
+                            React.createElement('li', null, "• Dependencia de información histórica de planta."),
+                            React.createElement('li', null, "• Desalineación de expectativas vs. contrato.")
+                        )
+                    ),
+                    React.createElement(Card, { className: "bg-emerald-50/50 border-emerald-100" },
+                        React.createElement('h3', { className: "text-md font-bold text-emerald-700 mb-3 flex items-center gap-2" },
+                            React.createElement(Target, { className: "w-4 h-4" }),
+                            " Prioridades Tácticas (Q1 2026)"
+                        ),
+                        React.createElement('ul', { className: "space-y-2 text-sm text-slate-700" },
+                            React.createElement('li', { className: "flex items-center gap-2" }, React.createElement(CheckCircle, { className: "w-3 h-3 text-emerald-600" }), " Cerrar Venta: ADM Tanques"),
+                            React.createElement('li', { className: "flex items-center gap-2" }, React.createElement(CheckCircle, { className: "w-3 h-3 text-emerald-600" }), " Cerrar Venta: ADM Planos"),
+                            React.createElement('li', { className: "flex items-center gap-2" }, React.createElement(CheckCircle, { className: "w-3 h-3 text-emerald-600" }), " Definir Modelo: SuKarne Universidad"),
+                            React.createElement('li', { className: "flex items-center gap-2" }, React.createElement(CheckCircle, { className: "w-3 h-3 text-emerald-600" }), " Entregar: GRAMOSA (Feb)")
+                        )
+                    )
+                )
+            )
+        );
+
+        const ViewAgenda = () => React.createElement('div', { className: "space-y-8 animate-fadeIn max-w-2xl mx-auto" },
+            React.createElement(SectionHeader, { title: "Agenda de la Sesión", subtitle: "Objetivo: Salir con decisiones tomadas" }),
+            React.createElement('div', { className: "relative border-l-2 border-slate-200 ml-4 space-y-8" },
+                [
+                    { time: '2 min', title: 'Contexto y Visión PH', desc: 'Objetivo estratégico 2026 para la cuenta.' },
+                    { time: '10 min', title: 'Revisión del Portafolio', desc: 'Estatus ADM, SuKarne y GRAMOSA.' },
+                    { time: '15 min', title: 'Frentes Críticos', desc: 'Profundizar en la estrategia de Tanques y Universidad.' },
+                    { time: '10 min', title: 'Gobernanza y Dinero', desc: 'Confirmar modelos de cobro y reglas.' },
+                    { time: '5 min', title: 'Cierre', desc: 'Lectura de acuerdos y siguientes pasos.' }
+                ].map((item, idx) => React.createElement('div', { key: idx, className: "relative pl-8" },
+                    React.createElement('div', { className: "absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-blue-500" }),
+                    React.createElement('div', { className: "flex flex-col sm:flex-row sm:items-baseline sm:justify-between mb-1" },
+                        React.createElement('h4', { className: "font-bold text-slate-800 text-lg" }, item.title),
+                        React.createElement('span', { className: "text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded" }, item.time)
+                    ),
+                    React.createElement('p', { className: "text-slate-500 text-sm" }, item.desc)
+                ))
+            ),
+            React.createElement('div', { className: "mt-8 pt-8 border-t border-slate-200" },
+                React.createElement('h3', { className: "font-bold text-slate-800 mb-4" }, "Entregables de la Reunión"),
+                React.createElement('div', { className: "grid gap-3" },
+                    ['Lista de decisiones tomadas', 'Luz verde para propuestas ADM', 'Plan de cierre GRAMOSA validado', 'Acuerdo sobre esquema de pagos'].map((step, i) => React.createElement('div', { key: i, className: "flex items-center gap-3 p-3 bg-slate-50 rounded-lg border border-slate-100" },
+                        React.createElement('div', { className: "w-5 h-5 rounded-full border-2 border-slate-300" }),
+                        React.createElement('span', { className: "text-slate-700 font-medium" }, step)
+                    ))
+                )
+            )
+        );
+
+        // --- Main App ---
+
+        const Dashboard = () => {
+          const [activeTab, setActiveTab] = useState('vision');
+          const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+          const tabs = [
+            { id: 'vision', label: 'Visión', icon: Target },
+            { id: 'portfolio', label: 'Portafolio', icon: Briefcase },
+            { id: 'models', label: 'Modelos', icon: Layout },
+            { id: 'strategy', label: 'Alineación', icon: Users },
+            { id: 'agenda', label: 'Agenda', icon: Clock },
+          ];
+
+          return React.createElement('div', { className: "min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col" },
+            // Navbar
+            React.createElement('header', { className: "bg-slate-900 text-white sticky top-0 z-50 shadow-md" },
+                React.createElement('div', { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" },
+                    React.createElement('div', { className: "flex items-center justify-between h-20" },
+                        // Logo Area
+                        React.createElement('div', { className: "flex-shrink-0 cursor-pointer", onClick: () => setActiveTab('vision') },
+                            React.createElement(MainLogo, null)
+                        ),
+                        // Desktop Tabs
+                        React.createElement('nav', { className: "hidden md:flex space-x-1 ml-8" },
+                            tabs.map(tab => React.createElement('button', {
+                                key: tab.id,
+                                onClick: () => setActiveTab(tab.id),
+                                className: `px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2
+                                    ${activeTab === tab.id 
+                                        ? 'bg-slate-800 text-white shadow-inner border border-slate-700' 
+                                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'}`
+                            },
+                                React.createElement(tab.icon, { className: "w-4 h-4" }),
+                                tab.label
+                            ))
+                        ),
+                        // Mobile Menu Button
+                        React.createElement('div', { className: "md:hidden flex items-center gap-4" },
+                            React.createElement('span', { className: "text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded" }, "2026"),
+                            React.createElement('button', { onClick: () => setIsMenuOpen(!isMenuOpen), className: "p-2 text-slate-300" },
+                                isMenuOpen ? React.createElement(X, null) : React.createElement(Menu, null)
+                            )
+                        )
+                    )
+                ),
+                // Mobile Nav
+                isMenuOpen && React.createElement('div', { className: "md:hidden bg-slate-800 border-t border-slate-700" },
+                    tabs.map(tab => React.createElement('button', {
+                        key: tab.id,
+                        onClick: () => { setActiveTab(tab.id); setIsMenuOpen(false); },
+                        className: `block w-full text-left px-4 py-3 text-base font-medium
+                            ${activeTab === tab.id ? 'bg-slate-900 text-white' : 'text-slate-300'}`
+                    },
+                        React.createElement('span', { className: "flex items-center gap-3" },
+                            React.createElement(tab.icon, { className: "w-5 h-5" }),
+                            tab.label
+                        )
+                    ))
+                )
+            ),
+            
+            // Main Content
+            React.createElement('main', { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8" },
+                React.createElement('div', { className: "min-h-[500px]" },
+                    activeTab === 'vision' && React.createElement(ViewVision, null),
+                    activeTab === 'portfolio' && React.createElement(ViewPortfolio, null),
+                    activeTab === 'models' && React.createElement(ViewModels, null),
+                    activeTab === 'strategy' && React.createElement(ViewStrategy, null),
+                    activeTab === 'agenda' && React.createElement(ViewAgenda, null)
+                )
+            ),
+
+            // Footer
+            React.createElement('footer', { className: "bg-white border-t border-slate-200 mt-auto" },
+                React.createElement('div', { className: "max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4" },
+                    React.createElement('div', { className: "flex items-center gap-4" },
+                        React.createElement('p', { className: "text-slate-500 text-sm font-medium" }, "PH | Proyectos Herrera"),
+                        React.createElement('span', { className: "text-slate-300 text-xs" }, "|"),
+                        React.createElement('p', { className: "text-slate-400 text-xs" }, "Dashboard de Cuenta: MEOSA")
+                    ),
+                    React.createElement('div', { className: "flex items-center gap-2 text-xs font-mono text-slate-400" },
+                        React.createElement('div', { className: "w-2 h-2 rounded-full bg-blue-500 animate-pulse" }),
+                        "PH SYSTEM ACTIVE"
+                    )
+                )
+            )
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(Dashboard));
+
+    </script>
+</body>
+</html>
