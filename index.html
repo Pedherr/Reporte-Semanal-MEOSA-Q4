@@ -15,6 +15,18 @@
         body { font-family: 'Inter', sans-serif; }
         .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Print Specific Styles */
+        @media print {
+            @page { margin: 1.5cm; }
+            body { background-color: white; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            .print-break-inside-avoid { break-inside: avoid; }
+            .shadow-sm, .shadow-lg { box-shadow: none !important; }
+            .border { border-color: #cbd5e1 !important; } /* slate-300 */
+        }
+        .print-only { display: none; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -32,7 +44,7 @@
             Layout, Users, FileText, ChevronRight, ArrowRight, Shield, 
             Activity, XCircle, Menu, X, Calendar, Building2, BarChart3,
             ClipboardList, GraduationCap, MessageSquare, DollarSign, Calculator,
-            Briefcase as PackageIcon, Layers, Zap
+            Briefcase as PackageIcon, Layers, Zap, Printer, FileDown
         } from 'https://esm.sh/lucide-react@0.263.1';
 
         // --- Configuration ---
@@ -42,9 +54,6 @@
         // --- Data ---
         
         // Financial Data (Refined with Strict Packages Logic)
-        // Fixed: Gramosa (Excluded from cost)
-        // Flexible: PFD + SuKarne (Included in cost)
-        // Billable: Flexible + Mentoria
         const financialHistory = [
             { 
                 week: 'Semana 01 (02-03 Ene)', 
@@ -323,8 +332,8 @@
             React.createElement('span', { className: "font-black text-slate-900 tracking-tighter text-lg" }, "PH")
           ),
           React.createElement('div', { className: "hidden sm:flex flex-col border-l border-slate-700 pl-3" },
-            React.createElement('span', { className: "font-bold text-lg tracking-tight leading-none text-white" }, "Gestión Estratégica"),
-            React.createElement('span', { className: "text-slate-400 text-[10px] font-medium tracking-widest uppercase" }, "Cuenta: MEOSA 2026")
+            React.createElement('span', { className: "font-bold text-lg tracking-tight leading-none text-slate-900" }, "Gestión Estratégica"),
+            React.createElement('span', { className: "text-slate-500 text-[10px] font-medium tracking-widest uppercase" }, "Cuenta: MEOSA 2026")
           ),
           React.createElement('div', { className: "sm:hidden flex flex-col" },
              React.createElement('span', { className: "font-bold text-lg text-white" }, "PH")
@@ -333,7 +342,7 @@
 
         const Card = ({ children, className = '' }) => React.createElement(
           'div',
-          { className: `bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className}` },
+          { className: `bg-white rounded-xl shadow-sm border border-slate-200 p-6 ${className} print-break-inside-avoid` },
           children
         );
 
@@ -389,14 +398,9 @@
         const ViewFinancials = () => {
             // New Calculation Logic based on User Constraints
             const totalHours = financialHistory.reduce((acc, curr) => acc + (curr.gramosaHours + curr.flexibleHours + curr.mentoriaHours), 0);
-            
-            // Excluded from cost calculation but tracked for capacity
             const totalGramosa = financialHistory.reduce((acc, curr) => acc + curr.gramosaHours, 0);
-            
-            // Included in cost calculation
-            const totalFlexible = financialHistory.reduce((acc, curr) => acc + curr.flexibleHours, 0); // PFD + SuKarne
+            const totalFlexible = financialHistory.reduce((acc, curr) => acc + curr.flexibleHours, 0); 
             const totalMentoria = financialHistory.reduce((acc, curr) => acc + curr.mentoriaHours, 0);
-            
             const totalBillable = totalFlexible + totalMentoria;
             const totalCost = totalBillable * HOURLY_RATE;
 
@@ -804,6 +808,11 @@
           const [activeTab, setActiveTab] = useState('vision');
           const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+          // Print Logic
+          const handlePrint = () => {
+              window.print();
+          };
+
           const tabs = [
             { id: 'vision', label: 'Cierre Enero', icon: BarChart3 },
             { id: 'financials', label: 'Control HH', icon: Calculator }, // New Tab
@@ -815,7 +824,7 @@
 
           return React.createElement('div', { className: "min-h-screen bg-slate-50 font-sans text-slate-900 flex flex-col" },
             // Navbar
-            React.createElement('header', { className: "bg-slate-900 text-white sticky top-0 z-50 shadow-md" },
+            React.createElement('header', { className: "bg-slate-900 text-white sticky top-0 z-50 shadow-md no-print" },
                 React.createElement('div', { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" },
                     React.createElement('div', { className: "flex items-center justify-between h-20" },
                         // Logo Area
@@ -836,17 +845,26 @@
                                 tab.label
                             ))
                         ),
-                        // Mobile Menu Button
-                        React.createElement('div', { className: "md:hidden flex items-center gap-4" },
-                            React.createElement('span', { className: "text-[10px] text-slate-400 border border-slate-700 px-2 py-1 rounded" }, "2026"),
-                            React.createElement('button', { onClick: () => setIsMenuOpen(!isMenuOpen), className: "p-2 text-slate-300" },
-                                isMenuOpen ? React.createElement(X, null) : React.createElement(Menu, null)
+                        // Actions
+                        React.createElement('div', { className: "flex items-center gap-2" },
+                             React.createElement('button', {
+                                onClick: handlePrint,
+                                className: "bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-md flex items-center gap-2 text-sm font-bold transition-colors"
+                             }, 
+                                React.createElement(Printer, { size: 18 }),
+                                React.createElement('span', { className: "hidden sm:inline" }, "Imprimir")
+                             ),
+                             // Mobile Menu Button
+                             React.createElement('div', { className: "md:hidden flex items-center gap-2 ml-2" },
+                                React.createElement('button', { onClick: () => setIsMenuOpen(!isMenuOpen), className: "p-2 text-slate-300" },
+                                    isMenuOpen ? React.createElement(X, null) : React.createElement(Menu, null)
+                                )
                             )
                         )
                     )
                 ),
                 // Mobile Nav
-                isMenuOpen && React.createElement('div', { className: "md:hidden bg-slate-800 border-t border-slate-700" },
+                isMenuOpen && React.createElement('div', { className: "md:hidden bg-slate-800 border-t border-slate-700 no-print" },
                     tabs.map(tab => React.createElement('button', {
                         key: tab.id,
                         onClick: () => { setActiveTab(tab.id); setIsMenuOpen(false); },
@@ -862,19 +880,53 @@
             ),
             
             // Main Content
-            React.createElement('main', { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8" },
-                React.createElement('div', { className: "min-h-[500px]" },
+            React.createElement('main', { className: "flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 print:p-0" },
+                // Print Header (Only visible when printing)
+                React.createElement('div', { className: "print-only mb-8 border-b-2 border-slate-800 pb-4" },
+                    React.createElement('div', { className: "flex justify-between items-end" },
+                        React.createElement('div', { className: "flex items-center gap-3" },
+                            React.createElement('div', { className: "w-12 h-12 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-800" },
+                                React.createElement('span', { className: "font-black text-white tracking-tighter text-xl" }, "PH")
+                            ),
+                            React.createElement('div', { className: "flex flex-col" },
+                                React.createElement('h1', { className: "text-2xl font-bold text-slate-900 leading-none" }, "Reporte Semanal Ejecutivo"),
+                                React.createElement('span', { className: "text-sm text-slate-500 font-medium uppercase tracking-wide" }, "Cuenta Estratégica: MEOSA 2026")
+                            )
+                        ),
+                        React.createElement('div', { className: "text-right" },
+                            React.createElement('p', { className: "text-sm font-bold text-slate-800" }, `Corte: ${LAST_UPDATED}`),
+                            React.createElement('p', { className: "text-xs text-slate-500" }, "Generado por J.A.R.V.I.S.")
+                        )
+                    )
+                ),
+
+                // Interactive Content (Hidden when printing if not active, Logic handled by print CSS above usually hides everything except selected, but here we want a specific print view or print current view)
+                // BETTER APPROACH FOR SINGLE FILE: Render a specific "Print View" structure hidden by default, shown only on print.
+                
+                // Regular View Container
+                React.createElement('div', { className: "min-h-[500px] no-print" },
                     activeTab === 'vision' && React.createElement(ViewVision, null),
-                    activeTab === 'financials' && React.createElement(ViewFinancials, null), // New View
+                    activeTab === 'financials' && React.createElement(ViewFinancials, null), 
                     activeTab === 'portfolio' && React.createElement(ViewPortfolio, null),
                     activeTab === 'models' && React.createElement(ViewModels, null),
                     activeTab === 'strategy' && React.createElement(ViewStrategy, null),
                     activeTab === 'agenda' && React.createElement(ViewAgenda, null)
+                ),
+
+                // PRINT ONLY VIEW (Aggregates Key Info)
+                React.createElement('div', { className: "print-only space-y-8" },
+                    React.createElement(ViewVision),
+                    React.createElement('hr', { className: "border-slate-200" }),
+                    React.createElement(ViewFinancials),
+                    React.createElement('hr', { className: "border-slate-200" }),
+                    React.createElement(ViewStrategy),
+                    React.createElement('hr', { className: "border-slate-200" }),
+                    React.createElement(ViewAgenda)
                 )
             ),
 
             // Footer
-            React.createElement('footer', { className: "bg-white border-t border-slate-200 mt-auto" },
+            React.createElement('footer', { className: "bg-white border-t border-slate-200 mt-auto no-print" },
                 React.createElement('div', { className: "max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4" },
                     React.createElement('div', { className: "flex items-center gap-4" },
                         React.createElement('p', { className: "text-slate-500 text-sm font-medium" }, "PH | We´re Accountable"),
