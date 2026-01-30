@@ -34,6 +34,17 @@
             transform: translateY(-2px);
             border-color: #cbd5e1;
         }
+
+        /* Timeline vertical */
+        .timeline-line::before {
+            content: ''; 
+            position: absolute; 
+            left: 0; 
+            top: 0; 
+            bottom: 0; 
+            width: 2px; 
+            background-color: #e2e8f0;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -42,7 +53,7 @@
 
     <!-- Motor React (Sin JSX para máxima estabilidad) -->
     <script type="module">
-        import React, { useState } from 'https://esm.sh/react@18.2.0';
+        import React, { useState, useEffect } from 'https://esm.sh/react@18.2.0';
         import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
         
         // Iconos
@@ -74,81 +85,88 @@
         const portfolioData = {
           strategic: [
             { id: 'pilgrims', client: 'PILGRIMS', title: 'Ingeniería BIM / Peletizado', status: 'PROP. ENVIADA', note: 'Enviada 26/01. Esperando feedback.', icon: Building2, color: 'emerald' },
-            { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Entregada 30/01.', icon: CheckCircle, color: 'emerald' },
-            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'EN PROCESO', note: 'Entrega programada 06/02.', icon: Zap, color: 'blue' },
-            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'VALIDANDO', note: 'Diagrama OK. Visita cierre 02/02.', icon: Users, color: 'blue' },
+            { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta entregada 30/01.', icon: CheckCircle, color: 'emerald' },
+            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'EN PROCESO', note: 'Entrega programada para 06/02.', icon: Zap, color: 'blue' },
+            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'VALIDANDO', note: 'Diagrama entregado 25/01. Visita 02/02.', icon: Users, color: 'blue' },
             { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'VIGENTE', note: 'Propuesta activa.', icon: Layout, color: 'blue' },
             { id: 'adm-tanques', client: 'ADM', title: 'Documentación Tanques', status: 'RECHAZADA', note: 'Archivar lecciones.', icon: XCircle, color: 'red' }
           ],
           approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Hito 154h superado (60% Total).', icon: CheckCircle, progress: 60, totalHH: '154 / 256 HH' }
+            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido al 60% (154h acumuladas).', icon: CheckCircle, progress: 60, totalHH: '154 / 256 HH' }
           ],
           recurring: [
-            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Sesión 2h (Planificación).', icon: Shield },
-            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'En Curso', note: 'Sesión 3h (Retomado).', icon: Activity },
-            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Continuo', note: '10h esta semana (Germán 8h).', icon: Users }
+            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Sesión trabajo 2h.', icon: Shield },
+            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'En Curso', note: 'Sesión trabajo 3h.', icon: Activity },
+            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Continuo', note: 'Equipo completo (10h sem).', icon: Users }
           ]
         };
 
         const modelsData = [
             { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: CheckCircle, items: [{ label: 'GRAMOSA', value: 'Avance: 154 HH (60%)' }] },
             { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: ClipboardList, items: [{ label: "Pilgrim's", status: 'ENVIADA' }, { label: 'Alto Sano (Med)', status: 'ENTREGADA' }, { label: 'Alto Sano (Pan)', status: '06/02' }] },
-            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: Shield, items: [{ label: 'SuKarne Póliza', value: '12 HH (YTD)' }, { label: 'PFD', value: '6 HH (YTD)' }, { label: 'Total Variable', value: '18 HH Enero' }] },
+            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: Shield, items: [{ label: 'SuKarne Póliza', value: '10 HH (YTD)' }, { label: 'PFD', value: '6 HH (YTD)' }, { label: 'Total Variable', value: '16 HH Enero' }] },
             { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: GraduationCap, items: [{ label: 'Planner', value: '28h' }, { label: 'Coord', value: '4h' }, { label: 'Ops', value: '3h' }] }
         ];
 
         const alignmentPoints = [
-            { title: 'Cierre Comercial Enero', text: 'Objetivos cumplidos: Pilgrim\'s enviado (26/01) y Alto Sano Medidores entregado (30/01). Paneles queda para Sem 1 Feb.' },
-            { title: 'Hito Gramosa', text: 'Se rompe la barrera de las 150 horas (154h acumuladas). Avance físico y financiero alineado al 60%.' },
-            { title: 'Validación SuKarne', text: 'Diagrama de flujo Rolado Michoacán entregado. Todo listo para visita de cierre el 02/02.' },
-            { title: 'Recursos Internos', text: 'Semana más fuerte en capacitación (10h). Germán Planner consolidado con 8h esta semana. PFD reactivado.' }
+            { title: 'Cierre Comercial Enero', text: 'Se cumplió con el envío de Pilgrim\'s (26/01) y Alto Sano Medidores (30/01). Alto Sano Paneles queda para el 06/02.' },
+            { title: 'Avance Gramosa', text: 'Ritmo sostenido. Se acumulan 154 horas, alcanzando el 60% del paquete total contratado.' },
+            { title: 'Validación SuKarne', text: 'Diagrama de flujo (Rolado Michoacán) entregado. Visita clave el 02/02 para cerrar propuesta Universidad.' },
+            { title: 'Recursos Internos', text: 'Semana récord en mentorías (10h). Germán (Planner) lidera con 8h esta semana. PFD reactivado con 3h.' }
         ];
 
         // --- UTILS ---
         const formatMoney = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
-        const ce = React.createElement; // Alias para escribir menos
+        const ce = React.createElement; 
 
         // --- COMPONENTES UI ---
 
-        const Card = ({ children, className = "" }) => 
-            ce('div', { className: `card-elite p-6 ${className}` }, children);
+        const Card = ({ children, className = '' }) => React.createElement(
+            'div',
+            { className: `card-elite p-6 ${className}` },
+            children
+        );
 
-        const Badge = ({ children, color = "blue" }) => {
+        const Badge = ({ children, color = 'blue' }) => {
             const colors = {
-                blue: "bg-blue-100 text-blue-800 border-blue-200",
-                emerald: "bg-emerald-100 text-emerald-800 border-emerald-200",
-                amber: "bg-amber-100 text-amber-800 border-amber-200",
-                red: "bg-red-100 text-red-800 border-red-200",
-                cyan: "bg-cyan-100 text-cyan-800 border-cyan-200",
-                purple: "bg-purple-100 text-purple-800 border-purple-200",
+                blue: 'bg-blue-50 text-blue-700 border-blue-200', 
+                emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                amber: 'bg-amber-50 text-amber-700 border-amber-200', 
+                red: 'bg-red-50 text-red-700 border-red-200',
+                cyan: 'bg-cyan-50 text-cyan-700 border-cyan-200',
+                purple: 'bg-purple-50 text-purple-700 border-purple-200'
             };
-            return ce('span', { className: `px-2.5 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wide ${colors[color] || colors.blue}` }, children);
+            return React.createElement(
+                'span',
+                { className: `px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider ${colors[color] || colors.blue}` },
+                children
+            );
         };
 
-        const ProgressBar = ({ progress, label, color = "emerald" }) => 
-            ce('div', { className: "w-full mt-4" },
-                ce('div', { className: "flex justify-between text-xs mb-1 font-semibold text-slate-600" },
-                    ce('span', null, "Avance HH"),
-                    ce('span', { className: "text-slate-900 font-mono" }, label)
-                ),
-                ce('div', { className: "w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200" },
-                    ce('div', { 
-                        className: `h-full rounded-full transition-all duration-1000 ${color === 'emerald' ? 'bg-emerald-500' : 'bg-blue-500'}`, 
-                        style: { width: `${progress}%` } 
-                    })
-                )
-            );
+        const ProgressBar = ({ progress, label, color = "emerald" }) => React.createElement('div', { className: "w-full mt-4" },
+            React.createElement('div', { className: "flex justify-between text-xs mb-1.5 font-semibold text-slate-600" },
+                React.createElement('span', null, "Avance HH"),
+                React.createElement('span', { className: "text-slate-900 font-mono" }, label)
+            ),
+            React.createElement('div', { className: "w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200 shadow-inner" },
+                React.createElement('div', { 
+                    className: "bg-emerald-500 h-2.5 rounded-full transition-all duration-1000 shadow-sm", 
+                    style: { width: `${progress}%` } 
+                })
+            )
+        );
 
-        const SectionHeader = ({ title, subtitle, icon }) => 
-            ce('div', { className: "mb-8 flex items-center gap-4 border-b border-slate-200 pb-4" },
-                ce('div', { className: "p-3 bg-white border border-slate-200 rounded-xl text-slate-800 shadow-sm" },
-                    ce(icon, { size: 24 })
-                ),
-                ce('div', null,
-                    ce('h2', { className: "text-2xl font-bold text-slate-900 leading-none" }, title),
-                    ce('p', { className: "text-slate-500 text-sm mt-1" }, subtitle)
-                )
-            );
+        const SectionHeader = ({ title, subtitle, icon }) => React.createElement(
+            'div',
+            { className: "mb-8 flex items-center gap-4 border-b border-slate-200 pb-4" },
+            React.createElement('div', { className: "p-3 bg-white border border-slate-200 rounded-xl text-slate-800 shadow-sm" },
+                React.createElement(icon, { size: 24 })
+            ),
+            React.createElement('div', null,
+                React.createElement('h2', { className: "text-2xl font-bold text-slate-900 leading-none" }, title),
+                React.createElement('p', { className: "text-slate-500 text-sm mt-1" }, subtitle)
+            )
+        );
 
         // --- VISTAS ---
 
@@ -163,14 +181,13 @@
             const totalBillable = totals.flex + totals.ment;
             const totalCost = totalBillable * HOURLY_RATE;
             
-            // Distribution Calc
             const pctFixed = (totals.gramosa / totals.total) * 100;
             const pctVar = (totalBillable / totals.total) * 100;
 
-            return ce('div', { className: "space-y-8 animate-enter" },
+            return React.createElement('div', { className: "space-y-8 animate-enter" },
                 ce(SectionHeader, { title: "Control Financiero", subtitle: "Rentabilidad y Carga Operativa (Cierre Enero)", icon: Calculator }),
                 
-                // Tarjetas KPI
+                // KPI Cards
                 ce('div', { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" },
                     ce(Card, { className: "border-t-4 border-t-slate-500" },
                         ce('div', { className: "flex justify-between items-start" },
@@ -361,6 +378,7 @@
 
         const ViewModels = () => ce('div', { className: "space-y-6 animate-enter" },
             ce(SectionHeader, { title: "Modelos de Gestión", subtitle: "Actividad detallada por esquema", icon: Layout }),
+            
             ce('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
                 modelsData.map((m, idx) => 
                     ce(Card, { key: idx, className: "hover:border-blue-300 transition-colors" },
@@ -399,31 +417,50 @@
             )
         );
 
+        // --- AGENDA COMPONENT DEFINED HERE ---
+        const ViewAgenda = () => ce('div', { className: "space-y-6 animate-enter" },
+            ce(SectionHeader, { title: "Agenda de Seguimiento", subtitle: "Cierre de Mes (31 Enero)", icon: Clock }),
+            
+            ce('div', { className: "bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite" },
+                ce('div', { className: "relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line" },
+                    [
+                        { time: '5 min', title: 'Revisión Cierre Enero', desc: 'Resultados Financieros y Operativos (66 HH Total).' },
+                        { time: '10 min', title: 'Estatus Propuestas', desc: 'Pilgrim\'s enviada y Alto Sano Medidores entregada.' },
+                        { time: '10 min', title: 'Plan Visita SuKarne', desc: 'Coordinación logística visita 02/02 para cierre.' },
+                        { time: '10 min', title: 'Entrega Paneles AS', desc: 'Revisión avance para entrega 06/02.' },
+                        { time: '5 min', title: 'Siguientes Pasos PFD', desc: 'Asegurar continuidad tras reactivación.' }
+                    ].map((item, idx) => (
+                        ce('div', { key: idx, className: "relative pl-12 group" },
+                            ce('div', { className: "absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm" }),
+                            ce('div', { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2" },
+                                ce('h4', { className: "font-bold text-lg text-slate-800" }, item.title),
+                                ce('span', { className: "text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200" }, item.time)
+                            ),
+                            ce('p', { className: "text-slate-600 leading-relaxed font-medium border-l-2 border-transparent pl-2 group-hover:border-blue-200 transition-colors" }, item.desc)
+                        )
+                    ))
+                )
+            )
+        );
+
         const ViewStrategy = () => ce('div', { className: "grid lg:grid-cols-2 gap-8 animate-enter" },
             ce('div', null,
                 ce('h3', { className: "text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2" },
-                    ce(Clock, { className: "text-blue-600", size: 20 }), " Agenda de Cierre (Ene)"
+                    ce(BarChart3, { className: "text-blue-600", size: 20 }), " Análisis de Situación"
                 ),
-                ce('div', { className: "card-elite p-8" },
-                    ce('div', { className: "space-y-8 border-l-2 border-slate-100 ml-2 pl-8 timeline-line relative" },
-                        [{ title: "Visita Cierre SuKarne", desc: "Reunión en sitio para detalles finales.", tag: "Prioridad", time: "02/02" },
-                        { title: "Entrega Paneles Alto Sano", desc: "Envío formal de propuesta técnica.", tag: "Táctico", time: "06/02" },
-                        { title: "Seguimiento Pilgrim's", desc: "Validación de feedback propuesta enviada.", tag: "Comercial", time: "Sem 6" },
-                        { title: "Reporte Mensual", desc: "Presentación ejecutiva cierre Enero.", tag: "Gestión", time: "31/01" }
-                        ].map((item, i) => ce('div', { key: i, className: "relative group" },
-                            ce('div', { className: "absolute -left-[39px] top-1 w-4 h-4 rounded-full bg-white border-4 border-blue-500 shadow-sm group-hover:scale-110 transition-transform" }),
-                            ce('div', { className: "flex justify-between items-center mb-1" },
-                                ce('h4', { className: "font-bold text-sm text-slate-800" }, item.title, ce('span', { className: "text-[10px] text-slate-400 font-normal ml-2" }, `(${item.tag})`)),
-                                ce('span', { className: "text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-mono border border-slate-200" }, item.time)
-                            ),
-                            ce('p', { className: "text-xs text-slate-500 leading-relaxed" }, item.desc)
-                        ))
-                    )
+                ce('div', { className: "space-y-4" },
+                    alignmentPoints.map((point, i) => ce('div', { key: i, className: "group p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all card-elite" },
+                        ce('div', { className: "flex items-baseline gap-3 mb-1" },
+                            ce('span', { className: "text-blue-600 font-black text-2xl opacity-30 group-hover:opacity-100 transition-opacity" }, `0${i + 1}`),
+                            ce('span', { className: "font-bold text-slate-800 text-lg group-hover:text-blue-700 transition-colors" }, point.title)
+                        ),
+                        ce('p', { className: "text-sm text-slate-600 pl-10 leading-relaxed font-medium" }, point.text)
+                    ))
                 )
             ),
             ce('div', null,
                 ce('h3', { className: "text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" },
-                     ce(BarChart3, { className: "text-blue-600", size: 20 }), " Alineación Estratégica"
+                     ce(Target, { className: "text-blue-600", size: 20 }), " Gestión de Riesgos & Foco"
                 ),
                 ce('div', { className: "space-y-4" },
                     ce(Card, { className: "bg-emerald-50 border-emerald-200 !p-4 !shadow-none" },
@@ -517,7 +554,7 @@
             )
         );
 
-        // --- DASHBOARD CONTAINER ---
+        // --- DASHBOARD MASTER ---
 
         const Dashboard = () => {
             const [activeTab, setActiveTab] = useState('vision');
@@ -528,7 +565,8 @@
                 { id: 'financials', label: 'Control HH' },
                 { id: 'portfolio', label: 'Portafolio' },
                 { id: 'models', label: 'Modelos' },
-                { id: 'strategy', label: 'Estrategia' }
+                { id: 'strategy', label: 'Estrategia' },
+                { id: 'agenda', label: 'Agenda' }
             ];
 
             return ce('div', { className: "min-h-screen flex flex-col font-sans" },
@@ -569,7 +607,8 @@
                     activeTab === 'financials' && ViewFinancials(),
                     activeTab === 'portfolio' && ViewPortfolio(),
                     activeTab === 'models' && ViewModels(),
-                    activeTab === 'strategy' && ce('div', { className: "space-y-10 animate-enter" }, ViewStrategy(), ViewAgenda())
+                    activeTab === 'strategy' && ViewStrategy(),
+                    activeTab === 'agenda' && ViewAgenda()
                 ),
                 ce('footer', { className: "bg-white border-t border-slate-200 mt-auto py-8" },
                     ce('div', { className: "max-w-7xl mx-auto px-4 flex justify-between text-sm text-slate-500" },
