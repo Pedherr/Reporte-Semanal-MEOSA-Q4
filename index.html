@@ -24,15 +24,22 @@
         .animate-fadeIn { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Estilos de Impresión */
+        /* Estilos de Impresión Premium */
         @media print {
-            @page { margin: 0.5cm; size: A4; }
-            body { background-color: white !important; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+            @page { size: landscape; margin: 0.5cm; }
+            body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .no-print { display: none !important; }
             .print-only { display: block !important; width: 100%; }
-            .card-print { border: 1px solid #cbd5e1; break-inside: avoid; page-break-inside: avoid; box-shadow: none; margin-bottom: 1rem; }
+            .card-visual { border: 1px solid #cbd5e1 !important; box-shadow: none !important; break-inside: avoid; page-break-inside: avoid; margin-bottom: 1rem; background-color: white !important; }
             .bg-slate-50 { background-color: #f8fafc !important; }
-            .bg-slate-900 { background-color: #0f172a !important; color: white !important; }
+            
+            /* Ajustes Tabla Impresión */
+            table { font-size: 11px !important; width: 100%; }
+            th, td { padding: 6px 4px !important; }
+            
+            /* Forzar visualización de barras de progreso */
+            .print-progress-bg { background-color: #e2e8f0 !important; }
+            .print-progress-fill { background-color: #10b981 !important; }
         }
         .print-only { display: none; }
     </style>
@@ -42,6 +49,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // Helper Icon Component
         const Icon = ({ name, size = 24, className = "" }) => {
             React.useEffect(() => { lucide.createIcons(); }, [name]);
             return <i data-lucide={name} width={size} height={size} className={className}></i>;
@@ -50,30 +58,13 @@
         const LAST_UPDATED = "24 de Enero, 2026"; 
         const HOURLY_RATE = 900;
 
-        // --- DATOS ---
+        // --- DATOS MAESTROS ---
         
-        // Historial Financiero Corregido
         const financialHistory = [
-            { 
-                week: 'Semana 01 (02-03 Ene)', 
-                gramosaHours: 0, flexibleHours: 0, mentoriaHours: 1, 
-                activity: 'Arranque Año: Mentoría Edson (Coordinador).', status: 'Cerrado'
-            },
-            { 
-                week: 'Semana 02 (05-09 Ene)', 
-                gramosaHours: 6, flexibleHours: 0, mentoriaHours: 9, 
-                activity: 'GRAMOSA (6h Pkg), Foco Mentoría: Germán Ortiz (Planner).', status: 'Cerrado'
-            },
-            { 
-                week: 'Semana 03 (12-16 Ene)', 
-                gramosaHours: 10, flexibleHours: 4, mentoriaHours: 6, // 10h total billable (4 flex + 6 ment)
-                activity: 'GRAMOSA(10h), PFD(3h), Póliza SK(1h), Ment. Germán(5h)/Edson(1h).', status: 'Cerrado'
-            },
-            { 
-                week: 'Semana 04 (19-23 Ene)', 
-                gramosaHours: 14, flexibleHours: 7, mentoriaHours: 9, 
-                activity: 'GRAMOSA(14h), Póliza SK(7h), Ment. Germán(6h)/Edson(1h)/Johan(2h).', status: 'Cerrado'
-            }
+            { week: 'Semana 01 (02-03 Ene)', gramosaHours: 0, flexibleHours: 0, mentoriaHours: 1, activity: 'Arranque Año: Mentoría Edson (Coordinador).', status: 'Cerrado' },
+            { week: 'Semana 02 (05-09 Ene)', gramosaHours: 6, flexibleHours: 0, mentoriaHours: 9, activity: 'GRAMOSA (6h Pkg), Foco Mentoría: Germán Ortiz (Planner).', status: 'Cerrado' },
+            { week: 'Semana 03 (12-16 Ene)', gramosaHours: 10, flexibleHours: 4, mentoriaHours: 6, activity: 'GRAMOSA(10h), PFD(3h), Póliza SK(1h), Ment. Germán(5h)/Edson(1h).', status: 'Cerrado' },
+            { week: 'Semana 04 (19-23 Ene)', gramosaHours: 14, flexibleHours: 7, mentoriaHours: 9, activity: 'GRAMOSA(14h), Póliza SK(7h), Ment. Germán(6h)/Edson(1h)/Johan(2h).', status: 'Cerrado' }
         ];
 
         const portfolioData = {
@@ -86,7 +77,7 @@
             { id: 'adm-tanques', client: 'ADM', title: 'Documentación Tanques', status: 'Rechazada', note: 'Archivar lecciones.', icon: 'x-circle', color: 'red' }
           ],
           approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido (+14h esta semana).', icon: 'check-circle' }
+            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido (+14h esta semana).', icon: 'check-circle', progress: 55, totalHH: '142 / 256 HH' }
           ],
           recurring: [
             { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Gestión Michoacán.', icon: 'shield' },
@@ -95,61 +86,123 @@
           ]
         };
 
+        const modelsData = [
+            { 
+                type: 'Proyecto Cerrado', desc: 'Entregables + Hitos + Pagos', color: 'bg-emerald-500', icon: 'check-circle',
+                items: [{ label: 'GRAMOSA', value: 'Avance acumulado: 142 HH (55%)', highlight: true }]
+            },
+            { 
+                type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial Activo', color: 'bg-blue-500', icon: 'clipboard-list',
+                items: [
+                    { label: 'Pilgrim\'s (BIM)', status: 'AL 80%', date: 'Cierre: 26/01' },
+                    { label: 'Alto Sano (2 Props)', status: 'NUEVO', date: 'Recibido 23/01' },
+                    { label: 'ADM (Planos)', status: 'COTIZADO', date: 'Vigente' },
+                    { label: 'SuKarne (Uni)', status: 'EN PROCESO', date: 'Diagramando' }
+                ]
+            },
+            { 
+                type: 'HH Consumidas', desc: 'Bolsa / Póliza / Soporte', color: 'bg-amber-500', icon: 'shield',
+                items: [
+                    { label: 'SuKarne Póliza', value: '8 HH (Gestión)', sub: 'Acumulado Enero' },
+                    { label: 'PFD (Ventas)', value: '3 HH (Alcance)', sub: 'Acumulado Enero' }
+                ]
+            },
+            { 
+                type: 'Mentorías', desc: 'Desarrollo de Roles', color: 'bg-indigo-500', icon: 'graduation-cap',
+                items: [
+                    { label: 'Planner (Germán)', value: '20h. Control.' },
+                    { label: 'Coord (Edson)', value: '3h. Implementación.' },
+                    { label: 'Ops (Johan)', value: '2h. Activación.' }
+                ]
+            }
+        ];
+
+        const alignmentPoints = [
+            { title: 'Tracción Operativa', text: 'Semana de alta ejecución (30 HH totales). GRAMOSA avanza sólido y Póliza SK retoma control estratégico.' },
+            { title: 'Avance Comercial', text: 'SuKarne Uni: Del concepto a la realidad. Pilgrim\'s al 80%. Alto Sano entra con 2 requerimientos nuevos.' },
+            { title: 'Recursos Internos', text: 'Equipo completo en cancha. Johan López activo (2h). Germán mantiene liderazgo en horas (20h acumuladas).' },
+            { title: 'Ajuste PFD', text: 'Se integraron 3h de Daniel Zepeda en Sem 3. Proyecto requiere constancia para evitar rezago.' }
+        ];
+
         const formatMoney = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 
         // --- COMPONENTES UI ---
 
         const Card = ({ children, className = '' }) => (
-            <div className={`bg-white rounded-xl shadow-sm border border-slate-200 p-6 card-print ${className}`}>
+            <div className={`bg-white rounded-xl shadow-md border border-slate-200 p-6 card-visual transition-shadow hover:shadow-lg ${className}`}>
                 {children}
             </div>
         );
 
         const Badge = ({ children, color = 'blue' }) => {
             const colors = {
-                blue: 'bg-blue-100 text-blue-800', emerald: 'bg-emerald-100 text-emerald-800',
-                amber: 'bg-amber-100 text-amber-800', red: 'bg-red-100 text-red-800',
-                cyan: 'bg-cyan-100 text-cyan-800', purple: 'bg-purple-100 text-purple-800'
+                blue: 'bg-blue-100 text-blue-800 border-blue-200', emerald: 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                amber: 'bg-amber-100 text-amber-800 border-amber-200', red: 'bg-red-100 text-red-800 border-red-200',
+                cyan: 'bg-cyan-100 text-cyan-800 border-cyan-200', purple: 'bg-purple-100 text-purple-800 border-purple-200'
             };
-            return <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${colors[color] || colors.blue}`}>{children}</span>;
+            return <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${colors[color] || colors.blue}`}>{children}</span>;
         };
+
+        const ProgressBar = ({ progress, label }) => (
+            <div className="w-full mt-4">
+                <div className="flex justify-between text-xs mb-1">
+                    <span className="font-bold text-slate-700">Progreso HH</span>
+                    <span className="text-slate-500 font-mono">{label}</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden print-progress-bg">
+                    <div className="bg-emerald-500 h-2.5 rounded-full print-progress-fill" style={{ width: `${progress}%` }}></div>
+                </div>
+            </div>
+        );
+
+        const SectionHeader = ({ title, subtitle, icon }) => (
+            <div className="mb-6 flex items-center gap-3 border-b-2 border-slate-100 pb-3">
+                <div className="p-2 bg-white border border-slate-200 rounded-lg text-slate-700 shadow-sm">
+                    <Icon name={icon} size={24} />
+                </div>
+                <div>
+                    <h2 className="text-2xl font-bold text-slate-800 leading-none">{title}</h2>
+                    <p className="text-slate-500 text-sm mt-1">{subtitle}</p>
+                </div>
+            </div>
+        );
 
         // --- VISTAS ---
 
         const ViewVision = () => (
-            <div className="space-y-6">
-                <div className="flex justify-between items-end mb-4">
+            <div className="space-y-6 animate-fadeIn">
+                <div className="flex justify-between items-end mb-2">
                     <div>
-                        <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <h3 className="text-2xl font-black text-slate-800 flex items-center gap-2">
                             <Icon name="bar-chart-3" className="text-blue-600" /> Cierre Mensual: Enero 2026
                         </h3>
-                        <p className="text-slate-500 text-sm">Resultados Acumulados (Semanas 1-4)</p>
+                        <p className="text-slate-500 font-medium">Resultados Acumulados (Semanas 1-4)</p>
                     </div>
                 </div>
                 
                 <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="border-l-4 border-l-emerald-600">
+                    <Card className="border-l-4 border-l-emerald-500">
                         <div className="flex items-start gap-4">
-                            <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600"><Icon name="check-circle" size={24} /></div>
+                            <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600 border border-emerald-100 shadow-sm"><Icon name="check-circle" size={28} /></div>
                             <div>
                                 <h3 className="font-bold text-lg text-slate-800 mb-2">Hitos Cumplidos</h3>
-                                <ul className="text-sm text-slate-600 space-y-1 list-disc pl-4">
-                                    <li>SuKarne Uni: Levantamiento (Oscarin) completado.</li>
-                                    <li>GRAMOSA: +14h ejecutadas. Ritmo fuerte.</li>
-                                    <li>Mentorías: Johan activado. Equipo 100% en cancha.</li>
+                                <ul className="text-sm text-slate-600 space-y-2">
+                                    <li className="flex items-center gap-2"><Icon name="check" size={14} className="text-emerald-500" /> <strong>SuKarne Uni:</strong> Levantamiento listo.</li>
+                                    <li className="flex items-center gap-2"><Icon name="check" size={14} className="text-emerald-500" /> <strong>GRAMOSA:</strong> Ritmo fuerte (+14h).</li>
+                                    <li className="flex items-center gap-2"><Icon name="check" size={14} className="text-emerald-500" /> <strong>Mentorías:</strong> Equipo 100% activo.</li>
                                 </ul>
                             </div>
                         </div>
                     </Card>
-                    <Card className="border-l-4 border-l-blue-600">
+                    <Card className="border-l-4 border-l-blue-500">
                         <div className="flex items-start gap-4">
-                            <div className="p-3 bg-blue-50 rounded-lg text-blue-600"><Icon name="target" size={24} /></div>
+                            <div className="p-3 bg-blue-50 rounded-xl text-blue-600 border border-blue-100 shadow-sm"><Icon name="target" size={28} /></div>
                             <div>
-                                <h3 className="font-bold text-lg text-slate-800 mb-2">Próximos Pasos (Cierre Enero)</h3>
-                                <ul className="text-sm text-slate-600 space-y-1 list-disc pl-4">
-                                    <li><span className="font-bold text-blue-700">Pilgrim's:</span> Finalizar cotización (80%).</li>
-                                    <li><span className="font-bold text-blue-700">SuKarne Uni:</span> Modelar Diagrama Flujo.</li>
-                                    <li><span className="font-bold text-blue-700">Alto Sano:</span> Iniciar 2 cotizaciones.</li>
+                                <h3 className="font-bold text-lg text-slate-800 mb-2">Foco Cierre Enero</h3>
+                                <ul className="text-sm text-slate-600 space-y-2">
+                                    <li className="flex items-center gap-2"><Icon name="arrow-right" size={14} className="text-blue-500" /> <span className="font-bold text-blue-700">Pilgrim's:</span> Cerrar cotización.</li>
+                                    <li className="flex items-center gap-2"><Icon name="arrow-right" size={14} className="text-blue-500" /> <span className="font-bold text-blue-700">SuKarne:</span> Modelar Diagrama.</li>
+                                    <li className="flex items-center gap-2"><Icon name="arrow-right" size={14} className="text-blue-500" /> <span className="font-bold text-blue-700">Alto Sano:</span> Iniciar props.</li>
                                 </ul>
                             </div>
                         </div>
@@ -157,21 +210,21 @@
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    <div className="bg-emerald-100 p-4 rounded-lg border border-emerald-200 text-center">
-                        <div className="text-2xl font-black text-emerald-700">55%</div>
-                        <div className="text-xs font-bold text-emerald-800 uppercase">Avance Gramosa</div>
+                    <div className="bg-emerald-50 p-4 rounded-xl border border-emerald-200 text-center shadow-sm">
+                        <div className="text-3xl font-black text-emerald-600">55%</div>
+                        <div className="text-xs font-bold text-emerald-800 uppercase tracking-wider mt-1">Avance Gramosa</div>
                     </div>
-                    <div className="bg-blue-100 p-4 rounded-lg border border-blue-200 text-center">
-                        <div className="text-2xl font-black text-blue-700">80%</div>
-                        <div className="text-xs font-bold text-blue-800 uppercase">Cot. Pilgrim's</div>
+                    <div className="bg-blue-50 p-4 rounded-xl border border-blue-200 text-center shadow-sm">
+                        <div className="text-3xl font-black text-blue-600">80%</div>
+                        <div className="text-xs font-bold text-blue-800 uppercase tracking-wider mt-1">Cot. Pilgrim's</div>
                     </div>
-                    <div className="bg-amber-100 p-4 rounded-lg border border-amber-200 text-center">
-                        <div className="text-2xl font-black text-amber-700">25h</div>
-                        <div className="text-xs font-bold text-amber-800 uppercase">Mentorías Acum.</div>
+                    <div className="bg-amber-50 p-4 rounded-xl border border-amber-200 text-center shadow-sm">
+                        <div className="text-3xl font-black text-amber-600">25h</div>
+                        <div className="text-xs font-bold text-amber-800 uppercase tracking-wider mt-1">Mentorías Acum.</div>
                     </div>
-                    <div className="bg-slate-100 p-4 rounded-lg border border-slate-200 text-center">
-                        <div className="text-2xl font-black text-slate-700">OK</div>
-                        <div className="text-xs font-bold text-slate-800 uppercase">Levant. SK</div>
+                    <div className="bg-slate-100 p-4 rounded-xl border border-slate-200 text-center shadow-sm">
+                        <div className="text-3xl font-black text-slate-600">OK</div>
+                        <div className="text-xs font-bold text-slate-700 uppercase tracking-wider mt-1">Levant. SK</div>
                     </div>
                 </div>
             </div>
@@ -187,67 +240,91 @@
 
             return (
                 <div className="space-y-6">
-                    <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <Icon name="calculator" className="text-blue-600" /> Control Financiero Enero (YTD)
-                    </h3>
+                    <SectionHeader title="Control Financiero" subtitle="Desglose Semanal y Acumulado (Enero)" icon="calculator" />
                     
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                            <p className="text-xs text-slate-500 uppercase font-bold">Ocupación Total</p>
-                            <p className="text-2xl font-black text-slate-800">{totalHours} h</p>
-                        </div>
-                        <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                            <p className="text-xs text-purple-700 uppercase font-bold">Fijo (Gramosa)</p>
-                            <p className="text-2xl font-black text-purple-900">{totalGramosa} h</p>
-                        </div>
-                        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                            <p className="text-xs text-blue-700 uppercase font-bold">Flex + Ment (Costo)</p>
-                            <p className="text-2xl font-black text-blue-900">{totalBillable} h</p>
-                        </div>
-                        <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-                            <p className="text-xs text-emerald-700 uppercase font-bold">Inversión Var.</p>
-                            <p className="text-2xl font-black text-emerald-900">{formatMoney(totalCost)}</p>
-                        </div>
+                        <Card className="bg-slate-50 border-slate-200 !p-4">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-xs text-slate-500 uppercase font-bold">Ocupación Total</p>
+                                    <p className="text-3xl font-black text-slate-800 mt-1">{totalHours} h</p>
+                                </div>
+                                <Icon name="clock" className="text-slate-300" />
+                            </div>
+                        </Card>
+                        <Card className="bg-purple-50 border-purple-200 !p-4">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-xs text-purple-700 uppercase font-bold">Fijo (Gramosa)</p>
+                                    <p className="text-3xl font-black text-purple-900 mt-1">{totalGramosa} h</p>
+                                </div>
+                                <Icon name="briefcase" className="text-purple-300" />
+                            </div>
+                        </Card>
+                        <Card className="bg-blue-50 border-blue-200 !p-4">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-xs text-blue-700 uppercase font-bold">Costeables</p>
+                                    <p className="text-3xl font-black text-blue-900 mt-1">{totalBillable} h</p>
+                                </div>
+                                <Icon name="target" className="text-blue-300" />
+                            </div>
+                        </Card>
+                        <Card className="bg-emerald-50 border-emerald-200 !p-4">
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <p className="text-xs text-emerald-700 uppercase font-bold">Inversión Var.</p>
+                                    <p className="text-2xl font-black text-emerald-700 mt-1 tracking-tight">{formatMoney(totalCost)}</p>
+                                </div>
+                                <Icon name="dollar-sign" className="text-emerald-400" />
+                            </div>
+                        </Card>
                     </div>
 
-                    <div className="overflow-hidden rounded-lg border border-slate-200">
+                    <div className="overflow-hidden rounded-xl border border-slate-200 shadow-sm card-visual">
                         <table className="w-full text-sm text-left">
-                            <thead className="bg-slate-100 text-slate-600 font-bold">
+                            <thead className="bg-slate-100 text-slate-600 font-bold border-b border-slate-200">
                                 <tr>
-                                    <th className="px-4 py-2">Semana</th>
-                                    <th className="px-4 py-2">Actividad</th>
-                                    <th className="px-4 py-2 text-center">Total</th>
-                                    <th className="px-4 py-2 text-center text-purple-700">Fijo</th>
-                                    <th className="px-4 py-2 text-center text-blue-700">Flex</th>
-                                    <th className="px-4 py-2 text-center text-indigo-700">Ment</th>
-                                    <th className="px-4 py-2 text-right">Costo Acum.</th>
+                                    <th className="px-6 py-3">Semana</th>
+                                    <th className="px-6 py-3">Actividad</th>
+                                    <th className="px-6 py-3 text-center">Total</th>
+                                    <th className="px-6 py-3 text-center text-purple-700">Fijo</th>
+                                    <th className="px-6 py-3 text-center text-blue-700">Flex</th>
+                                    <th className="px-6 py-3 text-center text-indigo-700">Ment</th>
+                                    <th className="px-6 py-3 text-right">Costo Sem.</th>
+                                    <th className="px-6 py-3 text-right">Costo Acum.</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-slate-100 bg-white">
                                 {financialHistory.map((row, i) => {
                                     const accBillable = financialHistory.slice(0, i+1).reduce((a,c) => a + c.flexibleHours + c.mentoriaHours, 0);
+                                    const periodBillable = row.flexibleHours + row.mentoriaHours;
+                                    const periodCost = periodBillable * HOURLY_RATE;
+                                    const accCost = accBillable * HOURLY_RATE;
                                     const totalRow = row.gramosaHours + row.flexibleHours + row.mentoriaHours;
                                     return (
-                                        <tr key={i} className="hover:bg-slate-50">
-                                            <td className="px-4 py-3 font-medium text-slate-700">{row.week}</td>
-                                            <td className="px-4 py-3 text-slate-600 text-xs max-w-xs">{row.activity}</td>
-                                            <td className="px-4 py-3 text-center font-bold">{totalRow} h</td>
-                                            <td className="px-4 py-3 text-center text-purple-600 bg-purple-50/30">{row.gramosaHours || '-'}</td>
-                                            <td className="px-4 py-3 text-center text-blue-600 bg-blue-50/30">{row.flexibleHours || '-'}</td>
-                                            <td className="px-4 py-3 text-center text-indigo-600 bg-indigo-50/30">{row.mentoriaHours || '-'}</td>
-                                            <td className="px-4 py-3 text-right font-mono font-bold text-emerald-700">{formatMoney(accBillable * HOURLY_RATE)}</td>
+                                        <tr key={i} className="hover:bg-slate-50 transition-colors">
+                                            <td className="px-6 py-4 font-medium text-slate-700">{row.week}</td>
+                                            <td className="px-6 py-4 text-slate-600 text-xs max-w-xs">{row.activity}</td>
+                                            <td className="px-6 py-4 text-center font-bold">{totalRow} h</td>
+                                            <td className="px-6 py-4 text-center text-purple-600 bg-purple-50/30 font-bold">{row.gramosaHours || '-'}</td>
+                                            <td className="px-6 py-4 text-center text-blue-600 bg-blue-50/30 font-bold">{row.flexibleHours || '-'}</td>
+                                            <td className="px-6 py-4 text-center text-indigo-600 bg-indigo-50/30 font-bold">{row.mentoriaHours || '-'}</td>
+                                            <td className="px-6 py-4 text-right font-mono text-slate-600">{formatMoney(periodCost)}</td>
+                                            <td className="px-6 py-4 text-right font-mono font-bold text-emerald-700">{formatMoney(accCost)}</td>
                                         </tr>
                                     );
                                 })}
                             </tbody>
                             <tfoot className="bg-slate-100 font-bold text-slate-800 border-t-2 border-slate-300">
                                 <tr>
-                                    <td className="px-4 py-3 text-right" colSpan="2">TOTALES</td>
-                                    <td className="px-4 py-3 text-center">{totalHours} h</td>
-                                    <td className="px-4 py-3 text-center text-purple-800">{totalGramosa} h</td>
-                                    <td className="px-4 py-3 text-center text-blue-800">{totalFlexible} h</td>
-                                    <td className="px-4 py-3 text-center text-indigo-800">{totalMentoria} h</td>
-                                    <td className="px-4 py-3 text-right text-emerald-800">{formatMoney(totalCost)}</td>
+                                    <td className="px-6 py-4 text-right" colSpan="2">TOTALES ENERO</td>
+                                    <td className="px-6 py-4 text-center">{totalHours} h</td>
+                                    <td className="px-6 py-4 text-center text-purple-800">{totalGramosa} h</td>
+                                    <td className="px-6 py-4 text-center text-blue-800">{totalFlexible} h</td>
+                                    <td className="px-6 py-4 text-center text-indigo-800">{totalMentoria} h</td>
+                                    <td className="px-6 py-4 text-right text-slate-900">-</td>
+                                    <td className="px-6 py-4 text-right text-emerald-800">{formatMoney(totalCost)}</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -257,166 +334,193 @@
         };
 
         const ViewPortfolio = () => (
-            <div className="space-y-6">
-                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <Icon name="briefcase" className="text-blue-600" /> Portafolio Estratégico
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-6 animate-fadeIn">
+                <SectionHeader title="Portafolio de Cuentas" subtitle="Estatus de Frentes Activos" icon="briefcase" />
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {portfolioData.strategic.map((p, i) => (
-                        <Card key={i} className={`border-l-4 ${p.color === 'red' ? 'border-l-red-500' : p.color === 'cyan' ? 'border-l-cyan-500' : 'border-l-blue-500'}`}>
-                            <div className="flex justify-between items-start mb-2">
-                                <span className="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">{p.client}</span>
+                        <Card key={i} className={`relative overflow-hidden group hover:shadow-lg transition-all border-l-4 ${p.color === 'red' ? 'border-l-red-500' : p.color === 'cyan' ? 'border-l-cyan-500' : 'border-l-blue-500'}`}>
+                            <div className="flex justify-between items-start mb-3 pl-2">
+                                <div className="flex items-center gap-2">
+                                    <Icon name={p.icon} size={20} className="text-slate-400" />
+                                    <span className="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600">{p.client}</span>
+                                </div>
                                 <Badge color={p.color}>{p.status}</Badge>
                             </div>
-                            <h4 className="font-bold text-slate-800">{p.title}</h4>
-                            <p className="text-xs text-slate-500 mt-2">{p.note}</p>
+                            <h4 className="font-bold text-slate-800 pl-2 text-lg mb-1">{p.title}</h4>
+                            <p className="text-sm text-slate-500 pl-2">{p.note}</p>
                         </Card>
                     ))}
                 </div>
-                <h4 className="font-bold text-slate-700 mt-6 flex items-center gap-2"><Icon name="check-circle" size={18} /> En Ejecución / Recurrentes</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {portfolioData.approved.concat(portfolioData.recurring).map((p, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-lg shadow-sm card-print">
-                            <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-full ${p.id === 'gramosa' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
-                                    <Icon name={p.icon} size={16} />
+
+                <div className="mt-8">
+                    <h4 className="font-bold text-slate-700 mb-4 flex items-center gap-2 border-b border-slate-200 pb-2">
+                        <Icon name="check-circle" size={18} /> En Ejecución & Recurrentes
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {portfolioData.approved.concat(portfolioData.recurring).map((p, i) => (
+                            <div key={i} className="flex flex-col p-5 bg-white border border-slate-200 rounded-xl shadow-sm card-visual hover:border-emerald-200 transition-colors">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center gap-4">
+                                        <div className={`p-3 rounded-full ${p.id === 'gramosa' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'}`}>
+                                            <Icon name={p.icon} size={24} />
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-slate-800 text-lg">{p.title}</p>
+                                            <p className="text-sm text-slate-500 flex items-center gap-1 font-medium">
+                                                {p.client} • {p.note}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Badge color={p.id === 'gramosa' ? 'emerald' : 'amber'}>{p.status}</Badge>
                                 </div>
-                                <div>
-                                    <p className="font-bold text-sm text-slate-800">{p.title}</p>
-                                    <p className="text-xs text-slate-500">{p.client} • {p.note}</p>
-                                </div>
+                                {p.progress && (
+                                    <div className="mt-2 pl-16">
+                                        <ProgressBar progress={p.progress} label={p.totalHH} />
+                                    </div>
+                                )}
                             </div>
-                            <Badge color={p.id === 'gramosa' ? 'emerald' : 'amber'}>{p.status}</Badge>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         );
 
         const ViewModels = () => (
-            <div className="space-y-6">
-                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <Icon name="layout" className="text-blue-600" /> Modelos de Gestión
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Card>
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2 bg-emerald-100 text-emerald-600 rounded-lg"><Icon name="check-circle" size={20} /></div>
-                            <div>
-                                <h4 className="font-bold text-slate-800">Proyecto Cerrado</h4>
-                                <p className="text-xs text-slate-500">Entregables + Hitos (Fijo)</p>
+            <div className="space-y-6 animate-fadeIn">
+                <SectionHeader title="Modelos de Gestión" subtitle="Actividad detallada por esquema" icon="layout" />
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {modelsData.map((m, idx) => (
+                        <Card key={idx} className="hover:border-blue-300 transition-colors">
+                            <div className="flex items-start justify-between mb-4">
+                                <div>
+                                    <div className={`h-1.5 w-12 ${m.color} rounded-full mb-2`}></div>
+                                    <h4 className="font-bold text-xl text-slate-800">{m.type}</h4>
+                                    <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{m.desc}</p>
+                                </div>
+                                <div className={`p-2 rounded-lg ${m.color} bg-opacity-10 text-slate-600`}>
+                                    <Icon name={m.icon} size={24} />
+                                </div>
                             </div>
-                        </div>
-                        <div className="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
-                            <strong>GRAMOSA:</strong> Avance acumulado 142 HH (55%). Entregable estructura MP.
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2 bg-blue-100 text-blue-600 rounded-lg"><Icon name="clipboard-list" size={20} /></div>
-                            <div>
-                                <h4 className="font-bold text-slate-800">Cotizaciones</h4>
-                                <p className="text-xs text-slate-500">Pipeline Activo</p>
+                            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 space-y-3">
+                                {m.items.map((item, i) => (
+                                    <div key={i} className="flex justify-between items-start text-sm border-b border-slate-200 pb-2 last:border-0 last:pb-0">
+                                        <div className="flex flex-col">
+                                            <span className="font-bold text-slate-700">{item.label}</span>
+                                            {item.sub && <span className="text-xs text-slate-400">{item.sub}</span>}
+                                            {item.value && <span className="text-slate-600 mt-0.5">{item.value}</span>}
+                                        </div>
+                                        {item.status && (
+                                            <div className="text-right">
+                                                <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
+                                                    item.status === 'NUEVO' ? 'bg-cyan-100 text-cyan-700 border-cyan-200' :
+                                                    item.status.includes('80%') ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                                    'bg-white text-slate-600 border-slate-200'
+                                                }`}>{item.status}</span>
+                                                {item.date && <p className="text-[10px] text-slate-400 mt-1">{item.date}</p>}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        </div>
-                        <ul className="text-xs text-slate-600 space-y-1">
-                            <li className="flex justify-between"><span>Pilgrim's (BIM)</span> <span className="font-bold text-blue-700">80%</span></li>
-                            <li className="flex justify-between"><span>Alto Sano (2)</span> <span className="font-bold text-cyan-600">NUEVO</span></li>
-                            <li className="flex justify-between"><span>SuKarne (Uni)</span> <span className="font-bold text-slate-600">En Proceso</span></li>
-                        </ul>
-                    </Card>
-                    <Card>
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2 bg-amber-100 text-amber-600 rounded-lg"><Icon name="shield" size={20} /></div>
-                            <div>
-                                <h4 className="font-bold text-slate-800">HH Consumidas</h4>
-                                <p className="text-xs text-slate-500">Bolsa / Póliza (Variable)</p>
-                            </div>
-                        </div>
-                        <div className="text-sm text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
-                            <ul className="list-disc pl-4 space-y-1">
-                                <li><strong>SuKarne Póliza:</strong> 8 HH (Gestión).</li>
-                                <li><strong>PFD (Ventas):</strong> 3 HH (Alcance).</li>
-                                <li className="pt-1 border-t border-slate-200 mt-1"><strong>Total Enero:</strong> 11 HH Costeables.</li>
-                            </ul>
-                        </div>
-                    </Card>
-                    <Card>
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg"><Icon name="graduation-cap" size={20} /></div>
-                            <div>
-                                <h4 className="font-bold text-slate-800">Mentorías</h4>
-                                <p className="text-xs text-slate-500">Desarrollo Roles (Variable)</p>
-                            </div>
-                        </div>
-                        <ul className="text-xs text-slate-600 space-y-1">
-                            <li><strong>Planner:</strong> 20h. Control y Reportes.</li>
-                            <li><strong>Coord:</strong> 3h. Implementación.</li>
-                            <li><strong>Ops:</strong> 2h. Activación.</li>
-                        </ul>
-                    </Card>
-                </div>
-            </div>
-        );
-
-        const ViewStrategy = () => (
-            <div className="space-y-6">
-                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <Icon name="target" className="text-blue-600" /> Estrategia & Próximos Pasos
-                </h3>
-                <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="bg-red-50 border-red-200">
-                        <h4 className="font-bold text-red-800 flex items-center gap-2 mb-3">
-                            <Icon name="alert-triangle" size={18} /> Riesgos & Alertas
-                        </h4>
-                        <ul className="text-sm text-red-700 space-y-2 list-disc pl-4">
-                            <li><strong>Pilgrim's:</strong> Deadline crítico (26/01) para cotización.</li>
-                            <li><strong>PFD:</strong> Retomar para evitar rezago por carga operativa.</li>
-                            <li><strong>ADM:</strong> Riesgo de estancamiento tras rechazo de tanques.</li>
-                        </ul>
-                    </Card>
-                    <Card className="bg-emerald-50 border-emerald-200">
-                        <h4 className="font-bold text-emerald-800 flex items-center gap-2 mb-3">
-                            <Icon name="check-square" size={18} /> Tareas Cierre Enero
-                        </h4>
-                        <ul className="text-sm text-emerald-700 space-y-2">
-                            <li className="flex gap-2"><Icon name="square" size={16} /> Finalizar/Enviar Cotización Pilgrim's.</li>
-                            <li className="flex gap-2"><Icon name="square" size={16} /> Iniciar Cotizaciones Alto Sano (2).</li>
-                            <li className="flex gap-2"><Icon name="square" size={16} /> Modelar Diagrama Flujo SuKarne Uni.</li>
-                            <li className="flex gap-2"><Icon name="square" size={16} /> Reporte Mensual Ejecutivo PH.</li>
-                        </ul>
-                    </Card>
-                </div>
-            </div>
-        );
-
-        const ViewAgenda = () => (
-            <div className="space-y-6">
-                <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <Icon name="clock" className="text-blue-600" /> Agenda de Seguimiento (24 Enero)
-                </h3>
-                <div className="relative border-l-2 border-slate-200 ml-4 space-y-6">
-                    {[
-                        { time: '5 min', title: 'Revisión Resultados Sem 4', desc: 'Levantamiento exitoso y avance GRAMOSA.' },
-                        { time: '10 min', title: 'Cierre Comercial Pilgrim\'s', desc: 'Validar el 20% faltante de la cotización.' },
-                        { time: '10 min', title: 'Modelado SuKarne Uni', desc: 'Revisar datos de Oscarin para Diagrama de Flujo.' },
-                        { time: '10 min', title: 'Planificación PFD', desc: 'Reprogramar sesión perdida para no perder tracción.' },
-                        { time: '5 min', title: 'Asignación Cierre de Mes', desc: 'Objetivos finales para cerrar Enero fuerte.' }
-                    ].map((item, idx) => (
-                        <div key={idx} className="relative pl-8">
-                            <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-white border-4 border-blue-500"></div>
-                            <div className="flex items-baseline justify-between mb-1">
-                                <h4 className="font-bold text-slate-800">{item.title}</h4>
-                                <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">{item.time}</span>
-                            </div>
-                            <p className="text-sm text-slate-600">{item.desc}</p>
-                        </div>
+                        </Card>
                     ))}
                 </div>
             </div>
         );
 
-        // --- APP PRINCIPAL ---
+        const ViewStrategy = () => (
+            <div className="space-y-6 animate-fadeIn">
+                <SectionHeader title="Estrategia & Riesgos" subtitle="Análisis situacional y plan de acción" icon="target" />
+                
+                <div className="grid lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <Icon name="bar-chart-3" className="text-blue-600" /> Análisis de Situación
+                        </h3>
+                        <div className="space-y-4">
+                            {alignmentPoints.map((point, i) => (
+                                <div key={i} className="group p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all card-visual">
+                                    <div className="flex items-baseline gap-3 mb-1">
+                                        <span className="text-blue-600 font-black text-2xl opacity-30 group-hover:opacity-100 transition-opacity">0{i + 1}</span>
+                                        <span className="font-bold text-slate-800 text-lg group-hover:text-blue-700 transition-colors">{point.title}</span>
+                                    </div>
+                                    <p className="text-sm text-slate-600 pl-10 leading-relaxed font-medium">{point.text}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        <Card className="bg-red-50 border-red-200">
+                            <h4 className="font-bold text-red-900 flex items-center gap-2 mb-4 text-lg">
+                                <Icon name="alert-triangle" size={20} /> Riesgos & Alertas
+                            </h4>
+                            <ul className="text-sm text-red-800 space-y-3">
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-1.5 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                    <span><strong>Pilgrim's:</strong> Deadline crítico (26/01) para cotización.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-1.5 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                    <span><strong>PFD:</strong> Retomar para evitar rezago por carga operativa.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="mt-1.5 w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0"></span>
+                                    <span><strong>ADM:</strong> Riesgo de estancamiento tras rechazo de tanques.</span>
+                                </li>
+                            </ul>
+                        </Card>
+
+                        <Card className="bg-emerald-50 border-emerald-200">
+                            <h4 className="font-bold text-emerald-900 flex items-center gap-2 mb-4 text-lg">
+                                <Icon name="check-square" size={20} /> Tareas Cierre Enero
+                            </h4>
+                            <div className="space-y-2">
+                                {['Finalizar/Enviar Cotización Pilgrim\'s.', 'Iniciar Cotizaciones Alto Sano (2).', 'Modelar Diagrama Flujo SuKarne Uni.', 'Reporte Mensual Ejecutivo PH.'].map((task, i) => (
+                                    <div key={i} className="flex items-center gap-3 p-3 bg-white rounded-lg border border-emerald-100 shadow-sm">
+                                        <div className="w-6 h-6 rounded border-2 border-emerald-400 flex items-center justify-center flex-shrink-0">
+                                            <div className="w-3 h-3 bg-emerald-400 rounded-sm"></div>
+                                        </div>
+                                        <span className="text-sm text-emerald-900 font-bold">{task}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </Card>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const ViewAgenda = () => (
+            <div className="space-y-6 animate-fadeIn">
+                <SectionHeader title="Agenda de Seguimiento" subtitle="Revisión Semanal (24 Enero)" icon="clock" />
+                
+                <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-visual">
+                    <div className="relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line">
+                        {[
+                            { time: '5 min', title: 'Revisión Resultados Sem 4', desc: 'Levantamiento exitoso y avance GRAMOSA.' },
+                            { time: '10 min', title: 'Cierre Comercial Pilgrim\'s', desc: 'Validar el 20% faltante de la cotización.' },
+                            { time: '10 min', title: 'Modelado SuKarne Uni', desc: 'Revisar datos de Oscarin para Diagrama de Flujo.' },
+                            { time: '10 min', title: 'Planificación PFD', desc: 'Reprogramar sesión perdida para no perder tracción.' },
+                            { time: '5 min', title: 'Asignación Cierre de Mes', desc: 'Objetivos finales para cerrar Enero fuerte.' }
+                        ].map((item, idx) => (
+                            <div key={idx} className="relative pl-12 group">
+                                <div className="absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm"></div>
+                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
+                                    <h4 className="font-bold text-lg text-slate-800">{item.title}</h4>
+                                    <span className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">{item.time}</span>
+                                </div>
+                                <p className="text-slate-600 leading-relaxed font-medium border-l-2 border-transparent pl-2 group-hover:border-blue-200 transition-colors">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+
+        // --- APP ---
 
         const Dashboard = () => {
             const [activeTab, setActiveTab] = React.useState('vision');
@@ -424,7 +528,6 @@
 
             const handlePrint = () => window.print();
 
-            // Lista de Pestañas Completa
             const tabs = [
                 { id: 'vision', label: 'Cierre Enero' },
                 { id: 'financials', label: 'Control HH' },
@@ -435,8 +538,7 @@
             ];
 
             return (
-                <div className="min-h-screen flex flex-col">
-                    
+                <div className="min-h-screen flex flex-col font-sans">
                     {/* Header PANTALLA */}
                     <header className="bg-slate-900 text-white sticky top-0 z-50 shadow-md no-print">
                         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
@@ -445,24 +547,22 @@
                                 <span className="font-bold hidden md:inline">MEOSA 2026</span>
                             </div>
                             
-                            {/* Desktop Nav */}
                             <nav className="hidden md:flex gap-1">
                                 {tabs.map(tab => (
                                     <button 
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`px-3 py-1.5 rounded-md text-sm transition-colors ${activeTab === tab.id ? 'bg-blue-600 text-white font-medium' : 'text-slate-300 hover:bg-slate-800'}`}
+                                        className={`px-4 py-2 rounded-md text-sm transition-all ${activeTab === tab.id ? 'bg-blue-600 text-white font-bold shadow-lg' : 'text-slate-300 hover:bg-slate-800'}`}
                                     >
                                         {tab.label}
                                     </button>
                                 ))}
                             </nav>
 
-                            <div className="flex items-center gap-2">
-                                <button onClick={handlePrint} className="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-md text-sm font-bold flex items-center gap-2 transition-colors">
-                                    <Icon name="printer" size={16} /> <span className="hidden sm:inline">Imprimir</span>
+                            <div className="flex items-center gap-3">
+                                <button onClick={handlePrint} className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-md text-sm font-bold flex items-center gap-2 transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+                                    <Icon name="printer" size={18} /> <span className="hidden sm:inline">Imprimir Reporte</span>
                                 </button>
-                                {/* Mobile Menu Toggle */}
                                 <button className="md:hidden p-2 text-slate-300" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                                     <Icon name={isMenuOpen ? "x" : "menu"} size={24} />
                                 </button>
@@ -486,18 +586,18 @@
                     </header>
 
                     {/* Header IMPRESIÓN */}
-                    <div className="print-only p-8 border-b-2 border-slate-800 mb-6 bg-white">
+                    <div className="print-only p-8 border-b-4 border-slate-900 mb-8 bg-white print-header">
                         <div className="flex justify-between items-end">
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-slate-900 text-white rounded-xl flex items-center justify-center text-2xl font-black">PH</div>
+                                <div className="w-20 h-20 bg-slate-900 text-white rounded-xl flex items-center justify-center text-4xl font-black border-4 border-slate-900">PH</div>
                                 <div>
-                                    <h1 className="text-3xl font-bold text-slate-900 leading-none">Reporte Ejecutivo Semanal</h1>
-                                    <p className="text-slate-500 font-medium uppercase tracking-widest mt-1">Cuenta Estratégica: MEOSA 2026</p>
+                                    <h1 className="text-4xl font-black text-slate-900 leading-none mb-1">REPORTE EJECUTIVO</h1>
+                                    <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Cuenta Estratégica: MEOSA 2026</p>
                                 </div>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm font-bold text-slate-800">Corte: {LAST_UPDATED}</p>
-                                <p className="text-xs text-slate-400">Gen: J.A.R.V.I.S.</p>
+                                <p className="text-lg font-bold text-slate-800 bg-slate-100 px-4 py-1 rounded">Corte: {LAST_UPDATED}</p>
+                                <p className="text-xs text-slate-400 mt-1 font-mono">Generado por J.A.R.V.I.S.</p>
                             </div>
                         </div>
                     </div>
@@ -505,7 +605,7 @@
                     {/* Contenido Principal */}
                     <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 print:p-0">
                         
-                        {/* PANTALLA: Mostrar solo pestaña activa */}
+                        {/* PANTALLA */}
                         <div className="no-print min-h-[500px]">
                             {activeTab === 'vision' && <ViewVision />}
                             {activeTab === 'financials' && <ViewFinancials />}
@@ -515,19 +615,20 @@
                             {activeTab === 'agenda' && <ViewAgenda />}
                         </div>
 
-                        {/* IMPRESIÓN: Mostrar TODO en orden */}
-                        <div className="print-only space-y-8">
+                        {/* IMPRESIÓN (Todo seguido) */}
+                        <div className="print-only space-y-10 print-container">
                             <ViewVision />
                             <hr className="border-slate-300" />
                             <ViewFinancials />
-                            <hr className="border-slate-300" />
+                            <div className="page-break" style={{pageBreakBefore: 'always'}}></div> 
                             <ViewPortfolio />
                             <hr className="border-slate-300" />
                             <ViewStrategy />
-                            <hr className="border-slate-300" />
+                            <div className="page-break" style={{pageBreakBefore: 'always'}}></div>
                             <ViewAgenda />
+                            <ViewModels />
                             
-                            <div className="mt-12 pt-4 border-t border-slate-200 flex justify-between text-xs text-slate-400">
+                            <div className="mt-12 pt-6 border-t-2 border-slate-200 flex justify-between text-xs font-bold text-slate-400 uppercase tracking-widest print-footer">
                                 <p>PH | We´re Accountable</p>
                                 <p>J.A.R.V.I.S. SYSTEM ACTIVE</p>
                             </div>
@@ -538,8 +639,8 @@
                     {/* Footer PANTALLA */}
                     <footer className="bg-white border-t border-slate-200 mt-auto py-6 no-print">
                         <div className="max-w-7xl mx-auto px-4 flex justify-between text-sm text-slate-500">
-                            <p>PH | We´re Accountable</p>
-                            <div className="flex items-center gap-2">
+                            <p className="font-medium">PH | We´re Accountable</p>
+                            <div className="flex items-center gap-2 text-xs font-mono">
                                 <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
                                 J.A.R.V.I.S. SYSTEM ACTIVE
                             </div>
