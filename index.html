@@ -5,27 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MEOSA 2026 | Centro de Mando Estratégico</title>
     
-    <!-- Tailwind CSS (Motor de Estilos) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fuente Inter (Tipografía Ejecutiva) -->
+    <!-- React & Babel -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        
-        /* Animaciones sutiles */
         .animate-enter { animation: enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes enter { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        /* Estilo de Tarjetas Elite */
+        @keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         .card-elite {
             background-color: white;
             border: 1px solid #e2e8f0;
-            border-radius: 0.75rem; /* rounded-xl */
+            border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             transition: all 0.2s ease-in-out;
         }
@@ -34,29 +35,25 @@
             transform: translateY(-2px);
             border-color: #cbd5e1;
         }
-
-        /* Timeline vertical */
+        
         .timeline-line::before {
-            content: ''; 
-            position: absolute; 
-            left: 0; 
-            top: 0; 
-            bottom: 0; 
-            width: 2px; 
-            background-color: #e2e8f0;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background-color: #e2e8f0;
         }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
     <div id="root"></div>
 
-    <!-- Motor React (Sin JSX para máxima estabilidad) -->
     <script type="module">
         import React, { useState, useEffect } from 'https://esm.sh/react@18.2.0';
         import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
-        
-        // Iconos
         import { 
             Briefcase, Target, CheckCircle, Clock, Layout, Users, 
             Shield, Activity, Zap, Building2, BarChart3, 
@@ -64,64 +61,59 @@
             ClipboardList, GraduationCap, DollarSign
         } from 'https://esm.sh/lucide-react@0.263.1';
 
-        // --- CONFIGURACIÓN ---
-        const LAST_UPDATED = "31 de Enero, 2026"; 
-        const HOURLY_RATE = 900; 
+        const ce = React.createElement;
 
-        // --- DATOS MAESTROS (SEMANAS 1-5) ---
-        // Sem 1: 1h Ment (Var)
-        // Sem 2: 6h Gram (Fijo), 9h Ment (Var)
-        // Sem 3: 10h Gram (Fijo), 10h Var (4 Flex + 6 Ment)
-        // Sem 4: 14h Gram (Fijo), 16h Var (7 Flex + 9 Ment)
-        // Sem 5: 12h Gram (Fijo), 15h Var (5 Flex + 10 Ment)
+        // --- DATOS ---
+        const LAST_UPDATED = "07 de Febrero, 2026";
+        const HOURLY_RATE = 900;
+
         const financialHistory = [
             { week: 'Sem 01 (02-03 Ene)', gramosa: 0, flex: 0, ment: 1, activity: 'Inicio Año: Mentoría Edson.' },
             { week: 'Sem 02 (05-09 Ene)', gramosa: 6, flex: 0, ment: 9, activity: 'Gramosa (6h), Foco Planner.' },
             { week: 'Sem 03 (12-16 Ene)', gramosa: 10, flex: 4, ment: 6, activity: 'Gramosa(10), PFD(3), SK(1), Ment(6).' },
             { week: 'Sem 04 (19-23 Ene)', gramosa: 14, flex: 7, ment: 9, activity: 'Gramosa(14), SK(7), Ment(9).' },
-            { week: 'Sem 05 (26-30 Ene)', gramosa: 12, flex: 5, ment: 10, activity: 'Gramosa(12), Flex(2SK+3PFD), Ment(10).' }
+            { week: 'Sem 05 (26-30 Ene)', gramosa: 12, flex: 5, ment: 10, activity: 'Gramosa(12), Flex(5), Ment(10).' },
+            { week: 'Sem 06 (02-06 Feb)', gramosa: 6, flex: 11, ment: 7, activity: 'USK Lev.(6), SK Pol.(5), Gram(6), Ment(7).' }
         ];
 
         const portfolioData = {
-          strategic: [
-            { id: 'pilgrims', client: 'PILGRIMS', title: 'Ingeniería BIM / Peletizado', status: 'PROP. ENVIADA', note: 'Enviada 26/01. Esperando feedback.', icon: Building2, color: 'emerald' },
-            { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta entregada 30/01.', icon: CheckCircle, color: 'emerald' },
-            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'EN PROCESO', note: 'Entrega programada para 06/02.', icon: Zap, color: 'blue' },
-            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'VALIDANDO', note: 'Diagrama entregado 25/01. Visita 02/02.', icon: Users, color: 'blue' },
-            { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'VIGENTE', note: 'Propuesta activa.', icon: Layout, color: 'blue' },
-            { id: 'adm-tanques', client: 'ADM', title: 'Documentación Tanques', status: 'RECHAZADA', note: 'Archivar lecciones.', icon: XCircle, color: 'red' }
-          ],
-          approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido al 60% (154h acumuladas).', icon: CheckCircle, progress: 60, totalHH: '154 / 256 HH' }
-          ],
-          recurring: [
-            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Sesión trabajo 2h.', icon: Shield },
-            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'En Curso', note: 'Sesión trabajo 3h.', icon: Activity },
-            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Continuo', note: 'Equipo completo (10h sem).', icon: Users }
-          ]
+            strategic: [
+                { id: 'pilgrims', client: 'PILGRIMS', title: 'Ingeniería BIM / Peletizado', status: 'PROP. ENVIADA', note: 'Enviada 26/01. Seguimiento.', icon: Building2, color: 'emerald' },
+                { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta entregada 30/01.', icon: CheckCircle, color: 'emerald' },
+                { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'RETRASO 10/02', note: 'Reprogramado para el 10/02.', icon: Zap, color: 'amber' },
+                { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'CITA 11/02', note: 'Levantamiento OK. Cierre propuesta.', icon: Users, color: 'blue' },
+                { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'VIGENTE', note: 'Propuesta activa.', icon: Layout, color: 'blue' },
+                { id: 'adm-tanques', client: 'ADM', title: 'Documentación Tanques', status: 'RECHAZADA', note: 'Archivar lecciones.', icon: XCircle, color: 'red' }
+            ],
+            approved: [
+                { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Acum: 160 HH (+6h esta sem).', icon: CheckCircle, progress: 62, totalHH: '160 / 256 HH' }
+            ],
+            recurring: [
+                { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Intenso', note: '6h Sem (Apoyo Alejandro/Johan).', icon: Shield },
+                { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Alineación', note: '1h Edson (Plan Piloto).', icon: Activity },
+                { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Activo', note: '7h Sem (Foco Planner).', icon: Users }
+            ]
         };
 
         const modelsData = [
-            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: CheckCircle, items: [{ label: 'GRAMOSA', value: 'Avance: 154 HH (60%)' }] },
-            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: ClipboardList, items: [{ label: "Pilgrim's", status: 'ENVIADA' }, { label: 'Alto Sano (Med)', status: 'ENTREGADA' }, { label: 'Alto Sano (Pan)', status: '06/02' }] },
-            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: Shield, items: [{ label: 'SuKarne Póliza', value: '10 HH (YTD)' }, { label: 'PFD', value: '6 HH (YTD)' }, { label: 'Total Variable', value: '16 HH Enero' }] },
-            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: GraduationCap, items: [{ label: 'Planner', value: '28h' }, { label: 'Coord', value: '4h' }, { label: 'Ops', value: '3h' }] }
+            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: CheckCircle, items: [{ label: 'GRAMOSA', value: 'Avance: 160 HH (62%)' }] },
+            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: ClipboardList, items: [{ label: "Pilgrim's", status: 'ENVIADA' }, { label: 'Alto Sano (Pan)', status: '10/02' }, { label: 'USK Mich.', status: '11/02' }] },
+            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: Shield, items: [{ label: 'SuKarne (Pol+USK)', value: '18 HH (YTD)' }, { label: 'PFD', value: '6 HH (YTD)' }, { label: 'Total Feb (Sem 6)', value: '12 HH' }] },
+            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: GraduationCap, items: [{ label: 'Planner', value: '33h (YTD)' }, { label: 'Coord', value: '5h (YTD)' }, { label: 'Ops', value: '3h (YTD)' }] }
         ];
 
         const alignmentPoints = [
-            { title: 'Cierre Comercial Enero', text: 'Se cumplió con el envío de Pilgrim\'s (26/01) y Alto Sano Medidores (30/01). Alto Sano Paneles queda para el 06/02.' },
-            { title: 'Avance Gramosa', text: 'Ritmo sostenido. Se acumulan 154 horas, alcanzando el 60% del paquete total contratado.' },
-            { title: 'Validación SuKarne', text: 'Diagrama de flujo (Rolado Michoacán) entregado. Visita clave el 02/02 para cerrar propuesta Universidad.' },
-            { title: 'Recursos Internos', text: 'Semana récord en mentorías (10h). Germán (Planner) lidera con 8h esta semana. PFD reactivado con 3h.' }
+            { title: 'Arranque Febrero', text: 'Inicio fuerte con USK Michoacán (6h). Se mantiene ritmo en Gramosa (6h) y se intensifica Póliza SK.' },
+            { title: 'Entregables Alto Sano', text: 'Medidores entregado 30/01. Paneles REPROGRAMADO para el 10/02. Seguimiento prioritario.' },
+            { title: 'Cierre USK', text: 'Levantamiento Michoacán completado. Cita con cliente confirmada para el Miércoles 11/02.' },
+            { title: 'Desarrollo Interno', text: 'Germán (Planner) continúa desarrollo (5h esta sem). Edson alinea piloto PFD (1h).' }
         ];
 
-        // --- UTILS ---
         const formatMoney = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
-        const ce = React.createElement; 
 
         // --- COMPONENTES UI ---
 
-        const Card = ({ children, className = '' }) => React.createElement(
+        const Card = ({ children, className = '' }) => ce(
             'div',
             { className: `card-elite p-6 ${className}` },
             children
@@ -134,173 +126,157 @@
                 amber: 'bg-amber-50 text-amber-700 border-amber-200', 
                 red: 'bg-red-50 text-red-700 border-red-200',
                 cyan: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-                purple: 'bg-purple-50 text-purple-700 border-purple-200'
+                purple: 'bg-purple-50 text-purple-700 border-purple-200',
+                slate: 'bg-slate-100 text-slate-700 border-slate-300' 
             };
-            return React.createElement(
+            return ce(
                 'span',
-                { className: `px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wider ${colors[color] || colors.blue}` },
+                { className: `px-3 py-1 rounded-md text-[10px] font-bold border uppercase tracking-wide ${colors[color] || colors.blue}` },
                 children
             );
         };
 
-        const ProgressBar = ({ progress, label, color = "emerald" }) => React.createElement('div', { className: "w-full mt-4" },
-            React.createElement('div', { className: "flex justify-between text-xs mb-1.5 font-semibold text-slate-600" },
-                React.createElement('span', null, "Avance HH"),
-                React.createElement('span', { className: "text-slate-900 font-mono" }, label)
+        const ProgressBar = ({ progress, label, color = "emerald" }) => ce('div', { className: "w-full mt-4" },
+            ce('div', { className: "flex justify-between text-xs mb-1.5 font-semibold text-slate-600" },
+                ce('span', null, "Avance HH"),
+                ce('span', { className: "text-slate-900 font-mono" }, label)
             ),
-            React.createElement('div', { className: "w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200 shadow-inner" },
-                React.createElement('div', { 
+            ce('div', { className: "w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200 shadow-inner" },
+                ce('div', { 
                     className: "bg-emerald-500 h-2.5 rounded-full transition-all duration-1000 shadow-sm", 
                     style: { width: `${progress}%` } 
                 })
             )
         );
 
-        const SectionHeader = ({ title, subtitle, icon }) => React.createElement(
+        const SectionHeader = ({ title, subtitle, icon }) => ce(
             'div',
             { className: "mb-8 flex items-center gap-4 border-b border-slate-200 pb-4" },
-            React.createElement('div', { className: "p-3 bg-white border border-slate-200 rounded-xl text-slate-800 shadow-sm" },
-                React.createElement(icon, { size: 24 })
+            ce('div', { className: "p-3 bg-white border border-slate-200 rounded-xl text-slate-800 shadow-sm" },
+                ce(icon, { size: 24 })
             ),
-            React.createElement('div', null,
-                React.createElement('h2', { className: "text-2xl font-bold text-slate-900 leading-none" }, title),
-                React.createElement('p', { className: "text-slate-500 text-sm mt-1" }, subtitle)
+            ce('div', null,
+                ce('h2', { className: "text-2xl font-bold text-slate-900 leading-none" }, title),
+                ce('p', { className: "text-slate-500 text-sm mt-1" }, subtitle)
             )
         );
 
         // --- VISTAS ---
 
         const ViewFinancials = () => {
-            const totals = financialHistory.reduce((acc, row) => ({
+            // Calcular totales
+            const calculateTotals = (data) => data.reduce((acc, row) => ({
                 gramosa: acc.gramosa + row.gramosa,
                 flex: acc.flex + row.flex,
                 ment: acc.ment + row.ment,
                 total: acc.total + row.gramosa + row.flex + row.ment
             }), { gramosa: 0, flex: 0, ment: 0, total: 0 });
 
-            const totalBillable = totals.flex + totals.ment;
-            const totalCost = totalBillable * HOURLY_RATE;
-            
-            const pctFixed = (totals.gramosa / totals.total) * 100;
-            const pctVar = (totalBillable / totals.total) * 100;
+            // Enero (Sem 1-5)
+            const rowsJan = financialHistory.slice(0, 5);
+            const totalsJan = calculateTotals(rowsJan);
+            const costJan = (totalsJan.flex + totalsJan.ment) * HOURLY_RATE;
 
-            return React.createElement('div', { className: "space-y-8 animate-enter" },
-                ce(SectionHeader, { title: "Control Financiero", subtitle: "Rentabilidad y Carga Operativa (Cierre Enero)", icon: Calculator }),
+            // Febrero (Sem 6)
+            const rowsFeb = financialHistory.slice(5);
+            const totalsFeb = calculateTotals(rowsFeb);
+            const costFeb = (totalsFeb.flex + totalsFeb.ment) * HOURLY_RATE;
+
+            return ce('div', { className: "space-y-8 animate-enter" },
+                ce(SectionHeader, { title: "Control Financiero", subtitle: "Cierre Enero (Consolidado) & Avance Febrero", icon: Calculator }),
                 
-                // KPI Cards
-                ce('div', { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" },
-                    ce(Card, { className: "border-t-4 border-t-slate-500" },
-                        ce('div', { className: "flex justify-between items-start" },
-                            ce('div', null,
-                                ce('p', { className: "text-xs text-slate-500 font-bold uppercase tracking-wider" }, "Ocupación Total"),
-                                ce('p', { className: "text-3xl font-black text-slate-800 mt-1" }, `${totals.total} h`)
-                            ),
-                            ce(Clock, { className: "text-slate-300", size: 24 })
-                        )
-                    ),
-                    ce(Card, { className: "border-t-4 border-t-purple-500" },
-                        ce('div', { className: "flex justify-between items-start" },
-                            ce('div', null,
-                                ce('p', { className: "text-xs text-purple-600 font-bold uppercase tracking-wider" }, "Fijo (Gramosa)"),
-                                ce('p', { className: "text-3xl font-black text-purple-900 mt-1" }, `${totals.gramosa} h`)
-                            ),
-                            ce(Briefcase, { className: "text-purple-300", size: 24 })
-                        )
-                    ),
-                    ce(Card, { className: "border-t-4 border-t-blue-600" },
-                        ce('div', { className: "flex justify-between items-start" },
-                            ce('div', null,
-                                ce('p', { className: "text-xs text-blue-600 font-bold uppercase tracking-wider" }, "Costeables"),
-                                ce('p', { className: "text-3xl font-black text-blue-900 mt-1" }, `${totalBillable} h`)
-                            ),
-                            ce(Target, { className: "text-blue-300", size: 24 })
-                        )
-                    ),
-                    ce(Card, { className: "border-t-4 border-t-emerald-600 bg-emerald-50/30" },
-                        ce('div', { className: "flex justify-between items-start" },
-                            ce('div', null,
-                                ce('p', { className: "text-xs text-emerald-700 font-bold uppercase tracking-wider" }, "Inversión Ene"),
-                                ce('p', { className: "text-3xl font-black text-emerald-800 mt-1 tracking-tight" }, formatMoney(totalCost))
-                            ),
-                            ce(DollarSign, { className: "text-emerald-500", size: 24 })
-                        )
-                    ),
-                ),
-
-                // Distribution Bar
-                ce('div', { className: "bg-white p-4 rounded-xl border border-slate-200 shadow-sm" },
-                    ce('h4', { className: "text-xs font-bold text-slate-600 uppercase mb-3 flex items-center gap-2" },
-                        ce(Activity, { size: 14 }), " Distribución de Esfuerzo Mensual"
-                    ),
-                    ce('div', { className: "flex h-4 w-full rounded-full overflow-hidden mb-2" },
-                        ce('div', { className: "bg-purple-500", style: { width: `${pctFixed}%` } }),
-                        ce('div', { className: "bg-blue-500", style: { width: `${pctVar}%` } })
-                    ),
-                    ce('div', { className: "flex justify-between text-xs font-medium text-slate-500" },
-                        ce('span', { className: "flex items-center gap-1" }, 
-                            ce('span', { className: "w-2 h-2 rounded-full bg-purple-500" }), `Paquete Fijo (${Math.round(pctFixed)}%)`
+                // Summary Cards
+                ce('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
+                    ce('div', { className: "bg-slate-800 rounded-xl p-6 text-white shadow-xl flex justify-between items-center" },
+                        ce('div', null,
+                            ce('p', { className: "text-slate-400 text-xs font-bold uppercase tracking-wider mb-1" }, "Cierre Definitivo Enero"),
+                            ce('h3', { className: "text-3xl font-black" }, formatMoney(costJan)),
+                            ce('div', { className: "flex gap-3 mt-2 text-xs text-slate-300" },
+                                ce('span', null, "Total: ", ce('strong', null, totalsJan.total + "h")),
+                                ce('span', null, "•"),
+                                ce('span', null, "Var: ", ce('strong', null, (totalsJan.flex + totalsJan.ment) + "h"))
+                            )
                         ),
-                        ce('span', { className: "flex items-center gap-1" }, 
-                            ce('span', { className: "w-2 h-2 rounded-full bg-blue-500" }), `Tiempo Variable (${Math.round(pctVar)}%)`
-                        )
+                        ce('div', { className: "p-3 bg-white/10 rounded-lg" }, ce(CheckCircle, { size: 32 }))
+                    ),
+
+                    ce('div', { className: "bg-white border border-emerald-200 rounded-xl p-6 shadow-md flex justify-between items-center" },
+                        ce('div', null,
+                            ce('p', { className: "text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1" }, "Avance Febrero (Sem 6)"),
+                            ce('h3', { className: "text-3xl font-black text-slate-800" }, formatMoney(costFeb)),
+                            ce('div', { className: "flex gap-3 mt-2 text-xs text-slate-500" },
+                                ce('span', null, "Total: ", ce('strong', null, totalsFeb.total + "h")),
+                                ce('span', null, "•"),
+                                ce('span', null, "Var: ", ce('strong', null, (totalsFeb.flex + totalsFeb.ment) + "h"))
+                            )
+                        ),
+                        ce('div', { className: "p-3 bg-emerald-50 rounded-lg text-emerald-600" }, ce(Activity, { size: 32 }))
                     )
                 ),
 
-                // Super Table
+                // Consolidated Table
                 ce('div', { className: "border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white" },
                     ce('table', { className: "w-full text-sm text-left border-collapse" },
                         ce('thead', { className: "bg-slate-50 text-slate-700 font-bold uppercase text-xs border-b border-slate-200" },
                             ce('tr', null,
-                                ce('th', { className: "px-6 py-4 border-r border-slate-100" }, "Semana"),
+                                ce('th', { className: "px-6 py-4 border-r border-slate-100" }, "Periodo"),
                                 ce('th', { className: "px-6 py-4 w-1/3 border-r border-slate-100" }, "Actividad Clave"),
                                 ce('th', { className: "px-4 py-4 text-center bg-slate-100/50 border-r border-slate-100" }, "Total"),
                                 ce('th', { className: "px-4 py-4 text-center text-purple-700 bg-purple-50/30 border-r border-purple-100" }, "Fijo"),
                                 ce('th', { className: "px-4 py-4 text-center text-blue-700 bg-blue-50/30 border-r border-blue-100" }, "Flex"),
                                 ce('th', { className: "px-4 py-4 text-center text-indigo-700 bg-indigo-50/30 border-r border-indigo-100" }, "Ment"),
-                                ce('th', { className: "px-6 py-4 text-right text-emerald-800 bg-emerald-50/30 border-r border-emerald-100" }, "Costo Sem."),
-                                ce('th', { className: "px-6 py-4 text-right bg-emerald-50 text-emerald-900" }, "Costo Acum.")
+                                ce('th', { className: "px-6 py-4 text-right bg-emerald-50 text-emerald-900" }, "Inversión")
                             )
                         ),
-                        ce('tbody', { className: "divide-y divide-slate-100" },
-                            financialHistory.map((row, i) => {
-                                const periodBillable = row.flex + row.ment;
-                                const weeklyCost = periodBillable * HOURLY_RATE;
-                                const accBillable = financialHistory.slice(0, i+1).reduce((a,c) => a + c.flex + c.ment, 0);
-                                const accCost = accBillable * HOURLY_RATE;
-                                const totalRow = row.gramosa + row.flex + row.ment;
-                                
+                        
+                        // Enero Group
+                        ce('tbody', { className: "divide-y divide-slate-100 border-b-2 border-slate-200" },
+                            ce('tr', { className: "bg-slate-50/50" }, ce('td', { colSpan: "7", className: "px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest" }, "Enero 2026")),
+                            rowsJan.map((row, i) => {
+                                const weeklyCost = (row.flex + row.ment) * HOURLY_RATE;
                                 return ce('tr', { key: i, className: "hover:bg-slate-50 transition-colors group" },
                                     ce('td', { className: "px-6 py-4 font-medium text-slate-700 border-r border-slate-100" }, row.week),
                                     ce('td', { className: "px-6 py-4 text-slate-600 text-xs max-w-xs border-r border-slate-100" }, row.activity),
-                                    ce('td', { className: "px-4 py-4 text-center font-bold text-slate-900 border-r border-slate-100 bg-slate-50/30" }, `${totalRow} h`),
-                                    ce('td', { className: "px-4 py-4 text-center text-purple-700 font-medium bg-purple-50/10 border-r border-purple-50 group-hover:bg-purple-50/30" }, row.gramosa || '-'),
-                                    ce('td', { className: "px-4 py-4 text-center text-blue-700 font-medium bg-blue-50/10 border-r border-blue-50 group-hover:bg-blue-50/30" }, row.flex || '-'),
-                                    ce('td', { className: "px-4 py-4 text-center text-indigo-700 font-medium bg-indigo-50/10 border-r border-indigo-50 group-hover:bg-indigo-50/30" }, row.ment || '-'),
-                                    ce('td', { className: "px-6 py-4 text-right text-slate-600 font-mono bg-emerald-50/10 border-r border-emerald-50 group-hover:bg-emerald-50/20" }, formatMoney(weeklyCost)),
-                                    ce('td', { className: "px-6 py-4 text-right font-bold text-emerald-800 font-mono bg-emerald-50 group-hover:bg-emerald-100/50" }, formatMoney(accCost))
+                                    ce('td', { className: "px-4 py-4 text-center font-bold text-slate-900 border-r border-slate-100 bg-slate-50/30" }, `${row.gramosa + row.flex + row.ment} h`),
+                                    ce('td', { className: "px-4 py-4 text-center text-purple-700 font-medium bg-purple-50/10 border-r border-purple-50" }, row.gramosa || '-'),
+                                    ce('td', { className: "px-4 py-4 text-center text-blue-700 font-medium bg-blue-50/10 border-r border-blue-50" }, row.flex || '-'),
+                                    ce('td', { className: "px-4 py-4 text-center text-indigo-700 font-medium bg-indigo-50/10 border-r border-indigo-50" }, row.ment || '-'),
+                                    ce('td', { className: "px-6 py-4 text-right text-emerald-800 bg-emerald-50/10 font-mono" }, formatMoney(weeklyCost))
                                 );
-                            })
-                        ),
-                        ce('tfoot', { className: "bg-slate-50 font-bold border-t-2 border-slate-200 text-xs uppercase" },
-                            ce('tr', null,
-                                ce('td', { colSpan: 2, className: "px-6 py-4 text-right text-slate-500 tracking-wider" }, "TOTALES ENERO"),
-                                ce('td', { className: "px-4 py-4 text-center bg-slate-100 text-slate-900" }, `${totals.total} h`),
-                                ce('td', { className: "px-4 py-4 text-center text-purple-900 bg-purple-50" }, `${totals.gramosa} h`),
-                                ce('td', { className: "px-4 py-4 text-center text-blue-900 bg-blue-50" }, `${totals.flex} h`),
-                                ce('td', { className: "px-4 py-4 text-center text-indigo-900 bg-indigo-50" }, `${totals.ment} h`),
-                                ce('td', { className: "px-6 py-4 text-right bg-emerald-50/50 text-slate-400" }, "-"),
-                                ce('td', { className: "px-6 py-4 text-right bg-emerald-100 text-emerald-900 text-sm border-l-4 border-l-emerald-400" }, formatMoney(totalCost))
+                            }),
+                            ce('tr', { className: "bg-slate-100 font-bold text-slate-800" },
+                                ce('td', { colSpan: 2, className: "px-6 py-3 text-right text-xs uppercase tracking-wide" }, "Total Enero"),
+                                ce('td', { className: "px-4 py-3 text-center bg-slate-200" }, `${totalsJan.total} h`),
+                                ce('td', { className: "px-4 py-3 text-center text-purple-900" }, `${totalsJan.gramosa} h`),
+                                ce('td', { className: "px-4 py-3 text-center text-blue-900" }, `${totalsJan.flex} h`),
+                                ce('td', { className: "px-4 py-3 text-center text-indigo-900" }, `${totalsJan.ment} h`),
+                                ce('td', { className: "px-6 py-3 text-right text-emerald-800" }, formatMoney(costJan))
                             )
-                        )
-                    )
-                ),
+                        ),
 
-                ce('div', { className: "bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 text-sm text-blue-800" },
-                    ce(Layers, { className: "mt-0.5 text-blue-500", size: 18 }),
-                    ce('div', null,
-                        ce('h4', { className: "font-bold text-blue-900" }, "Regla de Inversión"),
-                        ce('p', { className: "text-blue-700 mt-1" }, 
-                            "Costo Variable = (Pack Flexible: PFD/SuKarne + Mentorías) x Tarifa. Las horas Fijas (GRAMOSA) no impactan este monto."
+                        // Febrero Group
+                        ce('tbody', { className: "divide-y divide-slate-100" },
+                            ce('tr', { className: "bg-slate-50/50" }, ce('td', { colSpan: "7", className: "px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest" }, "Febrero 2026")),
+                            rowsFeb.map((row, i) => {
+                                const weeklyCost = (row.flex + row.ment) * HOURLY_RATE;
+                                return ce('tr', { key: i, className: "hover:bg-slate-50 transition-colors group" },
+                                    ce('td', { className: "px-6 py-4 font-medium text-slate-700 border-r border-slate-100" }, row.week),
+                                    ce('td', { className: "px-6 py-4 text-slate-600 text-xs max-w-xs border-r border-slate-100" }, row.activity),
+                                    ce('td', { className: "px-4 py-4 text-center font-bold text-slate-900 border-r border-slate-100 bg-slate-50/30" }, `${row.gramosa + row.flex + row.ment} h`),
+                                    ce('td', { className: "px-4 py-4 text-center text-purple-700 font-medium bg-purple-50/10 border-r border-purple-50" }, row.gramosa || '-'),
+                                    ce('td', { className: "px-4 py-4 text-center text-blue-700 font-medium bg-blue-50/10 border-r border-blue-50" }, row.flex || '-'),
+                                    ce('td', { className: "px-4 py-4 text-center text-indigo-700 font-medium bg-indigo-50/10 border-r border-indigo-50" }, row.ment || '-'),
+                                    ce('td', { className: "px-6 py-4 text-right text-emerald-800 bg-emerald-50/10 font-mono" }, formatMoney(weeklyCost))
+                                );
+                            }),
+                            ce('tr', { className: "bg-emerald-50/30 font-bold text-slate-800 border-t border-emerald-100" },
+                                ce('td', { colSpan: 2, className: "px-6 py-3 text-right text-xs uppercase tracking-wide text-emerald-900" }, "Parcial Febrero"),
+                                ce('td', { className: "px-4 py-3 text-center bg-emerald-100/50" }, `${totalsFeb.total} h`),
+                                ce('td', { className: "px-4 py-3 text-center text-purple-900" }, `${totalsFeb.gramosa} h`),
+                                ce('td', { className: "px-4 py-3 text-center text-blue-900" }, `${totalsFeb.flex} h`),
+                                ce('td', { className: "px-4 py-3 text-center text-indigo-900" }, `${totalsFeb.ment} h`),
+                                ce('td', { className: "px-6 py-3 text-right text-emerald-800" }, formatMoney(costFeb))
+                            )
                         )
                     )
                 )
@@ -316,7 +292,7 @@
                     ce('h3', { className: "text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-2 mb-4" },
                         ce(Target, { className: "text-blue-600", size: 20 }), " Frentes Estratégicos & Oportunidades"
                     ),
-                    ce('div', { className: "grid grid-cols-1 md:grid-cols-3 gap-4" },
+                    ce('div', { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" },
                         portfolioData.strategic.map((p, i) => 
                             ce('div', { key: i, className: `card-elite p-5 border-l-4 ${p.color === 'red' ? 'border-l-red-500' : p.color === 'cyan' ? 'border-l-cyan-500' : p.color === 'emerald' ? 'border-l-emerald-500' : 'border-l-blue-500'}` },
                                 ce('div', { className: "flex justify-between items-start mb-3 pl-2" },
@@ -350,14 +326,14 @@
                                 ),
                                 ce(Badge, { color: "emerald" }, "EN EJECUCIÓN")
                             ),
-                            ce(ProgressBar, { progress: 60, label: "154 / 256 HH" })
+                            ce(ProgressBar, { progress: 62, label: "160 / 256 HH" })
                         ),
 
                         ce('div', { className: "grid gap-3" },
                             [
-                                { title: "SuKarne Póliza", sub: "Gestión Michoacán", val: "12 HH Ene", icon: Shield, color: "text-amber-600", bg: "bg-amber-100" },
-                                { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "35 HH Ene", icon: Users, color: "text-indigo-600", bg: "bg-indigo-100" },
-                                { title: "Proyecto PFD", sub: "En Curso", val: "6 HH Ene", icon: Activity, color: "text-purple-600", bg: "bg-purple-100" }
+                                { title: "SuKarne Póliza", sub: "Gestión Michoacán", val: "18 HH YTD", icon: Shield, color: "text-amber-600", bg: "bg-amber-100" },
+                                { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "42 HH YTD", icon: Users, color: "text-indigo-600", bg: "bg-indigo-100" },
+                                { title: "Proyecto PFD", sub: "Alineación", val: "6 HH YTD", icon: Activity, color: "text-purple-600", bg: "bg-purple-100" }
                             ].map((k, i) => 
                                 ce('div', { key: i, className: "bg-white p-4 border border-slate-200 rounded-xl flex justify-between items-center shadow-sm hover:border-slate-300 transition-colors" },
                                     ce('div', { className: "flex items-center gap-3" },
@@ -377,7 +353,7 @@
         };
 
         const ViewModels = () => ce('div', { className: "space-y-6 animate-enter" },
-            ce(SectionHeader, { title: "Modelos de Gestión", subtitle: "Actividad detallada por esquema", icon: Layout }),
+            ce(SectionHeader, { title: "Modelos de Gestión", subtitle: "Actividad detallada por esquema" , icon: Layout }),
             
             ce('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
                 modelsData.map((m, idx) => 
@@ -417,50 +393,31 @@
             )
         );
 
-        // --- AGENDA COMPONENT DEFINED HERE ---
-        const ViewAgenda = () => ce('div', { className: "space-y-6 animate-enter" },
-            ce(SectionHeader, { title: "Agenda de Seguimiento", subtitle: "Cierre de Mes (31 Enero)", icon: Clock }),
-            
-            ce('div', { className: "bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite" },
-                ce('div', { className: "relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line" },
-                    [
-                        { time: '5 min', title: 'Revisión Cierre Enero', desc: 'Resultados Financieros y Operativos (66 HH Total).' },
-                        { time: '10 min', title: 'Estatus Propuestas', desc: 'Pilgrim\'s enviada y Alto Sano Medidores entregada.' },
-                        { time: '10 min', title: 'Plan Visita SuKarne', desc: 'Coordinación logística visita 02/02 para cierre.' },
-                        { time: '10 min', title: 'Entrega Paneles AS', desc: 'Revisión avance para entrega 06/02.' },
-                        { time: '5 min', title: 'Siguientes Pasos PFD', desc: 'Asegurar continuidad tras reactivación.' }
-                    ].map((item, idx) => (
-                        ce('div', { key: idx, className: "relative pl-12 group" },
-                            ce('div', { className: "absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm" }),
-                            ce('div', { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2" },
-                                ce('h4', { className: "font-bold text-lg text-slate-800" }, item.title),
-                                ce('span', { className: "text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200" }, item.time)
-                            ),
-                            ce('p', { className: "text-slate-600 leading-relaxed font-medium border-l-2 border-transparent pl-2 group-hover:border-blue-200 transition-colors" }, item.desc)
-                        )
-                    ))
-                )
-            )
-        );
-
         const ViewStrategy = () => ce('div', { className: "grid lg:grid-cols-2 gap-8 animate-enter" },
             ce('div', null,
                 ce('h3', { className: "text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2" },
-                    ce(BarChart3, { className: "text-blue-600", size: 20 }), " Análisis de Situación"
+                    ce(Clock, { className: "text-blue-600", size: 20 }), " Agenda Sem 07 (Feb)"
                 ),
-                ce('div', { className: "space-y-4" },
-                    alignmentPoints.map((point, i) => ce('div', { key: i, className: "group p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all card-elite" },
-                        ce('div', { className: "flex items-baseline gap-3 mb-1" },
-                            ce('span', { className: "text-blue-600 font-black text-2xl opacity-30 group-hover:opacity-100 transition-opacity" }, `0${i + 1}`),
-                            ce('span', { className: "font-bold text-slate-800 text-lg group-hover:text-blue-700 transition-colors" }, point.title)
-                        ),
-                        ce('p', { className: "text-sm text-slate-600 pl-10 leading-relaxed font-medium" }, point.text)
-                    ))
+                ce('div', { className: "card-elite p-8" },
+                    ce('div', { className: "space-y-8 border-l-2 border-slate-100 ml-2 pl-8 timeline-line relative" },
+                        [{ title: "Visita SuKarne", desc: "Coordinación para cierre de propuesta (02/02).", tag: "Hecho", time: "Lunes" },
+                         { title: "Entrega Paneles AS", desc: "Envío formal reprogramado (Retraso).", tag: "10/02", time: "Martes" },
+                         { title: "Reunión SuKarne", desc: "Cierre de propuesta Universidad.", tag: "Prioridad", time: "11/02" },
+                         { title: "Plan Piloto PFD", desc: "Alineación de diagramas con Edson.", tag: "Interno", time: "En Curso" }
+                        ].map((item, i) => ce('div', { key: i, className: "relative group" },
+                            ce('div', { className: "absolute -left-[39px] top-1 w-4 h-4 rounded-full bg-white border-4 border-blue-500 shadow-sm group-hover:scale-110 transition-transform" }),
+                            ce('div', { className: "flex justify-between items-center mb-1" },
+                                ce('h4', { className: "font-bold text-sm text-slate-800" }, item.title, ce('span', { className: "text-[10px] text-slate-400 font-normal ml-2" }, `(${item.tag})`)),
+                                ce('span', { className: "text-[10px] bg-slate-100 px-2 py-0.5 rounded text-slate-500 font-mono border border-slate-200" }, item.time)
+                            ),
+                            ce('p', { className: "text-xs text-slate-500 leading-relaxed" }, item.desc)
+                        ))
+                    )
                 )
             ),
             ce('div', null,
                 ce('h3', { className: "text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" },
-                     ce(Target, { className: "text-blue-600", size: 20 }), " Gestión de Riesgos & Foco"
+                     ce(BarChart3, { className: "text-blue-600", size: 20 }), " Alineación Estratégica"
                 ),
                 ce('div', { className: "space-y-4" },
                     ce(Card, { className: "bg-emerald-50 border-emerald-200 !p-4 !shadow-none" },
@@ -468,7 +425,7 @@
                             ce('div', { className: "mt-1 text-emerald-600" }, ce(CheckCircle, { size: 20 })),
                             ce('div', null,
                                 ce('p', { className: "text-xs font-bold text-emerald-800 uppercase mb-1" }, "Logro Clave"),
-                                ce('p', { className: "text-sm text-emerald-900 leading-snug" }, "Gramosa alcanza 60% con ritmo de 12h/sem. Equipo de mentoría 100% activado.")
+                                ce('p', { className: "text-sm text-emerald-900 leading-snug" }, "Enero cierra con $45.9K variables y 60% avance en Gramosa. Inercia positiva.")
                             )
                         )
                     ),
@@ -476,8 +433,8 @@
                         ce('div', { className: "flex gap-4" },
                             ce('div', { className: "mt-1 text-blue-600" }, ce(Target, { size: 20 })),
                             ce('div', null,
-                                ce('p', { className: "text-xs font-bold text-blue-800 uppercase mb-1" }, "Foco Comercial"),
-                                ce('p', { className: "text-sm text-blue-900 leading-snug" }, "Convertir interés de Alto Sano y Pilgrim's en POs antes de cerrar Febrero.")
+                                ce('p', { className: "text-xs font-bold text-blue-800 uppercase mb-1" }, "Foco Febrero"),
+                                ce('p', { className: "text-sm text-blue-900 leading-snug" }, "Cerrar venta Alto Sano y concretar alcance Universidad SuKarne post-visita.")
                             )
                         )
                     ),
@@ -486,7 +443,7 @@
                             ce('div', { className: "mt-1 text-red-600" }, ce(AlertTriangle, { size: 20 })),
                             ce('div', null,
                                 ce('p', { className: "text-xs font-bold text-red-800 uppercase mb-1" }, "Atención"),
-                                ce('p', { className: "text-sm text-red-900 leading-snug" }, "Mantener ritmo en mentorías y PFD para no perder inercia ganada en Enero.")
+                                ce('p', { className: "text-sm text-red-900 leading-snug" }, "Asegurar que la carga de Gramosa (+12h) no frene el seguimiento comercial de Pilgrim's.")
                             )
                         )
                     )
@@ -498,9 +455,9 @@
             ce('div', { className: "flex flex-col md:flex-row md:justify-between md:items-end mb-2 gap-4" },
                 ce('div', null,
                     ce('h3', { className: "text-3xl font-black text-slate-900 flex items-center gap-3" },
-                        ce(BarChart3, { className: "text-blue-600", size: 32 }), " Cierre Mensual: Enero 2026"
+                        ce(BarChart3, { className: "text-blue-600", size: 32 }), " Cierre Enero & Avance Feb"
                     ),
-                    ce('p', { className: "text-slate-500 font-medium mt-1 ml-11" }, "Resultados Acumulados (Semanas 1-5)")
+                    ce('p', { className: "text-slate-500 font-medium mt-1 ml-11" }, "Resultados Acumulados (Semanas 1-6)")
                 ),
                 ce(Badge, { color: "emerald" }, "ESTATUS: ÓPTIMO")
             ),
@@ -523,10 +480,10 @@
                     ce('div', { className: "flex items-start gap-5" },
                         ce('div', { className: "p-4 bg-blue-50 rounded-2xl text-blue-600 border border-blue-100 shadow-inner" }, ce(Target, { size: 32 })),
                         ce('div', null,
-                            ce('h3', { className: "font-bold text-lg text-slate-800 mb-3" }, "Foco Semana 1 Febrero"),
+                            ce('h3', { className: "font-bold text-lg text-slate-800 mb-3" }, "Foco Semana 2 Febrero"),
                             ce('ul', { className: "text-sm text-slate-600 space-y-3" },
-                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "SuKarne:"), " Visita cierre 02/02."),
-                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "Alto Sano:"), " Entregar Paneles 06/02."),
+                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "SuKarne:"), " Cierre propuesta 11/02."),
+                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "Alto Sano:"), " Entregar Paneles 10/02."),
                                 ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "PFD:"), " Mantener inercia (3h+).")
                             )
                         )
@@ -536,7 +493,7 @@
 
             ce('div', { className: "grid grid-cols-2 md:grid-cols-4 gap-4 mt-6" },
                 ce('div', { className: "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 text-center shadow-sm hover:shadow-md transition-shadow" },
-                    ce('div', { className: "text-4xl font-black text-emerald-600 tracking-tighter" }, "60%"),
+                    ce('div', { className: "text-4xl font-black text-emerald-600 tracking-tighter" }, "62%"),
                     ce('div', { className: "text-xs font-bold text-emerald-800 uppercase tracking-widest mt-2 border-t border-emerald-200 pt-2" }, "Avance Gramosa")
                 ),
                 ce('div', { className: "bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center shadow-sm hover:shadow-md transition-shadow" },
@@ -544,29 +501,28 @@
                     ce('div', { className: "text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2" }, "Cot. Pilgrim's")
                 ),
                 ce('div', { className: "bg-amber-50 p-5 rounded-2xl border border-amber-200 text-center shadow-sm hover:shadow-md transition-shadow" },
-                    ce('div', { className: "text-4xl font-black text-amber-600 tracking-tighter" }, "35h"),
-                    ce('div', { className: "text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2" }, "Mentorías")
+                    ce('div', { className: "text-4xl font-black text-amber-600 tracking-tighter" }, "42h"),
+                    ce('div', { className: "text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2" }, "Mentorías YTD")
                 ),
                 ce('div', { className: "bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm hover:shadow-md transition-shadow" },
-                    ce('div', { className: "text-4xl font-black text-slate-700 tracking-tighter" }, "OK"),
-                    ce('div', { className: "text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2" }, "Diag. Rolado")
+                    ce('div', { className: "text-4xl font-black text-slate-700 tracking-tighter" }, "CITA 11/02"),
+                    ce('div', { className: "text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2" }, "Estatus USK")
                 )
             )
         );
 
-        // --- DASHBOARD MASTER ---
+        // --- DASHBOARD CONTAINER ---
 
         const Dashboard = () => {
             const [activeTab, setActiveTab] = useState('vision');
             const [isMenuOpen, setIsMenuOpen] = useState(false);
 
             const tabs = [
-                { id: 'vision', label: 'Cierre Enero' },
+                { id: 'vision', label: 'Cierres' },
                 { id: 'financials', label: 'Control HH' },
                 { id: 'portfolio', label: 'Portafolio' },
                 { id: 'models', label: 'Modelos' },
-                { id: 'strategy', label: 'Estrategia' },
-                { id: 'agenda', label: 'Agenda' }
+                { id: 'strategy', label: 'Estrategia' }
             ];
 
             return ce('div', { className: "min-h-screen flex flex-col font-sans" },
@@ -607,8 +563,7 @@
                     activeTab === 'financials' && ViewFinancials(),
                     activeTab === 'portfolio' && ViewPortfolio(),
                     activeTab === 'models' && ViewModels(),
-                    activeTab === 'strategy' && ViewStrategy(),
-                    activeTab === 'agenda' && ViewAgenda()
+                    activeTab === 'strategy' && ce('div', { className: "space-y-10 animate-enter" }, ViewStrategy(), ce(ViewAgenda))
                 ),
                 ce('footer', { className: "bg-white border-t border-slate-200 mt-auto py-8" },
                     ce('div', { className: "max-w-7xl mx-auto px-4 flex justify-between text-sm text-slate-500" },
