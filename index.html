@@ -8,14 +8,6 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & Babel (Motor Robusto UMD) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
     <!-- Fuente Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
@@ -44,17 +36,24 @@
         .timeline-line::before {
             content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background-color: #e2e8f0;
         }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
     <div id="root"></div>
 
+    <!-- Motor React (Sin JSX para máxima estabilidad) -->
     <script type="module">
         import React, { useState } from 'https://esm.sh/react@18.2.0';
         import ReactDOM from 'https://esm.sh/react-dom@18.2.0/client';
         
-        // Importar Iconos
+        // Iconos
         import { 
             Briefcase, Target, CheckCircle, Clock, Layout, Users, 
             Shield, Activity, Zap, Building2, BarChart3, 
@@ -65,53 +64,57 @@
         const ce = React.createElement;
 
         // --- CONFIGURACIÓN ---
-        const LAST_UPDATED = "07 de Febrero, 2026"; 
+        const LAST_UPDATED = "14 de Febrero, 2026"; 
         const HOURLY_RATE = 900; 
 
-        // --- DATOS ---
+        // --- DATOS MAESTROS ---
         const financialHistory = [
+            // Enero (Cerrado)
             { week: 'Sem 01 (02-03 Ene)', gramosa: 0, flex: 0, ment: 1, activity: 'Inicio Año: Mentoría Edson.', status: 'Cerrado' },
             { week: 'Sem 02 (05-09 Ene)', gramosa: 6, flex: 0, ment: 9, activity: 'Gramosa (6h), Foco Planner.', status: 'Cerrado' },
             { week: 'Sem 03 (12-16 Ene)', gramosa: 10, flex: 4, ment: 6, activity: 'Gramosa(10), PFD(3), SK(1), Ment(6).', status: 'Cerrado' },
             { week: 'Sem 04 (19-23 Ene)', gramosa: 14, flex: 7, ment: 9, activity: 'Gramosa(14), SK(7), Ment(9).', status: 'Cerrado' },
             { week: 'Sem 05 (26-30 Ene)', gramosa: 12, flex: 5, ment: 10, activity: 'Gramosa(12), Flex(5), Ment(10).', status: 'Cerrado' },
-            // Semana 6 Febrero
-            { week: 'Sem 06 (02-06 Feb)', gramosa: 6, flex: 11, ment: 7, activity: 'USK Lev.(6), SK Pol.(5), Gram(6), Ment(7).', status: 'Abierto' }
+            
+            // Febrero (En Curso)
+            { week: 'Sem 06 (02-06 Feb)', gramosa: 6, flex: 11, ment: 7, activity: 'USK Lev.(6), SK Pol.(5), Gram(6), Ment(7).', status: 'Cerrado' },
+            { week: 'Sem 07 (09-13 Feb)', gramosa: 10, flex: 9, ment: 9, activity: 'Gram(10) Elec/Auto, SK(9) GPT ISO, Ment(9).', status: 'Cerrado' }
         ];
 
         const portfolioData = {
           strategic: [
-            { id: 'pilgrims', client: 'PILGRIMS', title: 'Ingeniería BIM / Peletizado', status: 'PROP. ENVIADA', note: 'Enviada 26/01. Esperando feedback.', icon: Building2, color: 'emerald' },
-            { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta entregada 30/01.', icon: CheckCircle, color: 'emerald' },
-            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'RETRASO 10/02', note: 'Reprogramado para el 10/02.', icon: Zap, color: 'amber' },
-            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'CITA 11/02', note: 'Levantamiento OK. Cierre propuesta.', icon: Users, color: 'blue' },
+            { id: 'pilgrims', client: 'PILGRIMS', title: 'Ingeniería BIM / Peletizado', status: 'PROP. ENVIADA', note: 'Enviada 26/01. Esperando feedback.', icon: Building2, color: 'blue' },
+            { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta enviada 30/01.', icon: CheckCircle, color: 'emerald' },
+            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'ENVIADA 10/02', note: 'Propuesta enviada. En seguimiento.', icon: Zap, color: 'emerald' },
+            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'PROP. PILOTO', note: 'Presentada Línea Piloto 11/02.', icon: Users, color: 'purple' },
             { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'VIGENTE', note: 'Propuesta activa.', icon: Layout, color: 'blue' },
             { id: 'adm-tanques', client: 'ADM', title: 'Documentación Tanques', status: 'RECHAZADA', note: 'Archivar lecciones.', icon: XCircle, color: 'red' }
           ],
           approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Acum: 160 HH (+6h esta sem).', icon: CheckCircle, progress: 62.5, totalHH: '160 / 256 HH' }
+            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Hito 170 HH (66%). Trabajo pesado Elec/Auto.', icon: CheckCircle, progress: 66, totalHH: '170 / 256 HH' }
           ],
           recurring: [
-            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Intenso', note: '11h Sem (Levantamiento+Poliza).', icon: Shield },
-            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Alineación', note: '1h Edson (Plan Piloto).', icon: Activity },
-            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Activo', note: '7h Sem (Foco Planner).', icon: Users }
+            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Innovación', note: '9h Sem. GPT Reportes ISO + Gestión.', icon: Shield },
+            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Pausa', note: 'Sin actividad esta semana.', icon: Activity },
+            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Intenso', note: '9h Sem (Foco Planner/Entregables).', icon: Users }
           ]
         };
 
         const modelsData = [
-            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: CheckCircle, items: [{ label: 'GRAMOSA', value: 'Avance: 160 HH (62.5%)' }] },
-            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: ClipboardList, items: [{ label: "Pilgrim's", status: 'ENVIADA' }, { label: 'Alto Sano (Pan)', status: '10/02' }, { label: 'USK Mich.', status: '11/02' }] },
-            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: Shield, items: [{ label: 'SuKarne (Pol+USK)', value: '18 HH (YTD)' }, { label: 'PFD', value: '6 HH (YTD)' }, { label: 'Total Feb (Sem 6)', value: '12 HH' }] },
-            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: GraduationCap, items: [{ label: 'Planner', value: '33h (YTD)' }, { label: 'Coord', value: '5h (YTD)' }, { label: 'Ops', value: '3h (YTD)' }] }
+            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: CheckCircle, items: [{ label: 'GRAMOSA', value: 'Avance: 170 HH (66%)' }] },
+            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: ClipboardList, items: [{ label: "Pilgrim's", status: 'ENVIADA' }, { label: 'Alto Sano (Pan)', status: 'ENVIADA' }, { label: 'USK (Piloto)', status: 'PRESENTADA' }] },
+            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: Shield, items: [{ label: 'SuKarne (Pol+USK)', value: '27 HH (YTD)' }, { label: 'PFD', value: '6 HH (YTD)' }, { label: 'Total Feb (Sem 6-7)', value: '20 HH' }] },
+            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: GraduationCap, items: [{ label: 'Planner', value: '41h (YTD)' }, { label: 'Coord', value: '6h (YTD)' }, { label: 'Ops', value: '4h (YTD)' }] }
         ];
 
         const alignmentPoints = [
-            { title: 'Arranque Febrero', text: 'Inicio fuerte con USK Michoacán (6h). Se mantiene ritmo en Gramosa (6h) y se intensifica Póliza SK.' },
-            { title: 'Entregables Alto Sano', text: 'Medidores entregado 30/01. Paneles REPROGRAMADO para el 10/02. Seguimiento prioritario.' },
-            { title: 'Cierre USK', text: 'Levantamiento Michoacán completado. Cita con cliente confirmada para el Miércoles 11/02.' },
-            { title: 'Desarrollo Interno', text: 'Germán (Planner) continúa desarrollo (5h esta sem). Edson alinea piloto PFD (1h).' }
+            { title: 'Cierre Comercial Sem 7', text: 'Se envió la propuesta de Paneles Alto Sano (10/02). Se presentó la estrategia "Línea Piloto" a USK (11/02).' },
+            { title: 'Avance Gramosa', text: 'Semana pesada (8h el jueves) enfocada en Electricidad y Automatización. Avance total llega al 66% (170h).' },
+            { title: 'Innovación SuKarne', text: 'Se implementa GPT para agilizar reportes ISO dentro de la Póliza. Valor añadido tangible.' },
+            { title: 'Desarrollo Interno', text: 'Germán (Planner) consolida rol con 9h de gestión de cronogramas y entregables.' }
         ];
 
+        // --- UTILS ---
         const formatMoney = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
 
         // --- COMPONENTES UI ---
@@ -179,7 +182,7 @@
             const totalsJan = calculateTotals(rowsJan);
             const costJan = (totalsJan.flex + totalsJan.ment) * HOURLY_RATE;
 
-            // Febrero (Sem 6)
+            // Febrero (Sem 6-7)
             const rowsFeb = financialHistory.slice(5);
             const totalsFeb = calculateTotals(rowsFeb);
             const costFeb = (totalsFeb.flex + totalsFeb.ment) * HOURLY_RATE;
@@ -189,7 +192,7 @@
             const grandTotalCost = costJan + costFeb;
 
             return ce('div', { className: "space-y-8 animate-enter" },
-                ce(SectionHeader, { title: "Control Financiero", subtitle: "Cierre Enero (Consolidado) & Avance Febrero", icon: Calculator }),
+                ce(SectionHeader, { title: "Control Financiero", subtitle: "Cierre Enero (Consolidado) & Avance Febrero (Sem 7)", icon: Calculator }),
                 
                 // Summary Cards
                 ce('div', { className: "grid grid-cols-1 md:grid-cols-2 gap-6" },
@@ -210,7 +213,7 @@
 
                     ce('div', { className: "bg-white border border-emerald-200 rounded-xl p-6 shadow-md flex justify-between items-center" },
                         ce('div', null,
-                            ce('p', { className: "text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1" }, "Avance Febrero (Sem 6)"),
+                            ce('p', { className: "text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1" }, "Avance Febrero (al 14/02)"),
                             ce('h3', { className: "text-3xl font-black text-slate-800" }, formatMoney(costFeb)),
                             ce('div', { className: "flex gap-3 mt-2 text-xs text-slate-500" },
                                 ce('span', null, "Total: ", ce('strong', null, totalsFeb.total + "h")),
@@ -296,7 +299,7 @@
                             ce('p', { className: "text-xs font-bold uppercase tracking-widest mb-1 text-slate-400" }, "Acumulado General 2026"),
                             ce('div', { className: "flex items-baseline justify-end gap-2" },
                                 ce('p', { className: "text-2xl font-black" }, formatMoney(grandTotalCost)),
-                                ce('span', { className: "text-sm font-medium text-slate-400" }, `/ ${grandTotalHours} HH`)
+                                ce('span', { className: "text-sm font-medium text-slate-400" }, `/ ${grandTotalHours} HH (YTD)`)
                             )
                         )
                     )
@@ -357,13 +360,13 @@
                                 ),
                                 ce(Badge, { color: "emerald" }, "EN EJECUCIÓN")
                             ),
-                            ce(ProgressBar, { progress: 62.5, label: "160 / 256 HH" })
+                            ce(ProgressBar, { progress: 66, label: "170 / 256 HH" })
                         ),
 
                         ce('div', { className: "grid gap-3" },
                             [
-                                { title: "SuKarne Póliza", sub: "Gestión Michoacán", val: "18 HH YTD", icon: Shield, color: "text-amber-600", bg: "bg-amber-100" },
-                                { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "42 HH YTD", icon: Users, color: "text-indigo-600", bg: "bg-indigo-100" },
+                                { title: "SuKarne Póliza", sub: "Gestión + GPT ISO", val: "29 HH YTD", icon: Shield, color: "text-amber-600", bg: "bg-amber-100" },
+                                { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "51 HH YTD", icon: Users, color: "text-indigo-600", bg: "bg-indigo-100" },
                                 { title: "Proyecto PFD", sub: "Alineación", val: "6 HH YTD", icon: Activity, color: "text-purple-600", bg: "bg-purple-100" }
                             ].map((k, i) => 
                                 ce('div', { key: i, className: "bg-white p-4 border border-slate-200 rounded-xl flex justify-between items-center shadow-sm hover:border-slate-300 transition-colors" },
@@ -424,34 +427,24 @@
             )
         );
 
-        const ViewAgenda = () => ce('div', { className: "space-y-6 animate-enter" },
-            ce(SectionHeader, { title: "Agenda de Seguimiento", subtitle: "Revisión Semanal (07 Febrero)", icon: Clock }),
-            
-            ce('div', { className: "bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite" },
-                ce('div', { className: "relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line" },
-                    [
-                        { time: '10 min', title: 'Entrega Paneles AS', desc: 'Envío formal reprogramado (Retraso).', tag: '10/02', color: 'amber' },
-                        { time: '30 min', title: 'Cierre Universidad USK', desc: 'Reunión definitiva post-visita.', tag: '11/02', color: 'blue' },
-                        { time: '15 min', title: 'Seguimiento Pilgrim\'s', desc: 'Validación de feedback propuesta enviada.', tag: 'Comercial', color: 'emerald' },
-                        { time: '10 min', title: 'Plan Piloto PFD', desc: 'Alineación de diagramas con Edson.', tag: 'Interno', color: 'purple' }
-                    ].map((item, idx) => (
-                        ce('div', { key: idx, className: "relative pl-12 group" },
-                            ce('div', { className: `absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-${item.color}-500 group-hover:scale-125 transition-transform shadow-sm` }),
-                            ce('div', { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2" },
-                                ce('h4', { className: "font-bold text-lg text-slate-800" }, item.title),
-                                ce('span', { className: `text-xs font-bold text-${item.color}-700 bg-${item.color}-50 px-3 py-1 rounded-full border border-${item.color}-200` }, item.time)
-                            ),
-                            ce('p', { className: "text-slate-600 leading-relaxed font-medium border-l-2 border-transparent pl-2 group-hover:border-blue-200 transition-colors" }, item.desc)
-                        )
-                    ))
-                )
-            )
-        );
-
         const ViewStrategy = () => ce('div', { className: "grid lg:grid-cols-2 gap-8 animate-enter" },
             ce('div', null,
+                ce('h3', { className: "text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2" },
+                    ce(BarChart3, { className: "text-blue-600", size: 20 }), " Alineación Estratégica"
+                ),
+                ce('div', { className: "space-y-4" },
+                    alignmentPoints.map((point, i) => ce('div', { key: i, className: "group p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all card-elite" },
+                        ce('div', { className: "flex items-baseline gap-3 mb-1" },
+                            ce('span', { className: "text-blue-600 font-black text-2xl opacity-30 group-hover:opacity-100 transition-opacity" }, `0${i + 1}`),
+                            ce('span', { className: "font-bold text-slate-800 text-lg group-hover:text-blue-700 transition-colors" }, point.title)
+                        ),
+                        ce('p', { className: "text-sm text-slate-600 pl-10 leading-relaxed font-medium" }, point.text)
+                    ))
+                )
+            ),
+            ce('div', null,
                 ce('h3', { className: "text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" },
-                     ce(BarChart3, { className: "text-blue-600", size: 20 }), " Alineación Estratégica"
+                     ce(Target, { className: "text-blue-600", size: 20 }), " Gestión de Riesgos & Foco"
                 ),
                 ce('div', { className: "space-y-4" },
                     ce(Card, { className: "bg-emerald-50 border-emerald-200 !p-4 !shadow-none" },
@@ -459,7 +452,7 @@
                             ce('div', { className: "mt-1 text-emerald-600" }, ce(CheckCircle, { size: 20 })),
                             ce('div', null,
                                 ce('p', { className: "text-xs font-bold text-emerald-800 uppercase mb-1" }, "Logro Clave"),
-                                ce('p', { className: "text-sm text-emerald-900 leading-snug" }, "Enero cierra con $45.9K variables y 60% avance en Gramosa. Inercia positiva.")
+                                ce('p', { className: "text-sm text-emerald-900 leading-snug" }, "Gramosa alcanza 66% con ritmo de 10h/sem. Equipo de mentoría 100% activado.")
                             )
                         )
                     ),
@@ -467,8 +460,8 @@
                         ce('div', { className: "flex gap-4" },
                             ce('div', { className: "mt-1 text-blue-600" }, ce(Target, { size: 20 })),
                             ce('div', null,
-                                ce('p', { className: "text-xs font-bold text-blue-800 uppercase mb-1" }, "Foco Febrero"),
-                                ce('p', { className: "text-sm text-blue-900 leading-snug" }, "Cerrar venta Alto Sano y concretar alcance Universidad SuKarne post-visita.")
+                                ce('p', { className: "text-xs font-bold text-blue-800 uppercase mb-1" }, "Foco Comercial"),
+                                ce('p', { className: "text-sm text-blue-900 leading-snug" }, "Convertir interés de Alto Sano y Pilgrim's en POs antes de cerrar Febrero.")
                             )
                         )
                     ),
@@ -477,30 +470,37 @@
                             ce('div', { className: "mt-1 text-red-600" }, ce(AlertTriangle, { size: 20 })),
                             ce('div', null,
                                 ce('p', { className: "text-xs font-bold text-red-800 uppercase mb-1" }, "Atención"),
-                                ce('p', { className: "text-sm text-red-900 leading-snug" }, "Asegurar que la carga de Gramosa (+12h) no frene el seguimiento comercial de Pilgrim's.")
+                                ce('p', { className: "text-sm text-red-900 leading-snug" }, "Mantener ritmo en mentorías y PFD para no perder inercia ganada en Enero.")
                             )
                         )
                     )
                 )
-            ),
-             ce('div', null, 
-                 ce('h3', { className: "text-lg font-bold text-slate-800 mb-4 flex items-center gap-2" },
-                     ce(Clock, { className: "text-blue-600", size: 20 }), " Visión General Sem 07"
-                 ),
-                 ce(Card, { className: "border-l-4 border-l-blue-500" },
-                     ce('div', { className: "space-y-4" },
-                         ce('p', { className: "text-sm text-slate-600 font-medium" }, "Semana crítica para cierres comerciales. El foco debe estar en la conversión de propuestas enviadas."),
-                         ce('div', { className: "grid grid-cols-2 gap-4 text-xs" },
-                             ce('div', { className: "bg-slate-50 p-2 rounded" }, 
-                                 ce('strong', { className: "block text-slate-800" }, "Meta 1"), "Cierre USK"
-                             ),
-                             ce('div', { className: "bg-slate-50 p-2 rounded" }, 
-                                 ce('strong', { className: "block text-slate-800" }, "Meta 2"), "Entrega AS Paneles"
-                             )
-                         )
-                     )
-                 )
-             )
+            )
+        );
+
+        const ViewAgenda = () => ce('div', { className: "space-y-6 animate-enter" },
+            ce(SectionHeader, { title: "Agenda de Seguimiento", subtitle: "Revisión Semanal (14 Febrero)", icon: Clock }),
+            
+            ce('div', { className: "bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite" },
+                ce('div', { className: "relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line" },
+                    [
+                        { time: '5 min', title: 'Revisión Cierre Enero', desc: 'Validación de cierre ($45.9k) y arranque Feb ($16.2k).' },
+                        { time: '10 min', title: 'Estrategia USK', desc: 'Confirmación Línea Piloto y plan de levantamiento L5.' },
+                        { time: '10 min', title: 'Seguimiento Alto Sano', desc: 'Validar recepción de propuesta Paneles.' },
+                        { time: '10 min', title: 'Gramosa Heavy', desc: 'Revisión técnica Elec/Auto (10h).' },
+                        { time: '5 min', title: 'Innovación SK', desc: 'Demo breve del GPT para reportes ISO.' }
+                    ].map((item, idx) => (
+                        ce('div', { key: idx, className: "relative pl-12 group" },
+                            ce('div', { className: "absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm" }),
+                            ce('div', { className: "flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2" },
+                                ce('h4', { className: "font-bold text-lg text-slate-800" }, item.title),
+                                ce('span', { className: "text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200" }, item.time)
+                            ),
+                            ce('p', { className: "text-slate-600 leading-relaxed font-medium border-l-2 border-transparent pl-2 group-hover:border-blue-200 transition-colors" }, item.desc)
+                        )
+                    ))
+                )
+            )
         );
 
         const ViewVision = () => ce('div', { className: "space-y-8 animate-enter" },
@@ -509,7 +509,7 @@
                     ce('h3', { className: "text-3xl font-black text-slate-900 flex items-center gap-3" },
                         ce(BarChart3, { className: "text-blue-600", size: 32 }), " Cierres & Avance"
                     ),
-                    ce('p', { className: "text-slate-500 font-medium mt-1 ml-11" }, "Consolidado Enero + Febrero (Sem 6)")
+                    ce('p', { className: "text-slate-500 font-medium mt-1 ml-11" }, "Consolidado Enero + Febrero (Sem 7)")
                 ),
                 ce(Badge, { color: "emerald" }, "ESTATUS: ÓPTIMO")
             ),
@@ -523,7 +523,7 @@
                             ce('ul', { className: "text-sm text-slate-600 space-y-3" },
                                 ce('li', { className: "flex items-center gap-2" }, ce(CheckCircle, { size: 16, className: "text-emerald-500" }), ce('strong', null, "Pilgrim's:"), " Propuesta enviada 26/01."),
                                 ce('li', { className: "flex items-center gap-2" }, ce(CheckCircle, { size: 16, className: "text-emerald-500" }), ce('strong', null, "Alto Sano:"), " Medidores entregado 30/01."),
-                                ce('li', { className: "flex items-center gap-2" }, ce(CheckCircle, { size: 16, className: "text-emerald-500" }), ce('strong', null, "GRAMOSA:"), " Avance al 60% (+12h).")
+                                ce('li', { className: "flex items-center gap-2" }, ce(CheckCircle, { size: 16, className: "text-emerald-500" }), ce('strong', null, "GRAMOSA:"), " Avance al 66% (+10h).")
                             )
                         )
                     )
@@ -532,11 +532,11 @@
                     ce('div', { className: "flex items-start gap-5" },
                         ce('div', { className: "p-4 bg-blue-50 rounded-2xl text-blue-600 border border-blue-100 shadow-inner" }, ce(Target, { size: 32 })),
                         ce('div', null,
-                            ce('h3', { className: "font-bold text-lg text-slate-800 mb-3" }, "Foco Semana 2 Febrero"),
+                            ce('h3', { className: "font-bold text-lg text-slate-800 mb-3" }, "Foco Semana 3 Febrero"),
                             ce('ul', { className: "text-sm text-slate-600 space-y-3" },
-                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "SuKarne:"), " Cierre propuesta 11/02."),
-                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "Alto Sano:"), " Entregar Paneles 10/02."),
-                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "PFD:"), " Mantener inercia (3h+).")
+                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "USK:"), " Prep. Levantamiento L5 (23-27)."),
+                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "Gramosa:"), " Entrega Automatización."),
+                                ce('li', { className: "flex items-center gap-2" }, ce(Layout, { size: 16, className: "text-blue-500" }), ce('span', { className: "font-bold text-blue-700" }, "Póliza:"), " Implementación GPT ISO.")
                             )
                         )
                     )
@@ -545,7 +545,7 @@
 
             ce('div', { className: "grid grid-cols-2 md:grid-cols-4 gap-4 mt-6" },
                 ce('div', { className: "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 text-center shadow-sm hover:shadow-md transition-shadow" },
-                    ce('div', { className: "text-4xl font-black text-emerald-600 tracking-tighter" }, "62.5%"),
+                    ce('div', { className: "text-4xl font-black text-emerald-600 tracking-tighter" }, "66%"),
                     ce('div', { className: "text-xs font-bold text-emerald-800 uppercase tracking-widest mt-2 border-t border-emerald-200 pt-2" }, "Avance Gramosa")
                 ),
                 ce('div', { className: "bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center shadow-sm hover:shadow-md transition-shadow" },
@@ -553,12 +553,12 @@
                     ce('div', { className: "text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2" }, "Cot. Pilgrim's")
                 ),
                 ce('div', { className: "bg-amber-50 p-5 rounded-2xl border border-amber-200 text-center shadow-sm hover:shadow-md transition-shadow" },
-                    ce('div', { className: "text-4xl font-black text-amber-600 tracking-tighter" }, "42h"),
+                    ce('div', { className: "text-4xl font-black text-amber-600 tracking-tighter" }, "44h"),
                     ce('div', { className: "text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2" }, "Mentorías YTD")
                 ),
                 ce('div', { className: "bg-white p-5 rounded-2xl border border-slate-200 text-center shadow-sm hover:shadow-md transition-shadow" },
-                    ce('div', { className: "text-4xl font-black text-slate-700 tracking-tighter" }, "CITA 11/02"),
-                    ce('div', { className: "text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2" }, "Estatus USK")
+                    ce('div', { className: "text-4xl font-black text-slate-700 tracking-tighter" }, "GPT"),
+                    ce('div', { className: "text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2" }, "Innovación SK")
                 )
             )
         );
@@ -616,8 +616,8 @@
                     activeTab === 'financials' && ViewFinancials(),
                     activeTab === 'portfolio' && ViewPortfolio(),
                     activeTab === 'models' && ViewModels(),
-                    activeTab === 'strategy' && ce('div', { className: "space-y-10 animate-enter" }, ViewStrategy(), ce(ViewAgenda)),
-                    activeTab === 'agenda' && ViewAgenda() // Direct access too
+                    activeTab === 'strategy' && ViewStrategy(),
+                    activeTab === 'agenda' && ViewAgenda()
                 ),
                 ce('footer', { className: "bg-white border-t border-slate-200 mt-auto py-8" },
                     ce('div', { className: "max-w-7xl mx-auto px-4 flex justify-between text-sm text-slate-500" },
