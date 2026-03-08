@@ -68,7 +68,7 @@
         };
 
         // --- CONFIGURACIÓN ---
-        const LAST_UPDATED = "28 de Febrero, 2026"; 
+        const LAST_UPDATED = "07 de Marzo, 2026"; 
         const HOURLY_RATE = 900; 
 
         // --- DATOS MAESTROS ---
@@ -80,44 +80,46 @@
             { week: 'Sem 04 (19-23 Ene)', gramosa: 14, flex: 7, ment: 9, activity: 'Gramosa(14), SK(7), Ment(9).', status: 'Cerrado' },
             { week: 'Sem 05 (26-30 Ene)', gramosa: 12, flex: 5, ment: 10, activity: 'Gramosa(12), Flex(5), Ment(10).', status: 'Cerrado' },
             
-            // Febrero (En Curso / Cierre)
+            // Febrero (Cerrado)
             { week: 'Sem 06 (02-06 Feb)', gramosa: 6, flex: 11, ment: 7, activity: 'USK Lev.(6), SK Pol.(5), Gram(6), Ment(7).', status: 'Cerrado' },
             { week: 'Sem 07 (09-13 Feb)', gramosa: 10, flex: 9, ment: 9, activity: 'Gram(10) Elec/Auto, SK(9) GPT ISO, Ment(9).', status: 'Cerrado' },
             { week: 'Sem 08 (16-20 Feb)', gramosa: 14, flex: 21, ment: 6, activity: 'Gram(14), AltoSano(13+), SK/Ment.', status: 'Cerrado' },
-            { week: 'Sem 09 (23-27 Feb)', gramosa: 10, flex: 24, ment: 6, activity: 'Gram(10), ADM Volt(13), SK(11 inc Sab).', status: 'Cierre Mes' }
+            { week: 'Sem 09 (23-27 Feb)', gramosa: 10, flex: 24, ment: 6, activity: 'Gram(10), ADM Volt(13), SK(11 inc Sab).', status: 'Cerrado' },
+
+            // Marzo (En Curso)
+            { week: 'Sem 10 (02-06 Mar)', gramosa: 7, flex: 24, ment: 7, activity: 'SK(22 incl. Viaje L5 + Contin. Dgo), Ment(7), Gram(7), ADM(2).', status: 'Cierre Sem' }
         ];
 
         const portfolioData = {
           strategic: [
-            { id: 'pilgrims', client: 'PILGRIMS', title: 'Ingeniería BIM / Peletizado', status: 'EN SEGUIMIENTO', note: 'Esperando feedback tras envío.', icon: 'building-2', color: 'blue' },
             { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta enviada 30/01.', icon: 'check-circle', color: 'emerald' },
             { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'VIGENTE', note: 'Propuestas activas en seguimiento.', icon: 'zap', color: 'emerald' },
-            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'POSPUESTO', note: 'Viaje L5 reprogramado al 05/03 (Riesgo País).', icon: 'alert-triangle', color: 'red' },
+            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'LEVANTAMIENTO OK', note: 'Visita ejecutada 05/03. Prep. cotización L5.', icon: 'users', color: 'emerald' },
             { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'VIGENTE', note: 'Propuesta activa.', icon: 'layout', color: 'blue' },
-            { id: 'adm-volteador', client: 'ADM', title: 'Volteador Celaya', status: 'LEVANTAMIENTO', note: 'Estructuración doc. y levantamiento PFD.', icon: 'file-text', color: 'amber' }
+            { id: 'adm-volteador', client: 'ADM', title: 'Volteador Celaya', status: 'LEVANTAMIENTO', note: 'Estructuración PFD en curso (2h sem).', icon: 'file-text', color: 'amber' }
           ],
           approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido 76% (194 HH). Cierre de Mes.', icon: 'check-circle', progress: 76, totalHH: '194 / 256 HH' }
+            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido 78.5% (201 HH).', icon: 'check-circle', progress: 78.5, totalHH: '201 / 256 HH' }
           ],
           recurring: [
-            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Mes cerrado. Incluye hrs Sábado 28 adelantadas.', icon: 'shield' },
-            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Activo', note: '13 HH volcadas a ADM Volteador.', icon: 'activity' },
-            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'En Curso', note: 'Alineamiento y retoma de proyectos (Planner).', icon: 'users' }
+            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Contingencia', note: 'Fuerte carga (18h) mitigando riesgo Accidente Durango.', icon: 'shield' },
+            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Activo', note: 'Destructuración alcance ADM.', icon: 'activity' },
+            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'En Curso', note: '7h (Planner + Ops con Johan).', icon: 'users' }
           ]
         };
 
         const modelsData = [
-            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: 'check-circle', items: [{ label: 'GRAMOSA', value: 'Avance: 194 HH (76%)' }] },
-            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: 'clipboard-list', items: [{ label: "ADM Volteador", status: 'LEVANTAMIENTO' }, { label: 'USK (Línea 5)', status: 'POSPUESTO 05/03' }, { label: "Alto Sano (Pan)", status: 'VIGENTE' }] },
-            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: 'shield', items: [{ label: 'Total Feb (Sem 6-9)', value: '65 HH Flexibles' }, { label: 'ADM Volteador', value: '13 HH (Sem 09)' }, { label: 'SuKarne Póliza', value: 'Cierre mes incl. Sab 28' }] },
-            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: 'graduation-cap', items: [{ label: 'Total Feb (Sem 6-9)', value: '28 HH Mentoría' }, { label: 'Total YTD 2026', value: '63 HH Mentoría' }, { label: 'Planner (Germán)', value: 'Alineamiento' }] }
+            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: 'check-circle', items: [{ label: 'GRAMOSA', value: 'Avance: 201 HH (78.5%)' }] },
+            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: 'clipboard-list', items: [{ label: "USK (Línea 5)", status: 'PREP. COTIZ.' }, { label: 'ADM Volteador', status: 'LEVANTAMIENTO' }, { label: "Alto Sano (Pan)", status: 'VIGENTE' }] },
+            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: 'shield', items: [{ label: 'Arranque Marzo (Sem 10)', value: '24 HH Flexibles' }, { label: 'SuKarne Póliza', value: 'Contingencia Durango' }, { label: 'SuKarne Visita', value: 'L5 Michoacán OK' }] },
+            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: 'graduation-cap', items: [{ label: 'Arranque Marzo (Sem 10)', value: '7 HH Mentoría' }, { label: 'Foco de la semana', value: 'Planner + Ops Johan' }] }
         ];
 
         const alignmentPoints = [
-            { title: 'Contingencia USK', text: 'Levantamiento Línea 5 en Michoacán pospuesto para el 05/03/2026 por incidente de seguridad en el país.' },
-            { title: 'Nuevo Frente ADM', text: 'Levantamiento y estructuración de PFD para el servicio "Volteador ADM Celaya" (13 HH invertidas).' },
-            { title: 'Cierre Financiero Mes', text: 'Horas operativas de Póliza SuKarne del sábado 28/02 se cargaron al viernes 27 para lograr un cierre de mes consolidado.' },
-            { title: 'Avance Gramosa', text: 'Se sumaron 10 HH en la semana, alcanzando el 76% (194 HH totales) al cierre de febrero.' }
+            { title: 'Ejecución USK', text: 'Visita de campo a Michoacán concretada el Jueves 05/03. Levantamiento L5 ejecutado para procesar cotización.' },
+            { title: 'Contingencia SuKarne', text: 'Semana de alta demanda en la Póliza (18 HH) por evaluación de accidente en Durango, revisión de stocks y justificaciones.' },
+            { title: 'Ritmo Gramosa', text: 'Se añaden 7 HH de avance al proyecto, superando la barrera del 78% (201 HH acumuladas).' },
+            { title: 'Desarrollo Interno', text: 'Reactivación de sesiones con Operaciones (Johan) y mantenimiento de inercia con Planner (Germán).' }
         ];
 
         // --- UTILS ---
@@ -188,30 +190,35 @@
             const costJan = (totalsJan.flex + totalsJan.ment) * HOURLY_RATE;
 
             // Febrero (Sem 6-9)
-            const rowsFeb = financialHistory.slice(5);
+            const rowsFeb = financialHistory.slice(5, 9);
             const totalsFeb = calculateTotals(rowsFeb);
             const costFeb = (totalsFeb.flex + totalsFeb.ment) * HOURLY_RATE;
 
+            // Marzo (Sem 10+)
+            const rowsMar = financialHistory.slice(9);
+            const totalsMar = calculateTotals(rowsMar);
+            const costMar = (totalsMar.flex + totalsMar.ment) * HOURLY_RATE;
+
             // Grand Total
-            const grandTotalHours = totalsJan.total + totalsFeb.total;
-            const grandTotalCost = costJan + costFeb;
+            const grandTotalHours = totalsJan.total + totalsFeb.total + totalsMar.total;
+            const grandTotalCost = costJan + costFeb + costMar;
 
             return (
                 <div className="space-y-8 animate-enter">
-                    <SectionHeader title="Control Financiero" subtitle="Estado de Resultados Operativo (Cierre Febrero)" icon="calculator" />
+                    <SectionHeader title="Control Financiero" subtitle="Estado de Resultados Operativo (Corte 07 Marzo)" icon="calculator" />
                     
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-slate-800 rounded-xl p-6 text-white shadow-xl flex justify-between items-center">
                             <div>
-                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Cierre Definitivo Enero</p>
-                                <h3 className="text-3xl font-black">{formatMoney(costJan)}</h3>
+                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Cierre Febrero</p>
+                                <h3 className="text-3xl font-black">{formatMoney(costFeb)}</h3>
                                 <div className="flex gap-3 mt-2 text-xs text-slate-300">
-                                    <span>Total: <strong>{totalsJan.total}h</strong></span>
+                                    <span>Total: <strong>{totalsFeb.total}h</strong></span>
                                     <span>•</span>
-                                    <span>Var: <strong>{totalsJan.flex + totalsJan.ment}h</strong></span>
+                                    <span>Var: <strong>{totalsFeb.flex + totalsFeb.ment}h</strong></span>
                                     <span>•</span>
-                                    <span>Fijo: <strong>{totalsJan.gramosa}h</strong></span>
+                                    <span>Fijo: <strong>{totalsFeb.gramosa}h</strong></span>
                                 </div>
                             </div>
                             <div className="p-3 bg-white/10 rounded-lg"><Icon name="check-circle" size={32} /></div>
@@ -219,14 +226,14 @@
 
                         <div className="bg-white border border-emerald-200 rounded-xl p-6 shadow-md flex justify-between items-center">
                             <div>
-                                <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1">Cierre Febrero (Sem 6-9)</p>
-                                <h3 className="text-3xl font-black text-slate-800">{formatMoney(costFeb)}</h3>
+                                <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1">Arranque Marzo (Sem 10)</p>
+                                <h3 className="text-3xl font-black text-slate-800">{formatMoney(costMar)}</h3>
                                 <div className="flex gap-3 mt-2 text-xs text-slate-500">
-                                    <span>Total: <strong>{totalsFeb.total}h</strong></span>
+                                    <span>Total: <strong>{totalsMar.total}h</strong></span>
                                     <span>•</span>
-                                    <span>Var: <strong>{totalsFeb.flex + totalsFeb.ment}h</strong></span>
+                                    <span>Var: <strong>{totalsMar.flex + totalsMar.ment}h</strong></span>
                                     <span>•</span>
-                                    <span>Fijo: <strong>{totalsFeb.gramosa}h</strong></span>
+                                    <span>Fijo: <strong>{totalsMar.gramosa}h</strong></span>
                                 </div>
                             </div>
                             <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600"><Icon name="activity" size={32} /></div>
@@ -248,25 +255,11 @@
                                 </tr>
                             </thead>
                             
-                            {/* Enero Group */}
-                            <tbody className="divide-y divide-slate-100 border-b-2 border-slate-200">
-                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Enero 2026</td></tr>
-                                {rowsJan.map((row, i) => {
-                                    const weeklyCost = (row.flex + row.ment) * HOURLY_RATE;
-                                    return (
-                                        <tr key={i} className="hover:bg-slate-50 transition-colors group">
-                                            <td className="px-6 py-4 font-medium text-slate-700 border-r border-slate-100">{row.week}</td>
-                                            <td className="px-6 py-4 text-slate-600 text-xs max-w-xs border-r border-slate-100">{row.activity}</td>
-                                            <td className="px-4 py-4 text-center font-bold text-slate-900 border-r border-slate-100 bg-slate-50/30">{row.gramosa + row.flex + row.ment} h</td>
-                                            <td className="px-4 py-4 text-center text-purple-700 font-medium bg-purple-50/10 border-r border-purple-50">{row.gramosa || '-'}</td>
-                                            <td className="px-4 py-4 text-center text-blue-700 font-medium bg-blue-50/10 border-r border-blue-50">{row.flex || '-'}</td>
-                                            <td className="px-4 py-4 text-center text-indigo-700 font-medium bg-indigo-50/10 border-r border-indigo-50">{row.ment || '-'}</td>
-                                            <td className="px-6 py-4 text-right text-emerald-800 bg-emerald-50/10 font-mono">{formatMoney(weeklyCost)}</td>
-                                        </tr>
-                                    );
-                                })}
+                            {/* Enero Group (Colapsado visualmente para espacio, opcional, pero aquí lo dejamos renderizado) */}
+                            <tbody className="divide-y divide-slate-100 border-b-2 border-slate-200 opacity-60 hover:opacity-100 transition-opacity">
+                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Enero 2026 (Cerrado)</td></tr>
                                 <tr className="bg-slate-100 font-bold text-slate-800">
-                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Total Enero</td>
+                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Subtotal Enero</td>
                                     <td className="px-4 py-3 text-center bg-slate-200">{totalsJan.total} h</td>
                                     <td className="px-4 py-3 text-center text-purple-900">{totalsJan.gramosa} h</td>
                                     <td className="px-4 py-3 text-center text-blue-900">{totalsJan.flex} h</td>
@@ -276,7 +269,7 @@
                             </tbody>
 
                             {/* Febrero Group */}
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-slate-100 border-b-2 border-slate-200">
                                 <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Febrero 2026</td></tr>
                                 {rowsFeb.map((row, i) => {
                                     const weeklyCost = (row.flex + row.ment) * HOURLY_RATE;
@@ -292,14 +285,33 @@
                                         </tr>
                                     );
                                 })}
-                                <tr className="bg-emerald-50/30 font-bold text-slate-800 border-t border-emerald-100">
-                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide text-emerald-900">Total Febrero</td>
-                                    <td className="px-4 py-3 text-center bg-emerald-100/50">{totalsFeb.total} h</td>
+                                <tr className="bg-slate-100 font-bold text-slate-800">
+                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Total Febrero</td>
+                                    <td className="px-4 py-3 text-center bg-slate-200">{totalsFeb.total} h</td>
                                     <td className="px-4 py-3 text-center text-purple-900">{totalsFeb.gramosa} h</td>
                                     <td className="px-4 py-3 text-center text-blue-900">{totalsFeb.flex} h</td>
                                     <td className="px-4 py-3 text-center text-indigo-900">{totalsFeb.ment} h</td>
                                     <td className="px-6 py-3 text-right text-emerald-800">{formatMoney(costFeb)}</td>
                                 </tr>
+                            </tbody>
+
+                            {/* Marzo Group */}
+                            <tbody className="divide-y divide-slate-100">
+                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest text-emerald-700">Marzo 2026</td></tr>
+                                {rowsMar.map((row, i) => {
+                                    const weeklyCost = (row.flex + row.ment) * HOURLY_RATE;
+                                    return (
+                                        <tr key={`mar-${i}`} className="hover:bg-slate-50 transition-colors group bg-emerald-50/10">
+                                            <td className="px-6 py-4 font-medium text-slate-800 border-r border-slate-100">{row.week}</td>
+                                            <td className="px-6 py-4 text-slate-700 text-xs max-w-xs border-r border-slate-100">{row.activity}</td>
+                                            <td className="px-4 py-4 text-center font-black text-slate-900 border-r border-slate-100 bg-slate-50/50">{row.gramosa + row.flex + row.ment} h</td>
+                                            <td className="px-4 py-4 text-center text-purple-700 font-medium border-r border-slate-100">{row.gramosa || '-'}</td>
+                                            <td className="px-4 py-4 text-center text-blue-700 font-medium border-r border-slate-100">{row.flex || '-'}</td>
+                                            <td className="px-4 py-4 text-center text-indigo-700 font-medium border-r border-slate-100">{row.ment || '-'}</td>
+                                            <td className="px-6 py-4 text-right text-emerald-800 font-mono font-bold">{formatMoney(weeklyCost)}</td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -310,7 +322,7 @@
                             <p className="text-xs font-bold uppercase tracking-widest mb-1 text-slate-400">Inversión Variable YTD</p>
                             <div className="flex items-baseline justify-end gap-2">
                                 <p className="text-2xl font-black">{formatMoney(grandTotalCost)}</p>
-                                <span className="text-sm font-medium text-slate-400">/ {totalsJan.flex+totalsJan.ment+totalsFeb.flex+totalsFeb.ment} HH</span>
+                                <span className="text-sm font-medium text-slate-400">/ {totalsJan.flex+totalsJan.ment+totalsFeb.flex+totalsFeb.ment+totalsMar.flex+totalsMar.ment} HH</span>
                             </div>
                         </div>
                     </div>
@@ -372,14 +384,14 @@
                                     </div>
                                     <Badge color="emerald">EN EJECUCIÓN</Badge>
                                 </div>
-                                <ProgressBar progress={76} label="194 / 256 HH" />
+                                <ProgressBar progress={78.5} label="201 / 256 HH" />
                             </Card>
 
                             <div className="grid gap-3">
                                 {[
-                                    { title: "SuKarne Póliza", sub: "Cierre Mes Consolidado", val: "40 HH YTD", icon: "shield", color: "text-amber-600", bg: "bg-amber-100" },
-                                    { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "63 HH YTD", icon: "users", color: "text-indigo-600", bg: "bg-indigo-100" },
-                                    { title: "Proyecto PFD", sub: "Alineación ADM Volteador", val: "19 HH YTD", icon: "activity", color: "text-purple-600", bg: "bg-purple-100" }
+                                    { title: "SuKarne Póliza", sub: "Contingencia & Stocks", val: "62 HH YTD", icon: "shield", color: "text-amber-600", bg: "bg-amber-100" },
+                                    { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "70 HH YTD", icon: "users", color: "text-indigo-600", bg: "bg-indigo-100" },
+                                    { title: "Proyecto PFD", sub: "Alineación ADM Volteador", val: "21 HH YTD", icon: "activity", color: "text-purple-600", bg: "bg-purple-100" }
                                 ].map((k, i) => (
                                     <div key={i} className="bg-white p-4 border border-slate-200 rounded-xl flex justify-between items-center shadow-sm hover:border-slate-300 transition-colors">
                                         <div className="flex items-center gap-3">
@@ -448,7 +460,7 @@
             <div className="grid lg:grid-cols-2 gap-8 animate-enter">
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
-                        <Icon name="bar-chart-3" className="text-blue-600" size={20} /> Análisis de Situación (Cierre Feb)
+                        <Icon name="bar-chart-3" className="text-blue-600" size={20} /> Análisis de Situación (Arranque Marzo)
                     </h3>
                     <div className="space-y-4">
                         {alignmentPoints.map((point, i) => (
@@ -473,7 +485,7 @@
                                 <div className="mt-1 text-emerald-600"><Icon name="check-circle" size={20} /></div>
                                 <div>
                                     <p className="text-xs font-bold text-emerald-800 uppercase mb-1">Logro Clave</p>
-                                    <p className="text-sm text-emerald-900 leading-snug">Cierre de mes ordenado. Apertura de nuevo requerimiento PFD ADM Volteador Celaya.</p>
+                                    <p className="text-sm text-emerald-900 leading-snug">Visita L5 Michoacán ejecutada. Gramosa supera el 78% demostrando constancia en la entrega técnica.</p>
                                 </div>
                             </div>
                         </Card>
@@ -481,8 +493,8 @@
                             <div className="flex gap-4">
                                 <div className="mt-1 text-blue-600"><Icon name="target" size={20} /></div>
                                 <div>
-                                    <p className="text-xs font-bold text-blue-800 uppercase mb-1">Foco Próxima Sem (Marzo)</p>
-                                    <p className="text-sm text-blue-900 leading-snug">Retomar viaje a Michoacán (USK L5) el 05/03 asegurando viabilidad y logística.</p>
+                                    <p className="text-xs font-bold text-blue-800 uppercase mb-1">Foco Próxima Sem (11)</p>
+                                    <p className="text-sm text-blue-900 leading-snug">Convertir interés de Alto Sano en PO y asegurar envíos de USK y ADM Volteador.</p>
                                 </div>
                             </div>
                         </Card>
@@ -491,7 +503,7 @@
                                 <div className="mt-1 text-red-600"><Icon name="alert-triangle" size={20} /></div>
                                 <div>
                                     <p className="text-xs font-bold text-red-800 uppercase mb-1">Atención / Riesgo</p>
-                                    <p className="text-sm text-red-900 leading-snug">Riesgo externo (seguridad) monitoreado activamente. Se ajustan cronogramas de campo en USK.</p>
+                                    <p className="text-sm text-red-900 leading-snug">Demanda extraordinaria por accidente en Durango. Controlar el alcance de la Póliza para no mermar la rentabilidad.</p>
                                 </div>
                             </div>
                         </Card>
@@ -502,16 +514,16 @@
 
         const ViewAgenda = () => (
             <div className="space-y-6 animate-enter">
-                <SectionHeader title="Agenda de Seguimiento" subtitle="Revisión Mensual (Cierre Febrero)" icon="clock" />
+                <SectionHeader title="Agenda de Seguimiento" subtitle="Revisión Semanal (07 Marzo)" icon="clock" />
                 
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite max-w-3xl mx-auto">
                     <div className="relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line">
                         {[
-                            { time: '10 min', title: 'Cierre Financiero Febrero', desc: 'Consolidación de mes completo (Sem 06 a 09) y facturación de horas.' },
-                            { time: '10 min', title: 'Nuevo ADM Volteador', desc: 'Revisión del avance de PFD y definición de alcance para cotización Celaya.' },
-                            { time: '5 min', title: 'Reprogramación USK', desc: 'Estatus de seguridad y confirmación de viaje para el 05/03.' },
-                            { time: '10 min', title: 'Corte Gramosa (76%)', desc: 'Entrega de mes y programación de recta final en marzo.' },
-                            { time: '5 min', title: 'Status Alto Sano', desc: 'Seguimiento a propuestas enviadas y vigentes.' }
+                            { time: '10 min', title: 'Cierre Sem 10', desc: 'Arranque agresivo de marzo ($27.9k variable / 38 HH totales).' },
+                            { time: '15 min', title: 'Contingencia Durango', desc: 'Impacto en horas Póliza y estrategia de atención al cliente.' },
+                            { time: '10 min', title: 'Levantamiento L5 USK', desc: 'Resultados de la visita y validación para iniciar cotización.' },
+                            { time: '5 min', title: 'Status Gramosa (78.5%)', desc: 'Avance de las 7h y confirmación de entregables próximos.' },
+                            { time: '5 min', title: 'Comercial Vigente', desc: 'Estatus de propuestas: Alto Sano, USK y ADM.' }
                         ].map((item, idx) => (
                             <div key={idx} className="relative pl-12 group">
                                 <div className="absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm"></div>
@@ -534,7 +546,7 @@
                         <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
                             <Icon name="bar-chart-3" className="text-blue-600" size={32} /> Cierres & Avance
                         </h3>
-                        <p className="text-slate-500 font-medium mt-1 ml-11">Corte Mensual (Cierre Febrero)</p>
+                        <p className="text-slate-500 font-medium mt-1 ml-11">Corte Semanal (Arranque Marzo - Sem 10)</p>
                     </div>
                     <Badge color="emerald">ESTATUS: ÓPTIMO</Badge>
                 </div>
@@ -544,11 +556,11 @@
                         <div className="flex items-start gap-5">
                             <div className="p-4 bg-emerald-50 rounded-2xl text-emerald-600 border border-emerald-100 shadow-inner"><Icon name="check-circle" size={32} /></div>
                             <div>
-                                <h3 className="font-bold text-lg text-slate-800 mb-3">Hitos Cumplidos (Feb)</h3>
+                                <h3 className="font-bold text-lg text-slate-800 mb-3">Hitos Cumplidos</h3>
                                 <ul className="text-sm text-slate-600 space-y-3">
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>ADM:</strong> Nuevo servicio Volteador iniciado.</li>
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>Póliza SK:</strong> Cierre de mes cuadrado (incl. Sab 28).</li>
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>GRAMOSA:</strong> 194h acumuladas (76%).</li>
+                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>USK L5:</strong> Levantamiento en Michoacán ejecutado.</li>
+                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>Póliza SK:</strong> Reacción efectiva ante accidente Durango.</li>
+                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>GRAMOSA:</strong> 201h acumuladas (78.5%).</li>
                                 </ul>
                             </div>
                         </div>
@@ -557,11 +569,11 @@
                         <div className="flex items-start gap-5">
                             <div className="p-4 bg-blue-50 rounded-2xl text-blue-600 border border-blue-100 shadow-inner"><Icon name="target" size={32} /></div>
                             <div>
-                                <h3 className="font-bold text-lg text-slate-800 mb-3">Foco Inicio Marzo</h3>
+                                <h3 className="font-bold text-lg text-slate-800 mb-3">Foco Semana 11</h3>
                                 <ul className="text-sm text-slate-600 space-y-3">
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">USK L5:</span> Ejecutar levantamiento 05/03.</li>
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">ADM Volteador:</span> Presentar PFD final.</li>
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Alto Sano:</span> Convertir cotización.</li>
+                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Cotización L5:</span> Procesar info Michoacán y enviar.</li>
+                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Contingencia SK:</span> Controlar HH invertidas en Dgo.</li>
+                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Comercial:</span> Forzar cierre Alto Sano y enviar L5.</li>
                                 </ul>
                             </div>
                         </div>
@@ -570,20 +582,20 @@
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-emerald-600 tracking-tighter">76%</div>
+                        <div className="text-4xl font-black text-emerald-600 tracking-tighter">78.5%</div>
                         <div className="text-xs font-bold text-emerald-800 uppercase tracking-widest mt-2 border-t border-emerald-200 pt-2">Avance Gramosa</div>
                     </div>
                     <div className="bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-blue-600 tracking-tighter">NUEVO</div>
-                        <div className="text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2">ADM Volteador</div>
+                        <div className="text-4xl font-black text-blue-600 tracking-tighter">PREP</div>
+                        <div className="text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2">Cotización USK L5</div>
                     </div>
-                    <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-indigo-600 tracking-tighter">63h</div>
-                        <div className="text-xs font-bold text-indigo-800 uppercase tracking-widest mt-2 border-t border-indigo-200 pt-2">Mentorías YTD</div>
+                    <div className="bg-amber-50 p-5 rounded-2xl border border-amber-200 text-center shadow-sm hover:shadow-md transition-shadow">
+                        <div className="text-4xl font-black text-amber-600 tracking-tighter">70h</div>
+                        <div className="text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2">Mentorías YTD</div>
                     </div>
                     <div className="bg-red-50 p-5 rounded-2xl border border-red-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-red-700 tracking-tighter">05/03</div>
-                        <div className="text-xs font-bold text-red-600 uppercase tracking-widest mt-2 border-t border-red-100 pt-2">Viaje USK Reprog.</div>
+                        <div className="text-4xl font-black text-red-700 tracking-tighter">DGO</div>
+                        <div className="text-xs font-bold text-red-600 uppercase tracking-widest mt-2 border-t border-red-100 pt-2">Atención Contin. SK</div>
                     </div>
                 </div>
             </div>
