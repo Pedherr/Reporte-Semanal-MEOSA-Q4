@@ -68,7 +68,7 @@
         };
 
         // --- CONFIGURACIÓN ---
-        const LAST_UPDATED = "14 de Marzo, 2026"; 
+        const LAST_UPDATED = "31 de Marzo, 2026"; 
         const HOURLY_RATE = 900; 
 
         // --- DATOS MAESTROS ---
@@ -86,41 +86,44 @@
             { week: 'Sem 08 (16-20 Feb)', gramosa: 14, flex: 21, ment: 6, activity: 'Gram(14), AltoSano(13+), SK/Ment.', status: 'Cerrado' },
             { week: 'Sem 09 (23-27 Feb)', gramosa: 10, flex: 24, ment: 6, activity: 'Gram(10), ADM Volt(13), SK(11 inc Sab).', status: 'Cerrado' },
 
-            // Marzo (En Curso)
+            // Marzo (Cerrado)
             { week: 'Sem 10 (02-06 Mar)', gramosa: 7, flex: 24, ment: 7, activity: 'SK(22 incl. Viaje L5 + Contin. Dgo), Ment(7), Gram(7), ADM(2).', status: 'Cerrado' },
-            { week: 'Sem 11 (09-13 Mar)', gramosa: 12, flex: 32, ment: 4, activity: 'Gram(12), PFD/L5/SK(32), Ment(4).', status: 'Cierre Sem' }
+            { week: 'Sem 11 (09-13 Mar)', gramosa: 12, flex: 30, ment: 4, activity: 'Gram(12), PFD/L5/SK(30), Ment(4).', status: 'Cerrado' },
+            { week: 'Sem 12 (16-20 Mar)', gramosa: 10, flex: 16, ment: 11, activity: 'Gram(10), Poliza SK(16), Ment Planner(11).', status: 'Cerrado' },
+            { week: 'Sem 13 (23-27 Mar)', gramosa: 20, flex: 25, ment: 4, activity: 'Gram(20) Entrega 95%, Hosokawa(11), SK(14), Ment(4).', status: 'Cerrado' },
+            { week: 'Sem 14 (30-31 Mar)', gramosa: 0, flex: 4, ment: 6, activity: 'Póliza SK(4), Mentoría Planner(6).', status: 'Cierre Mes' }
         ];
 
         const portfolioData = {
           strategic: [
-            { id: 'altosano-med', client: 'ALTO SANO', title: 'Instalación Medidores Flujo', status: 'ENTREGADA', note: 'Propuesta enviada 30/01.', icon: 'check-circle', color: 'emerald' },
-            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'EN ESPERA', note: 'Aún sin respuesta del cliente.', icon: 'clock', color: 'amber' },
-            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'COTIZANDO L5', note: 'Info compartida con equipo de cotización.', icon: 'file-text', color: 'blue' },
-            { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'VIGENTE', note: 'Propuesta activa.', icon: 'layout', color: 'blue' },
-            { id: 'adm-volteador', client: 'ADM', title: 'Volteador Celaya', status: 'COTIZANDO', note: 'Info lista y PFD divulgado al equipo.', icon: 'file-text', color: 'blue' }
+            { id: 'adm-volteador', client: 'ADM', title: 'Volteador Celaya', status: 'ENVIADA 19/03', note: 'Cotización enviada. En seguimiento comercial.', icon: 'send', color: 'emerald' },
+            { id: 'hosokawa-minsa', client: 'MINSA', title: 'Propuesta Hosokawa', status: 'ENVIADA 31/03', note: 'Cotización entregada. En seguimiento comercial.', icon: 'send', color: 'emerald' },
+            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'MITIGACIÓN', note: 'Explicación de situación actual y plan de mitigación de suministros.', icon: 'shield-alert', color: 'amber' },
+            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'RECHAZADA', note: 'Descartada por cliente (Factor costo).', icon: 'x-circle', color: 'slate' },
+            { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'RECHAZADA', note: 'Descartada por cliente (Factor costo).', icon: 'x-circle', color: 'slate' }
           ],
           approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Feb 2026', note: 'Avance sólido 83% (213 HH). Recta Final.', icon: 'check-circle', progress: 83, totalHH: '213 / 256 HH' }
+            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Abr 2026', note: 'Entregado 95% del proyecto. En fase de cierre.', icon: 'check-circle', progress: 95, totalHH: '243 / 256 HH' }
           ],
           recurring: [
-            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Atención DGO', note: 'Reporte seguridad/elevador Dgo en proceso de envío.', icon: 'shield' },
-            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Activo', note: 'Primer ejercicio de PFD divulgado al equipo.', icon: 'activity' },
-            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'En Curso', note: '4h (Foco exclusivo Planner).', icon: 'users' }
+            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Cierre de mes (incluye 30 y 31 Mar).', icon: 'shield' },
+            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Activo', note: 'Alianza técnica con Hosokawa (DA MINSA).', icon: 'activity' },
+            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Intenso', note: 'Foco sostenido en Planner (Germán).', icon: 'users' }
           ]
         };
 
         const modelsData = [
-            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: 'check-circle', items: [{ label: 'GRAMOSA', value: 'Avance: 213 HH (83%)' }] },
-            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: 'clipboard-list', items: [{ label: "USK (Línea 5)", status: 'COTIZANDO' }, { label: 'ADM Volteador', status: 'COTIZANDO' }, { label: "Alto Sano (Pan)", status: 'EN ESPERA' }] },
-            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: 'shield', items: [{ label: 'Marzo (Sem 10-11)', value: '56 HH Flexibles' }, { label: 'PFD + L5', value: 'Estructuración completada' }, { label: 'SuKarne Póliza', value: 'Foco en Reportes Dgo' }] },
-            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: 'graduation-cap', items: [{ label: 'Marzo (Sem 10-11)', value: '11 HH Mentoría' }, { label: 'Total YTD 2026', value: '74 HH Mentoría' }, { label: 'Foco', value: 'Planner exclusivo' }] }
+            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: 'check-circle', items: [{ label: 'GRAMOSA', value: 'Avance: 243 HH (95%)' }] },
+            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: 'clipboard-list', items: [{ label: 'ADM Volteador', status: 'ENVIADA 19/03' }, { label: 'MINSA (Hosokawa)', status: 'ENVIADA 31/03' }, { label: "USK (Línea 5)", status: 'MITIGACIÓN' }] },
+            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: 'shield', items: [{ label: 'Total Marzo', value: '99 HH Flexibles' }, { label: 'SuKarne Póliza', value: 'Cierre Mes Consolidado' }, { label: 'MINSA / Hosokawa', value: '11 HH (Nueva Alianza)' }] },
+            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: 'graduation-cap', items: [{ label: 'Total Marzo', value: '32 HH Mentoría' }, { label: 'Total YTD 2026', value: '95 HH Mentoría' }, { label: 'Foco actual', value: 'Planner (Formatos/Gestión)' }] }
         ];
 
         const alignmentPoints = [
-            { title: 'Avance de Cotizaciones', text: 'Excelente desbloqueo: La información del Levantamiento L5 (USK) y ADM Volteador ya fue procesada y compartida con el equipo de cotizaciones.' },
-            { title: 'Contingencia Durango', text: 'Se invirtieron horas de Póliza en elaborar el reporte de seguridad por accidente y daño del elevador. Pendiente su envío formal al cliente.' },
-            { title: 'Consolidación Gramosa', text: 'Se sumaron 12 HH en la semana, alcanzando el 83% de avance. Entramos en la fase de cierre de proyecto.' },
-            { title: 'Desarrollo Interno', text: 'La mentoría se enfocó exclusivamente en el Planner (Germán) y se logró la divulgación del primer ejercicio PFD al equipo operativo.' }
+            { title: 'Mitigación Activa USK', text: 'Ante la suspensión de la L5 por falta de refacciones, se toma liderazgo: entregamos explicación de la situación actual y un plan de mitigación de suministros para destrabar el avance.' },
+            { title: 'Ofensiva Comercial Minsa', text: 'Cierre de mes con envío de propuesta técnica para MINSA el martes 31/03, capitalizando la alianza estratégica con Hosokawa.' },
+            { title: 'Hito Gramosa (95%)', text: 'Se realizó la entrega del 95% del proyecto el 24/03 (Estructura MP y PT). Quedan 13 horas presupuestadas para la liquidación total.' },
+            { title: 'Precisión Financiera Marzo', text: 'Corte exacto al 31/03. Un mes récord de rendimiento con 131 HH Variables facturables, totalizando $117,900 MXN.' }
         ];
 
         // --- UTILS ---
@@ -195,7 +198,7 @@
             const totalsFeb = calculateTotals(rowsFeb);
             const costFeb = (totalsFeb.flex + totalsFeb.ment) * HOURLY_RATE;
 
-            // Marzo (Sem 10+)
+            // Marzo (Sem 10-14)
             const rowsMar = financialHistory.slice(9);
             const totalsMar = calculateTotals(rowsMar);
             const costMar = (totalsMar.flex + totalsMar.ment) * HOURLY_RATE;
@@ -206,20 +209,18 @@
 
             return (
                 <div className="space-y-8 animate-enter">
-                    <SectionHeader title="Control Financiero" subtitle="Estado de Resultados Operativo (Corte 14 Marzo)" icon="calculator" />
+                    <SectionHeader title="Control Financiero" subtitle="Estado de Resultados Operativo (Cierre 31 Marzo)" icon="calculator" />
                     
                     {/* Summary Cards */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-slate-800 rounded-xl p-6 text-white shadow-xl flex justify-between items-center">
                             <div>
-                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Cierre Febrero</p>
-                                <h3 className="text-3xl font-black">{formatMoney(costFeb)}</h3>
+                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Acumulado Ene-Feb</p>
+                                <h3 className="text-3xl font-black">{formatMoney(costJan + costFeb)}</h3>
                                 <div className="flex gap-3 mt-2 text-xs text-slate-300">
-                                    <span>Total: <strong>{totalsFeb.total}h</strong></span>
+                                    <span>Var: <strong>{totalsJan.flex + totalsJan.ment + totalsFeb.flex + totalsFeb.ment}h</strong></span>
                                     <span>•</span>
-                                    <span>Var: <strong>{totalsFeb.flex + totalsFeb.ment}h</strong></span>
-                                    <span>•</span>
-                                    <span>Fijo: <strong>{totalsFeb.gramosa}h</strong></span>
+                                    <span>Fijo: <strong>{totalsJan.gramosa + totalsFeb.gramosa}h</strong></span>
                                 </div>
                             </div>
                             <div className="p-3 bg-white/10 rounded-lg"><Icon name="check-circle" size={32} /></div>
@@ -227,7 +228,7 @@
 
                         <div className="bg-white border border-emerald-200 rounded-xl p-6 shadow-md flex justify-between items-center">
                             <div>
-                                <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1">Marzo (Sem 10-11)</p>
+                                <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1">Cierre Marzo Definitivo</p>
                                 <h3 className="text-3xl font-black text-slate-800">{formatMoney(costMar)}</h3>
                                 <div className="flex gap-3 mt-2 text-xs text-slate-500">
                                     <span>Total: <strong>{totalsMar.total}h</strong></span>
@@ -256,29 +257,16 @@
                                 </tr>
                             </thead>
                             
-                            {/* Enero Group */}
+                            {/* Enero/Febrero Group (Colapsado visualmente para espacio) */}
                             <tbody className="divide-y divide-slate-100 border-b-2 border-slate-200 opacity-60 hover:opacity-100 transition-opacity">
-                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Enero 2026 (Cerrado)</td></tr>
+                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Enero & Febrero (Cerrados)</td></tr>
                                 <tr className="bg-slate-100 font-bold text-slate-800">
-                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Subtotal Enero</td>
-                                    <td className="px-4 py-3 text-center bg-slate-200">{totalsJan.total} h</td>
-                                    <td className="px-4 py-3 text-center text-purple-900">{totalsJan.gramosa} h</td>
-                                    <td className="px-4 py-3 text-center text-blue-900">{totalsJan.flex} h</td>
-                                    <td className="px-4 py-3 text-center text-indigo-900">{totalsJan.ment} h</td>
-                                    <td className="px-6 py-3 text-right text-emerald-800">{formatMoney(costJan)}</td>
-                                </tr>
-                            </tbody>
-
-                            {/* Febrero Group */}
-                            <tbody className="divide-y divide-slate-100 border-b-2 border-slate-200 opacity-80 hover:opacity-100 transition-opacity">
-                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Febrero 2026 (Cerrado)</td></tr>
-                                <tr className="bg-slate-100 font-bold text-slate-800">
-                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Subtotal Febrero</td>
-                                    <td className="px-4 py-3 text-center bg-slate-200">{totalsFeb.total} h</td>
-                                    <td className="px-4 py-3 text-center text-purple-900">{totalsFeb.gramosa} h</td>
-                                    <td className="px-4 py-3 text-center text-blue-900">{totalsFeb.flex} h</td>
-                                    <td className="px-4 py-3 text-center text-indigo-900">{totalsFeb.ment} h</td>
-                                    <td className="px-6 py-3 text-right text-emerald-800">{formatMoney(costFeb)}</td>
+                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Acumulado Ene-Feb</td>
+                                    <td className="px-4 py-3 text-center bg-slate-200">{totalsJan.total + totalsFeb.total} h</td>
+                                    <td className="px-4 py-3 text-center text-purple-900">{totalsJan.gramosa + totalsFeb.gramosa} h</td>
+                                    <td className="px-4 py-3 text-center text-blue-900">{totalsJan.flex + totalsFeb.flex} h</td>
+                                    <td className="px-4 py-3 text-center text-indigo-900">{totalsJan.ment + totalsFeb.ment} h</td>
+                                    <td className="px-6 py-3 text-right text-emerald-800">{formatMoney(costJan + costFeb)}</td>
                                 </tr>
                             </tbody>
 
@@ -299,6 +287,14 @@
                                         </tr>
                                     );
                                 })}
+                                <tr className="bg-emerald-100 font-bold text-emerald-900">
+                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Cierre Total Marzo</td>
+                                    <td className="px-4 py-3 text-center bg-emerald-200/50">{totalsMar.total} h</td>
+                                    <td className="px-4 py-3 text-center">{totalsMar.gramosa} h</td>
+                                    <td className="px-4 py-3 text-center">{totalsMar.flex} h</td>
+                                    <td className="px-4 py-3 text-center">{totalsMar.ment} h</td>
+                                    <td className="px-6 py-3 text-right">{formatMoney(costMar)}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -339,7 +335,7 @@
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             {portfolioData.strategic.map((p, i) => (
-                                <Card key={i} className={`p-5 border-l-4 ${p.color === 'red' ? 'border-l-red-500' : p.color === 'cyan' ? 'border-l-cyan-500' : p.color === 'amber' ? 'border-l-amber-500' : p.color === 'purple' ? 'border-l-purple-500' : p.color === 'emerald' ? 'border-l-emerald-500' : 'border-l-blue-500'}`}>
+                                <Card key={i} className={`p-5 border-l-4 ${p.color === 'red' ? 'border-l-red-500' : p.color === 'cyan' ? 'border-l-cyan-500' : p.color === 'amber' ? 'border-l-amber-500' : p.color === 'purple' ? 'border-l-purple-500' : p.color === 'emerald' ? 'border-l-emerald-500' : p.color === 'slate' ? 'border-l-slate-400 opacity-70' : 'border-l-blue-500'}`}>
                                     <div className="flex justify-between items-start mb-3 pl-2">
                                         <div className="flex items-center gap-2">
                                             <Icon name={p.icon} size={20} className="text-slate-400" />
@@ -371,14 +367,14 @@
                                     </div>
                                     <Badge color="emerald">EN EJECUCIÓN</Badge>
                                 </div>
-                                <ProgressBar progress={83} label="213 / 256 HH" />
+                                <ProgressBar progress={95} label="243 / 256 HH" />
                             </Card>
 
                             <div className="grid gap-3">
                                 {[
-                                    { title: "SuKarne Póliza", sub: "Atención Contingencia", val: "80 HH YTD", icon: "shield", color: "text-amber-600", bg: "bg-amber-100" },
-                                    { title: "Mentorías PH", sub: "Planner/Coord/Ops", val: "74 HH YTD", icon: "users", color: "text-indigo-600", bg: "bg-indigo-100" },
-                                    { title: "Proyecto PFD", sub: "Cotizaciones Activas", val: "32 HH YTD", icon: "activity", color: "text-purple-600", bg: "bg-purple-100" }
+                                    { title: "SuKarne Póliza", sub: "Documentación y Reportes", val: "119 HH YTD", icon: "shield", color: "text-amber-600", bg: "bg-amber-100" },
+                                    { title: "Mentorías PH", sub: "Planner & Operaciones", val: "95 HH YTD", icon: "users", color: "text-indigo-600", bg: "bg-indigo-100" },
+                                    { title: "Alianza Hosokawa", sub: "Cotización MINSA", val: "11 HH YTD", icon: "activity", color: "text-purple-600", bg: "bg-purple-100" }
                                 ].map((k, i) => (
                                     <div key={i} className="bg-white p-4 border border-slate-200 rounded-xl flex justify-between items-center shadow-sm hover:border-slate-300 transition-colors">
                                         <div className="flex items-center gap-3">
@@ -428,7 +424,9 @@
                                                 <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
                                                     item.status === 'NUEVO' ? 'bg-cyan-100 text-cyan-700 border-cyan-200' :
                                                     item.status.includes('80%') ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                    item.status === 'ENTREGADA' || item.status === 'ENVIADA' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                                                    item.status === 'ENTREGADA' || item.status === 'ENVIADA 19/03' || item.status === 'ENVIADA 31/03' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
+                                                    item.status === 'MITIGACIÓN' ? 'bg-amber-100 text-amber-800 border-amber-200' :
+                                                    item.status === 'RECHAZADAS' ? 'bg-slate-100 text-slate-600 border-slate-200' :
                                                     'bg-white text-slate-600 border-slate-200'
                                                 }`}>{item.status}</span>
                                                 {item.date && <p className="text-[10px] text-slate-400 mt-1">{item.date}</p>}
@@ -447,7 +445,7 @@
             <div className="grid lg:grid-cols-2 gap-8 animate-enter">
                 <div>
                     <h3 className="text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
-                        <Icon name="bar-chart-3" className="text-blue-600" size={20} /> Análisis de Situación (Sem 11)
+                        <Icon name="bar-chart-3" className="text-blue-600" size={20} /> Análisis de Situación (Cierre Marzo)
                     </h3>
                     <div className="space-y-4">
                         {alignmentPoints.map((point, i) => (
@@ -472,16 +470,16 @@
                                 <div className="mt-1 text-emerald-600"><Icon name="check-circle" size={20} /></div>
                                 <div>
                                     <p className="text-xs font-bold text-emerald-800 uppercase mb-1">Logro Operativo</p>
-                                    <p className="text-sm text-emerald-900 leading-snug">Se destrabó la información (PFDs) para las cotizaciones de ADM y USK L5, pasándola al equipo responsable.</p>
+                                    <p className="text-sm text-emerald-900 leading-snug">Se procesaron y enviaron formalmente las cotizaciones de ADM Volteador y MINSA. Gramosa casi liquidado (95%).</p>
                                 </div>
                             </div>
                         </Card>
-                        <Card className="bg-blue-50 border-blue-200 !p-4 !shadow-none">
+                        <Card className="bg-amber-50 border-amber-200 !p-4 !shadow-none">
                             <div className="flex gap-4">
-                                <div className="mt-1 text-blue-600"><Icon name="target" size={20} /></div>
+                                <div className="mt-1 text-amber-600"><Icon name="shield-alert" size={20} /></div>
                                 <div>
-                                    <p className="text-xs font-bold text-blue-800 uppercase mb-1">Foco Próxima Sem (12)</p>
-                                    <p className="text-sm text-blue-900 leading-snug">Asegurar envío del Reporte de Durango al cliente. Presionar respuesta comercial de Alto Sano.</p>
+                                    <p className="text-xs font-bold text-amber-800 uppercase mb-1">Mitigación SuKarne L5</p>
+                                    <p className="text-sm text-amber-900 leading-snug">Ante la pausa del cliente por refacciones, MEOSA toma la iniciativa presentando un plan de mitigación de suministros para destrabar la ingeniería.</p>
                                 </div>
                             </div>
                         </Card>
@@ -489,8 +487,8 @@
                             <div className="flex gap-4">
                                 <div className="mt-1 text-red-600"><Icon name="alert-triangle" size={20} /></div>
                                 <div>
-                                    <p className="text-xs font-bold text-red-800 uppercase mb-1">Atención / Riesgo</p>
-                                    <p className="text-sm text-red-900 leading-snug">Gramosa llega a su recta final operativa (83%). Monitorear que no queden 'cabos sueltos' técnicos.</p>
+                                    <p className="text-xs font-bold text-red-800 uppercase mb-1">Atención / Riesgo de Suministro</p>
+                                    <p className="text-sm text-red-900 leading-snug">El caso USK demuestra que no podemos ser rehenes operativos de la proveeduría externa. Hay que aislar el valor de la ingeniería.</p>
                                 </div>
                             </div>
                         </Card>
@@ -501,16 +499,16 @@
 
         const ViewAgenda = () => (
             <div className="space-y-6 animate-enter">
-                <SectionHeader title="Agenda de Seguimiento" subtitle="Revisión Semanal (14 Marzo)" icon="clock" />
+                <SectionHeader title="Agenda de Seguimiento" subtitle="Revisión Mensual (Cierre Marzo)" icon="clock" />
                 
                 <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite max-w-3xl mx-auto">
                     <div className="relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line">
                         {[
-                            { time: '10 min', title: 'Carga Sem 11 (48 HH)', desc: 'Fuerte volumen operativo ($32.4k variable facturable). Mucho trabajo en gabinete PFD.' },
-                            { time: '10 min', title: 'Cotizaciones L5 y ADM', desc: 'Revisión del estatus del equipo de cotizadores con la info entregada.' },
-                            { time: '10 min', title: 'Reporte Durango SK', desc: 'Revisión final del reporte de seguridad del accidente previo a su envío al cliente.' },
-                            { time: '10 min', title: 'Avance Gramosa (83%)', desc: 'Entramos a la recta final. Coordinación de últimas HH y cierre de entregables.' },
-                            { time: '5 min', title: 'Seguimiento Comercial', desc: 'Estrategia para obtener respuesta de Alto Sano.' }
+                            { time: '10 min', title: 'Cierre Financiero Marzo', desc: 'Validación de 131 HH Variables en el mes ($117.9k MXN). Corrección fina aplicada.' },
+                            { time: '15 min', title: 'Plan de Mitigación USK', desc: 'Revisión del documento de mitigación de suministros para destrabar la L5.' },
+                            { time: '10 min', title: 'Nuevas Cotizaciones (MINSA / ADM)', desc: 'Estrategia de seguimiento a las propuestas enviadas el 19/03 y 31/03.' },
+                            { time: '10 min', title: 'Cierre Gramosa (95%)', desc: 'Revisión de lo entregado el 24/03 y plan de aterrizaje para el 5% final en abril.' },
+                            { time: '5 min', title: 'Lecciones Aprendidas', desc: 'Post-mortem rápido sobre el rechazo por precio en Alto Sano y ADM.' }
                         ].map((item, idx) => (
                             <div key={idx} className="relative pl-12 group">
                                 <div className="absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm"></div>
@@ -533,7 +531,7 @@
                         <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
                             <Icon name="bar-chart-3" className="text-blue-600" size={32} /> Cierres & Avance
                         </h3>
-                        <p className="text-slate-500 font-medium mt-1 ml-11">Corte Semanal (Sem 11 - 14 Marzo)</p>
+                        <p className="text-slate-500 font-medium mt-1 ml-11">Corte Mensual (Cierre Total Marzo)</p>
                     </div>
                     <Badge color="emerald">ESTATUS: ÓPTIMO</Badge>
                 </div>
@@ -545,9 +543,9 @@
                             <div>
                                 <h3 className="font-bold text-lg text-slate-800 mb-3">Hitos Cumplidos</h3>
                                 <ul className="text-sm text-slate-600 space-y-3">
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>USK & ADM:</strong> Info PFD compartida a cotizadores.</li>
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>Equipo:</strong> Divulgación 1er Ejercicio PFD.</li>
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>GRAMOSA:</strong> 213h acumuladas (83%).</li>
+                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>MINSA:</strong> Propuesta Hosokawa enviada (31/03).</li>
+                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>USK L5:</strong> Se entregó Plan de Mitigación al cliente.</li>
+                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>GRAMOSA:</strong> 243h acumuladas (95%).</li>
                                 </ul>
                             </div>
                         </div>
@@ -556,11 +554,11 @@
                         <div className="flex items-start gap-5">
                             <div className="p-4 bg-blue-50 rounded-2xl text-blue-600 border border-blue-100 shadow-inner"><Icon name="target" size={32} /></div>
                             <div>
-                                <h3 className="font-bold text-lg text-slate-800 mb-3">Foco Semana 12</h3>
+                                <h3 className="font-bold text-lg text-slate-800 mb-3">Foco Inicio Abril</h3>
                                 <ul className="text-sm text-slate-600 space-y-3">
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Cotizaciones:</span> Presionar envío L5 y Volteador.</li>
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">SuKarne:</span> Enviar reporte Accidente Durango.</li>
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Alto Sano:</span> Buscar respuesta de cliente.</li>
+                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Cotizaciones:</span> Hacer seguimiento a MINSA y ADM.</li>
+                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">SuKarne:</span> Monitorear respuesta al Plan de Mitigación.</li>
+                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Gramosa:</span> Liquidar el 5% final operativo.</li>
                                 </ul>
                             </div>
                         </div>
@@ -569,20 +567,20 @@
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                     <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-emerald-600 tracking-tighter">83%</div>
+                        <div className="text-4xl font-black text-emerald-600 tracking-tighter">95%</div>
                         <div className="text-xs font-bold text-emerald-800 uppercase tracking-widest mt-2 border-t border-emerald-200 pt-2">Avance Gramosa</div>
                     </div>
                     <div className="bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-blue-600 tracking-tighter">COTIZ.</div>
-                        <div className="text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2">ADM y USK L5</div>
+                        <div className="text-4xl font-black text-blue-600 tracking-tighter">ENVIADA</div>
+                        <div className="text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2">Propuesta MINSA</div>
                     </div>
                     <div className="bg-amber-50 p-5 rounded-2xl border border-amber-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-amber-600 tracking-tighter">74h</div>
-                        <div className="text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2">Mentorías YTD</div>
+                        <div className="text-4xl font-black text-amber-600 tracking-tighter">PLAN</div>
+                        <div className="text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2">Mitigación USK L5</div>
                     </div>
                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-slate-700 tracking-tighter">ESPERA</div>
-                        <div className="text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2">Estatus Alto Sano</div>
+                        <div className="text-4xl font-black text-slate-700 tracking-tighter">131h</div>
+                        <div className="text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2">Cierre Var. Marzo</div>
                     </div>
                 </div>
             </div>
