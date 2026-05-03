@@ -3,678 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MEOSA 2026 | Centro de Mando Estratégico</title>
-    
-    <!-- Tailwind CSS -->
+    <title>PH Command Center - MEOSA Abril 2026</title>
+    <!-- Cargando Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- React & Babel (Motor Robusto UMD) -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <!-- Fuente Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ph-navy': '#123A5B',
+                        'ph-gold': '#FFA726',
+                        'ph-success': '#4CAF50',
+                        'ph-hosokawa': '#E30613',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        
-        .animate-enter { animation: enter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        @keyframes enter { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        .card-elite {
-            background-color: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            transition: all 0.2s ease-in-out;
-        }
-        .card-elite:hover {
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transform: translateY(-2px);
-            border-color: #cbd5e1;
-        }
-
-        .timeline-line::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background-color: #e2e8f0;
-        }
-        
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
+        body { background-color: #f1f5f9; color: #123A5B; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .evidence-card:hover { transform: translateY(-2px); transition: all 0.3s ease; }
+        .header-gradient { background: linear-gradient(135deg, #123A5B 0%, #0a263d 100%); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="p-2 md:p-8">
 
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        // --- ICONOS GLOBALES ---
-        const Icon = ({ name, size = 18, className = "" }) => {
-            useEffect(() => {
-                if (window.lucide) window.lucide.createIcons();
-            }, [name]); 
-            return <i data-lucide={name} width={size} height={size} className={className}></i>;
-        };
-
-        // --- CONFIGURACIÓN ---
-        const LAST_UPDATED = "31 de Marzo, 2026"; 
-        const HOURLY_RATE = 900; 
-
-        // --- DATOS MAESTROS ---
-        const financialHistory = [
-            // Enero (Cerrado)
-            { week: 'Sem 01 (02-03 Ene)', gramosa: 0, flex: 0, ment: 1, activity: 'Inicio Año: Mentoría Edson.', status: 'Cerrado' },
-            { week: 'Sem 02 (05-09 Ene)', gramosa: 6, flex: 0, ment: 9, activity: 'Gramosa (6h), Foco Planner.', status: 'Cerrado' },
-            { week: 'Sem 03 (12-16 Ene)', gramosa: 10, flex: 4, ment: 6, activity: 'Gramosa(10), PFD(3), SK(1), Ment(6).', status: 'Cerrado' },
-            { week: 'Sem 04 (19-23 Ene)', gramosa: 14, flex: 7, ment: 9, activity: 'Gramosa(14), SK(7), Ment(9).', status: 'Cerrado' },
-            { week: 'Sem 05 (26-30 Ene)', gramosa: 12, flex: 5, ment: 10, activity: 'Gramosa(12), Flex(5), Ment(10).', status: 'Cerrado' },
-            
-            // Febrero (Cerrado)
-            { week: 'Sem 06 (02-06 Feb)', gramosa: 6, flex: 11, ment: 7, activity: 'USK Lev.(6), SK Pol.(5), Gram(6), Ment(7).', status: 'Cerrado' },
-            { week: 'Sem 07 (09-13 Feb)', gramosa: 10, flex: 9, ment: 9, activity: 'Gram(10) Elec/Auto, SK(9) GPT ISO, Ment(9).', status: 'Cerrado' },
-            { week: 'Sem 08 (16-20 Feb)', gramosa: 14, flex: 21, ment: 6, activity: 'Gram(14), AltoSano(13+), SK/Ment.', status: 'Cerrado' },
-            { week: 'Sem 09 (23-27 Feb)', gramosa: 10, flex: 24, ment: 6, activity: 'Gram(10), ADM Volt(13), SK(11 inc Sab).', status: 'Cerrado' },
-
-            // Marzo (Cerrado)
-            { week: 'Sem 10 (02-06 Mar)', gramosa: 7, flex: 24, ment: 7, activity: 'SK(22 incl. Viaje L5 + Contin. Dgo), Ment(7), Gram(7), ADM(2).', status: 'Cerrado' },
-            { week: 'Sem 11 (09-13 Mar)', gramosa: 12, flex: 30, ment: 4, activity: 'Gram(12), PFD/L5/SK(30), Ment(4).', status: 'Cerrado' },
-            { week: 'Sem 12 (16-20 Mar)', gramosa: 10, flex: 16, ment: 11, activity: 'Gram(10), Poliza SK(16), Ment Planner(11).', status: 'Cerrado' },
-            { week: 'Sem 13 (23-27 Mar)', gramosa: 20, flex: 25, ment: 4, activity: 'Gram(20) Entrega 95%, Hosokawa(11), SK(14), Ment(4).', status: 'Cerrado' },
-            { week: 'Sem 14 (30-31 Mar)', gramosa: 0, flex: 4, ment: 6, activity: 'Póliza SK(4), Mentoría Planner(6).', status: 'Cierre Mes' }
-        ];
-
-        const portfolioData = {
-          strategic: [
-            { id: 'adm-volteador', client: 'ADM', title: 'Volteador Celaya', status: 'ENVIADA 19/03', note: 'Cotización enviada. En seguimiento comercial.', icon: 'send', color: 'emerald' },
-            { id: 'hosokawa-minsa', client: 'MINSA', title: 'Propuesta Hosokawa', status: 'ENVIADA 31/03', note: 'Cotización entregada. En seguimiento comercial.', icon: 'send', color: 'emerald' },
-            { id: 'sukarne', client: 'SuKarne', title: 'Soporte Universidad SK', status: 'MITIGACIÓN', note: 'Explicación de situación actual y plan de mitigación de suministros.', icon: 'shield-alert', color: 'amber' },
-            { id: 'altosano-pan', client: 'ALTO SANO', title: 'Instalación de Paneles', status: 'RECHAZADA', note: 'Descartada por cliente (Factor costo).', icon: 'x-circle', color: 'slate' },
-            { id: 'adm-planos', client: 'ADM', title: 'Levantamiento Planos', status: 'RECHAZADA', note: 'Descartada por cliente (Factor costo).', icon: 'x-circle', color: 'slate' }
-          ],
-          approved: [
-            { id: 'gramosa', client: 'GRAMOSA', title: 'Ingeniería Consultoría', status: 'En Ejecución', deadline: 'Abr 2026', note: 'Entregado 95% del proyecto. En fase de cierre.', icon: 'check-circle', progress: 95, totalHH: '243 / 256 HH' }
-          ],
-          recurring: [
-            { id: 'poliza', client: 'SuKarne', title: 'Póliza Mantenimiento', status: 'Activo', note: 'Cierre de mes (incluye 30 y 31 Mar).', icon: 'shield' },
-            { id: 'pfd', client: 'MEOSA', title: 'Proyecto PFD', status: 'Activo', note: 'Alianza técnica con Hosokawa (DA MINSA).', icon: 'activity' },
-            { id: 'mentoria', client: 'MEOSA', title: 'Mentorías Internas', status: 'Intenso', note: 'Foco sostenido en Planner (Germán).', icon: 'users' }
-          ]
-        };
-
-        const modelsData = [
-            { type: 'Proyecto Cerrado', desc: 'Entregables + Hitos (Fijo)', color: 'bg-emerald-500', text: 'text-emerald-700', bg: 'bg-emerald-50', icon: 'check-circle', items: [{ label: 'GRAMOSA', value: 'Avance: 243 HH (95%)' }] },
-            { type: 'Gestión Cotizaciones', desc: 'Pipeline Comercial', color: 'bg-blue-500', text: 'text-blue-700', bg: 'bg-blue-50', icon: 'clipboard-list', items: [{ label: 'ADM Volteador', status: 'ENVIADA 19/03' }, { label: 'MINSA (Hosokawa)', status: 'ENVIADA 31/03' }, { label: "USK (Línea 5)", status: 'MITIGACIÓN' }] },
-            { type: 'HH Consumidas', desc: 'Póliza / Soporte (Variable)', color: 'bg-amber-500', text: 'text-amber-700', bg: 'bg-amber-50', icon: 'shield', items: [{ label: 'Total Marzo', value: '99 HH Flexibles' }, { label: 'SuKarne Póliza', value: 'Cierre Mes Consolidado' }, { label: 'MINSA / Hosokawa', value: '11 HH (Nueva Alianza)' }] },
-            { type: 'Mentorías', desc: 'Desarrollo Roles (Variable)', color: 'bg-indigo-500', text: 'text-indigo-700', bg: 'bg-indigo-50', icon: 'graduation-cap', items: [{ label: 'Total Marzo', value: '32 HH Mentoría' }, { label: 'Total YTD 2026', value: '95 HH Mentoría' }, { label: 'Foco actual', value: 'Planner (Formatos/Gestión)' }] }
-        ];
-
-        const alignmentPoints = [
-            { title: 'Mitigación Activa USK', text: 'Ante la suspensión de la L5 por falta de refacciones, se toma liderazgo: entregamos explicación de la situación actual y un plan de mitigación de suministros para destrabar el avance.' },
-            { title: 'Ofensiva Comercial Minsa', text: 'Cierre de mes con envío de propuesta técnica para MINSA el martes 31/03, capitalizando la alianza estratégica con Hosokawa.' },
-            { title: 'Hito Gramosa (95%)', text: 'Se realizó la entrega del 95% del proyecto el 24/03 (Estructura MP y PT). Quedan 13 horas presupuestadas para la liquidación total.' },
-            { title: 'Precisión Financiera Marzo', text: 'Corte exacto al 31/03. Un mes récord de rendimiento con 131 HH Variables facturables, totalizando $117,900 MXN.' }
-        ];
-
-        // --- UTILS ---
-        const formatMoney = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
-
-        // --- COMPONENTES UI ---
-
-        const Card = ({ children, className = '' }) => (
-            <div className={`card-elite p-6 ${className}`}>
-                {children}
+    <div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-[2.5rem] overflow-hidden border border-gray-200">
+        <!-- HEADER EJECUTIVO -->
+        <header class="header-gradient p-10 text-white flex flex-col md:flex-row justify-between items-start md:items-center">
+            <div>
+                <div class="flex items-center gap-3 mb-3">
+                    <span class="bg-ph-gold text-ph-navy px-3 py-0.5 rounded font-black tracking-widest text-[10px] uppercase shadow-sm">
+                        SOCIO ESTRATÉGICO
+                    </span>
+                    <span class="text-blue-200/50 font-bold text-xs uppercase tracking-tighter">MEOSA EXCLUSIVE REPORT</span>
+                </div>
+                <h1 class="text-5xl font-black tracking-tighter uppercase leading-none">Informe de Valor <br><span class="text-ph-gold">Abril 2026</span></h1>
+                <p class="text-blue-100 text-sm mt-3 font-medium border-l-2 border-ph-gold pl-3 italic">
+                    Propuesta ME26-004R2 | Proyectos: Hosokawa • Gramosa • DA
+                </p>
             </div>
-        );
-
-        const Badge = ({ children, color = 'blue' }) => {
-            const colors = {
-                blue: 'bg-blue-50 text-blue-700 border-blue-200', 
-                emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                amber: 'bg-amber-50 text-amber-700 border-amber-200', 
-                red: 'bg-red-50 text-red-700 border-red-200',
-                cyan: 'bg-cyan-50 text-cyan-700 border-cyan-200',
-                purple: 'bg-purple-50 text-purple-700 border-purple-200',
-                slate: 'bg-slate-100 text-slate-700 border-slate-300' 
-            };
-            return (
-                <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold border uppercase tracking-wider ${colors[color] || colors.blue}`}>
-                    {children}
-                </span>
-            );
-        };
-
-        const ProgressBar = ({ progress, label, color = "emerald" }) => (
-            <div className="w-full mt-4">
-                <div className="flex justify-between text-xs mb-1.5 font-semibold text-slate-600">
-                    <span>Avance HH</span>
-                    <span className="text-slate-900 font-mono">{label}</span>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200 shadow-inner">
-                    <div className={`h-full rounded-full transition-all duration-1000 shadow-sm ${color === 'emerald' ? 'bg-emerald-500' : 'bg-blue-500'}`} style={{ width: `${progress}%` }}></div>
-                </div>
+            <div class="mt-8 md:mt-0 bg-white/5 p-6 rounded-3xl backdrop-blur-xl border border-white/10 text-right shadow-inner">
+                <p class="text-[10px] uppercase font-black opacity-50 tracking-[0.2em] mb-1">Cierre Auditado</p>
+                <p class="text-3xl font-black">03 MAY 2026</p>
+                <p class="text-[10px] font-bold text-ph-gold mt-1 uppercase">Validado por J.A.R.V.I.S.</p>
             </div>
-        );
+        </header>
 
-        const SectionHeader = ({ title, subtitle, icon }) => (
-            <div className="mb-8 flex items-center gap-4 border-b border-slate-200 pb-4">
-                <div className="p-3 bg-white border border-slate-200 rounded-xl text-slate-800 shadow-sm">
-                    <Icon name={icon} size={24} />
-                </div>
-                <div>
-                    <h2 className="text-2xl font-bold text-slate-900 leading-none">{title}</h2>
-                    <p className="text-slate-500 text-sm mt-1">{subtitle}</p>
-                </div>
-            </div>
-        );
-
-        // --- VISTAS ---
-
-        const ViewFinancials = () => {
-            const calculateTotals = (data) => data.reduce((acc, row) => ({
-                gramosa: acc.gramosa + row.gramosa,
-                flex: acc.flex + row.flex,
-                ment: acc.ment + row.ment,
-                total: acc.total + row.gramosa + row.flex + row.ment
-            }), { gramosa: 0, flex: 0, ment: 0, total: 0 });
-
-            // Enero (Sem 1-5)
-            const rowsJan = financialHistory.slice(0, 5);
-            const totalsJan = calculateTotals(rowsJan);
-            const costJan = (totalsJan.flex + totalsJan.ment) * HOURLY_RATE;
-
-            // Febrero (Sem 6-9)
-            const rowsFeb = financialHistory.slice(5, 9);
-            const totalsFeb = calculateTotals(rowsFeb);
-            const costFeb = (totalsFeb.flex + totalsFeb.ment) * HOURLY_RATE;
-
-            // Marzo (Sem 10-14)
-            const rowsMar = financialHistory.slice(9);
-            const totalsMar = calculateTotals(rowsMar);
-            const costMar = (totalsMar.flex + totalsMar.ment) * HOURLY_RATE;
-
-            // Grand Total
-            const grandTotalHours = totalsJan.total + totalsFeb.total + totalsMar.total;
-            const grandTotalCost = costJan + costFeb + costMar;
-
-            return (
-                <div className="space-y-8 animate-enter">
-                    <SectionHeader title="Control Financiero" subtitle="Estado de Resultados Operativo (Cierre 31 Marzo)" icon="calculator" />
-                    
-                    {/* Summary Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-slate-800 rounded-xl p-6 text-white shadow-xl flex justify-between items-center">
-                            <div>
-                                <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Acumulado Ene-Feb</p>
-                                <h3 className="text-3xl font-black">{formatMoney(costJan + costFeb)}</h3>
-                                <div className="flex gap-3 mt-2 text-xs text-slate-300">
-                                    <span>Var: <strong>{totalsJan.flex + totalsJan.ment + totalsFeb.flex + totalsFeb.ment}h</strong></span>
-                                    <span>•</span>
-                                    <span>Fijo: <strong>{totalsJan.gramosa + totalsFeb.gramosa}h</strong></span>
-                                </div>
-                            </div>
-                            <div className="p-3 bg-white/10 rounded-lg"><Icon name="check-circle" size={32} /></div>
-                        </div>
-
-                        <div className="bg-white border border-emerald-200 rounded-xl p-6 shadow-md flex justify-between items-center">
-                            <div>
-                                <p className="text-emerald-600 text-xs font-bold uppercase tracking-wider mb-1">Cierre Marzo Definitivo</p>
-                                <h3 className="text-3xl font-black text-slate-800">{formatMoney(costMar)}</h3>
-                                <div className="flex gap-3 mt-2 text-xs text-slate-500">
-                                    <span>Total: <strong>{totalsMar.total}h</strong></span>
-                                    <span>•</span>
-                                    <span>Var: <strong>{totalsMar.flex + totalsMar.ment}h</strong></span>
-                                    <span>•</span>
-                                    <span>Fijo: <strong>{totalsMar.gramosa}h</strong></span>
-                                </div>
-                            </div>
-                            <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600"><Icon name="activity" size={32} /></div>
-                        </div>
-                    </div>
-
-                    {/* Consolidated Table */}
-                    <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
-                        <table className="w-full text-sm text-left border-collapse">
-                            <thead className="bg-slate-50 text-slate-700 font-bold uppercase text-xs border-b border-slate-200">
-                                <tr>
-                                    <th className="px-6 py-4 border-r border-slate-100">Periodo</th>
-                                    <th className="px-6 py-4 w-1/3 border-r border-slate-100">Actividad Clave</th>
-                                    <th className="px-4 py-4 text-center bg-slate-100/50 border-r border-slate-100">Total</th>
-                                    <th className="px-4 py-4 text-center text-purple-700 bg-purple-50/30 border-r border-purple-100">Fijo</th>
-                                    <th className="px-4 py-4 text-center text-blue-700 bg-blue-50/30 border-r border-blue-100">Flex</th>
-                                    <th className="px-4 py-4 text-center text-indigo-700 bg-indigo-50/30 border-r border-indigo-100">Ment</th>
-                                    <th className="px-6 py-4 text-right bg-emerald-50 text-emerald-900">Inversión Var.</th>
-                                </tr>
-                            </thead>
-                            
-                            {/* Enero/Febrero Group (Colapsado visualmente para espacio) */}
-                            <tbody className="divide-y divide-slate-100 border-b-2 border-slate-200 opacity-60 hover:opacity-100 transition-opacity">
-                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest">Enero & Febrero (Cerrados)</td></tr>
-                                <tr className="bg-slate-100 font-bold text-slate-800">
-                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Acumulado Ene-Feb</td>
-                                    <td className="px-4 py-3 text-center bg-slate-200">{totalsJan.total + totalsFeb.total} h</td>
-                                    <td className="px-4 py-3 text-center text-purple-900">{totalsJan.gramosa + totalsFeb.gramosa} h</td>
-                                    <td className="px-4 py-3 text-center text-blue-900">{totalsJan.flex + totalsFeb.flex} h</td>
-                                    <td className="px-4 py-3 text-center text-indigo-900">{totalsJan.ment + totalsFeb.ment} h</td>
-                                    <td className="px-6 py-3 text-right text-emerald-800">{formatMoney(costJan + costFeb)}</td>
-                                </tr>
-                            </tbody>
-
-                            {/* Marzo Group */}
-                            <tbody className="divide-y divide-slate-100">
-                                <tr className="bg-slate-50/50"><td colSpan="7" className="px-6 py-2 text-xs font-bold text-slate-500 uppercase tracking-widest text-emerald-700">Marzo 2026</td></tr>
-                                {rowsMar.map((row, i) => {
-                                    const weeklyCost = (row.flex + row.ment) * HOURLY_RATE;
-                                    return (
-                                        <tr key={`mar-${i}`} className="hover:bg-slate-50 transition-colors group bg-emerald-50/10">
-                                            <td className="px-6 py-4 font-medium text-slate-800 border-r border-slate-100">{row.week}</td>
-                                            <td className="px-6 py-4 text-slate-700 text-xs max-w-xs border-r border-slate-100">{row.activity}</td>
-                                            <td className="px-4 py-4 text-center font-black text-slate-900 border-r border-slate-100 bg-slate-50/50">{row.gramosa + row.flex + row.ment} h</td>
-                                            <td className="px-4 py-4 text-center text-purple-700 font-medium border-r border-slate-100">{row.gramosa || '-'}</td>
-                                            <td className="px-4 py-4 text-center text-blue-700 font-medium border-r border-slate-100">{row.flex || '-'}</td>
-                                            <td className="px-4 py-4 text-center text-indigo-700 font-medium border-r border-slate-100">{row.ment || '-'}</td>
-                                            <td className="px-6 py-4 text-right text-emerald-800 font-mono font-bold">{formatMoney(weeklyCost)}</td>
-                                        </tr>
-                                    );
-                                })}
-                                <tr className="bg-emerald-100 font-bold text-emerald-900">
-                                    <td colSpan="2" className="px-6 py-3 text-right text-xs uppercase tracking-wide">Cierre Total Marzo</td>
-                                    <td className="px-4 py-3 text-center bg-emerald-200/50">{totalsMar.total} h</td>
-                                    <td className="px-4 py-3 text-center">{totalsMar.gramosa} h</td>
-                                    <td className="px-4 py-3 text-center">{totalsMar.flex} h</td>
-                                    <td className="px-4 py-3 text-center">{totalsMar.ment} h</td>
-                                    <td className="px-6 py-3 text-right">{formatMoney(costMar)}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    {/* Acumulado General */}
-                    <div className="flex justify-end mt-4">
-                        <div className="text-right bg-slate-800 text-white p-4 rounded-lg shadow-lg">
-                            <p className="text-xs font-bold uppercase tracking-widest mb-1 text-slate-400">Inversión Variable YTD</p>
-                            <div className="flex items-baseline justify-end gap-2">
-                                <p className="text-2xl font-black">{formatMoney(grandTotalCost)}</p>
-                                <span className="text-sm font-medium text-slate-400">/ {totalsJan.flex+totalsJan.ment+totalsFeb.flex+totalsFeb.ment+totalsMar.flex+totalsMar.ment} HH</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start gap-3 text-sm text-blue-800">
-                        <Icon name="layers" className="mt-0.5 text-blue-500" size={18} />
-                        <div>
-                            <h4 className="font-bold text-blue-900">Regla de Inversión</h4>
-                            <p className="text-blue-700 mt-1">
-                                Costo Variable = (Pack Flexible: PFD/SuKarne/AltoSano + Mentorías) x Tarifa. Las horas Fijas (GRAMOSA) no impactan este monto.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ViewPortfolio = () => {
-            return (
-                <div className="space-y-8 animate-enter">
-                    <SectionHeader title="Portafolio de Cuentas" subtitle="Estatus de Frentes Activos" icon="briefcase" />
-                    
-                    {/* Estratégicos */}
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-2 mb-4">
-                            <Icon name="target" className="text-blue-600" size={20} /> Frentes Estratégicos & Oportunidades
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {portfolioData.strategic.map((p, i) => (
-                                <Card key={i} className={`p-5 border-l-4 ${p.color === 'red' ? 'border-l-red-500' : p.color === 'cyan' ? 'border-l-cyan-500' : p.color === 'amber' ? 'border-l-amber-500' : p.color === 'purple' ? 'border-l-purple-500' : p.color === 'emerald' ? 'border-l-emerald-500' : p.color === 'slate' ? 'border-l-slate-400 opacity-70' : 'border-l-blue-500'}`}>
-                                    <div className="flex justify-between items-start mb-3 pl-2">
-                                        <div className="flex items-center gap-2">
-                                            <Icon name={p.icon} size={20} className="text-slate-400" />
-                                            <span className="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-600 border border-slate-200">{p.client}</span>
-                                        </div>
-                                        <Badge color={p.color}>{p.status}</Badge>
-                                    </div>
-                                    <h4 className="font-bold text-slate-800 pl-2 text-lg mb-1">{p.title}</h4>
-                                    <p className="text-sm text-slate-500 pl-2">{p.note}</p>
-                                </Card>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Ejecución */}
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2 border-b border-slate-200 pb-2 mb-4">
-                            <Icon name="check-circle" className="text-emerald-600" size={20} /> En Ejecución & Recurrentes
-                        </h3>
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <Card className="border-l-4 border-l-emerald-500">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-3 bg-emerald-100 rounded-xl text-emerald-700"><Icon name="check-circle" size={24} /></div>
-                                        <div>
-                                            <h4 className="font-bold text-slate-800 text-lg">GRAMOSA Ing.</h4>
-                                            <p className="text-xs text-slate-500">Consultoría Activa</p>
-                                        </div>
-                                    </div>
-                                    <Badge color="emerald">EN EJECUCIÓN</Badge>
-                                </div>
-                                <ProgressBar progress={95} label="243 / 256 HH" />
-                            </Card>
-
-                            <div className="grid gap-3">
-                                {[
-                                    { title: "SuKarne Póliza", sub: "Documentación y Reportes", val: "119 HH YTD", icon: "shield", color: "text-amber-600", bg: "bg-amber-100" },
-                                    { title: "Mentorías PH", sub: "Planner & Operaciones", val: "95 HH YTD", icon: "users", color: "text-indigo-600", bg: "bg-indigo-100" },
-                                    { title: "Alianza Hosokawa", sub: "Cotización MINSA", val: "11 HH YTD", icon: "activity", color: "text-purple-600", bg: "bg-purple-100" }
-                                ].map((k, i) => (
-                                    <div key={i} className="bg-white p-4 border border-slate-200 rounded-xl flex justify-between items-center shadow-sm hover:border-slate-300 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`p-2 rounded-lg ${k.bg} ${k.color}`}><Icon name={k.icon} size={18} /></div>
-                                            <div>
-                                                <p className="font-bold text-xs text-slate-800">{k.title}</p>
-                                                <p className="text-[10px] text-slate-500 uppercase">{k.sub}</p>
-                                            </div>
-                                        </div>
-                                        <span className="font-mono text-xs font-bold text-slate-700 bg-slate-50 px-3 py-1 rounded border border-slate-100">{k.val}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ViewModels = () => (
-            <div className="space-y-6 animate-enter">
-                <SectionHeader title="Modelos de Gestión" subtitle="Actividad detallada por esquema" icon="layout" />
+        <main class="p-10">
+            <!-- BLOQUE DE MÉTRICAS CLAVE -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {modelsData.map((m, idx) => (
-                        <Card key={idx} className="hover:border-blue-300 transition-colors">
-                            <div className="flex items-start justify-between mb-4">
-                                <div>
-                                    <div className={`h-1.5 w-12 ${m.color} rounded-full mb-2`}></div>
-                                    <h4 className="font-bold text-xl text-slate-800">{m.type}</h4>
-                                    <p className="text-xs text-slate-500 uppercase tracking-wide font-semibold">{m.desc}</p>
-                                </div>
-                                <div className={`p-2 rounded-lg ${m.bg} ${m.text}`}>
-                                    <Icon name={m.icon} size={24} />
-                                </div>
-                            </div>
-                            <div className="bg-slate-50 rounded-lg p-4 border border-slate-100 space-y-3">
-                                {m.items.map((item, i) => (
-                                    <div key={i} className="flex justify-between items-start text-sm border-b border-slate-200 pb-2 last:border-0 last:pb-0">
-                                        <div className="flex flex-col">
-                                            <span className="font-bold text-slate-700">{item.label}</span>
-                                            {item.sub && <span className="text-xs text-slate-500">{item.sub}</span>}
-                                            {item.value && <span className="text-slate-600 mt-0.5">{item.value}</span>}
-                                        </div>
-                                        {item.status && (
-                                            <div className="text-right">
-                                                <span className={`text-[10px] font-bold px-2 py-1 rounded border ${
-                                                    item.status === 'NUEVO' ? 'bg-cyan-100 text-cyan-700 border-cyan-200' :
-                                                    item.status.includes('80%') ? 'bg-blue-50 text-blue-700 border-blue-200' :
-                                                    item.status === 'ENTREGADA' || item.status === 'ENVIADA 19/03' || item.status === 'ENVIADA 31/03' ? 'bg-emerald-100 text-emerald-700 border-emerald-200' :
-                                                    item.status === 'MITIGACIÓN' ? 'bg-amber-100 text-amber-800 border-amber-200' :
-                                                    item.status === 'RECHAZADAS' ? 'bg-slate-100 text-slate-600 border-slate-200' :
-                                                    'bg-white text-slate-600 border-slate-200'
-                                                }`}>{item.status}</span>
-                                                {item.date && <p className="text-[10px] text-slate-400 mt-1">{item.date}</p>}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </Card>
-                    ))}
-                </div>
-            </div>
-        );
-
-        const ViewStrategy = () => (
-            <div className="grid lg:grid-cols-2 gap-8 animate-enter">
-                <div>
-                    <h3 className="text-lg font-bold text-slate-800 border-b pb-2 mb-4 flex items-center gap-2">
-                        <Icon name="bar-chart-3" className="text-blue-600" size={20} /> Análisis de Situación (Cierre Marzo)
-                    </h3>
-                    <div className="space-y-4">
-                        {alignmentPoints.map((point, i) => (
-                            <div key={i} className="group p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all card-elite">
-                                <div className="flex items-baseline gap-3 mb-1">
-                                    <span className="text-blue-600 font-black text-2xl opacity-30 group-hover:opacity-100 transition-opacity">0{i + 1}</span>
-                                    <span className="font-bold text-slate-800 text-lg group-hover:text-blue-700 transition-colors">{point.title}</span>
-                                </div>
-                                <p className="text-sm text-slate-600 pl-10 leading-relaxed font-medium">{point.text}</p>
-                            </div>
-                        ))}
+                <!-- CONSUMO REAL (45 HH) -->
+                <div class="lg:col-span-2 bg-slate-50 p-8 rounded-[2rem] border-l-8 border-ph-gold shadow-sm">
+                    <h2 class="text-2xl font-black mb-8 uppercase tracking-tight flex items-center gap-3">
+                        <span class="bg-ph-navy text-white w-8 h-8 rounded-full flex items-center justify-center text-sm italic">PH</span>
+                        Balance de Colaboración Estratégica
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                        <div class="bg-ph-navy text-white p-5 rounded-[1.5rem] shadow-lg">
+                            <p class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest">Capacidad</p>
+                            <p class="text-5xl font-black mono leading-none">60<span class="text-lg ml-1 opacity-40">HH</span></p>
+                        </div>
+                        <div class="bg-white border-2 border-ph-navy p-5 rounded-[1.5rem] shadow-inner">
+                            <p class="text-[10px] font-bold text-ph-navy/50 uppercase mb-1 tracking-widest text-ph-gold">Auditadas</p>
+                            <p class="text-5xl font-black text-ph-navy mono leading-none">45<span class="text-sm ml-1 opacity-40">HH</span></p>
+                        </div>
+                        <div class="bg-ph-success text-white p-5 rounded-[1.5rem] shadow-lg">
+                            <p class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest">A Favor Mayo</p>
+                            <p class="text-5xl font-black mono leading-none">15<span class="text-lg ml-1 opacity-40">HH</span></p>
+                        </div>
                     </div>
                 </div>
 
-                <div>
-                    <h3 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                         <Icon name="target" className="text-blue-600" size={20} /> Gestión de Riesgos & Foco
-                    </h3>
-                    <div className="space-y-4">
-                        <Card className="bg-emerald-50 border-emerald-200 !p-4 !shadow-none">
-                            <div className="flex gap-4">
-                                <div className="mt-1 text-emerald-600"><Icon name="check-circle" size={20} /></div>
-                                <div>
-                                    <p className="text-xs font-bold text-emerald-800 uppercase mb-1">Logro Operativo</p>
-                                    <p className="text-sm text-emerald-900 leading-snug">Se procesaron y enviaron formalmente las cotizaciones de ADM Volteador y MINSA. Gramosa casi liquidado (95%).</p>
-                                </div>
-                            </div>
-                        </Card>
-                        <Card className="bg-amber-50 border-amber-200 !p-4 !shadow-none">
-                            <div className="flex gap-4">
-                                <div className="mt-1 text-amber-600"><Icon name="shield-alert" size={20} /></div>
-                                <div>
-                                    <p className="text-xs font-bold text-amber-800 uppercase mb-1">Mitigación SuKarne L5</p>
-                                    <p className="text-sm text-amber-900 leading-snug">Ante la pausa del cliente por refacciones, MEOSA toma la iniciativa presentando un plan de mitigación de suministros para destrabar la ingeniería.</p>
-                                </div>
-                            </div>
-                        </Card>
-                        <Card className="bg-red-50 border-red-200 !p-4 !shadow-none">
-                            <div className="flex gap-4">
-                                <div className="mt-1 text-red-600"><Icon name="alert-triangle" size={20} /></div>
-                                <div>
-                                    <p className="text-xs font-bold text-red-800 uppercase mb-1">Atención / Riesgo de Suministro</p>
-                                    <p className="text-sm text-red-900 leading-snug">El caso USK demuestra que no podemos ser rehenes operativos de la proveeduría externa. Hay que aislar el valor de la ingeniería.</p>
-                                </div>
-                            </div>
-                        </Card>
-                    </div>
-                </div>
-            </div>
-        );
-
-        const ViewAgenda = () => (
-            <div className="space-y-6 animate-enter">
-                <SectionHeader title="Agenda de Seguimiento" subtitle="Revisión Mensual (Cierre Marzo)" icon="clock" />
-                
-                <div className="bg-white rounded-xl border border-slate-200 p-8 shadow-sm card-elite max-w-3xl mx-auto">
-                    <div className="relative border-l-4 border-slate-100 ml-4 space-y-10 timeline-line">
-                        {[
-                            { time: '10 min', title: 'Cierre Financiero Marzo', desc: 'Validación de 131 HH Variables en el mes ($117.9k MXN). Corrección fina aplicada.' },
-                            { time: '15 min', title: 'Plan de Mitigación USK', desc: 'Revisión del documento de mitigación de suministros para destrabar la L5.' },
-                            { time: '10 min', title: 'Nuevas Cotizaciones (MINSA / ADM)', desc: 'Estrategia de seguimiento a las propuestas enviadas el 19/03 y 31/03.' },
-                            { time: '10 min', title: 'Cierre Gramosa (95%)', desc: 'Revisión de lo entregado el 24/03 y plan de aterrizaje para el 5% final en abril.' },
-                            { time: '5 min', title: 'Lecciones Aprendidas', desc: 'Post-mortem rápido sobre el rechazo por precio en Alto Sano y ADM.' }
-                        ].map((item, idx) => (
-                            <div key={idx} className="relative pl-12 group">
-                                <div className="absolute -left-[11px] top-1 w-5 h-5 rounded-full bg-white border-4 border-blue-500 group-hover:scale-125 transition-transform shadow-sm"></div>
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                                    <h4 className="font-bold text-lg text-slate-800">{item.title}</h4>
-                                    <span className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">{item.time}</span>
-                                </div>
-                                <p className="text-slate-600 leading-relaxed font-medium border-l-2 border-transparent pl-2 group-hover:border-blue-200 transition-colors">{item.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-
-        const ViewVision = () => (
-            <div className="space-y-8 animate-enter">
-                <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-2 gap-4">
+                <!-- FOCO ESTRATÉGICO MAYO -->
+                <div class="bg-ph-navy p-8 rounded-[2rem] text-white shadow-xl flex flex-col justify-between">
                     <div>
-                        <h3 className="text-3xl font-black text-slate-900 flex items-center gap-3">
-                            <Icon name="bar-chart-3" className="text-blue-600" size={32} /> Cierres & Avance
-                        </h3>
-                        <p className="text-slate-500 font-medium mt-1 ml-11">Corte Mensual (Cierre Total Marzo)</p>
-                    </div>
-                    <Badge color="emerald">ESTATUS: ÓPTIMO</Badge>
-                </div>
-                
-                <div className="grid md:grid-cols-2 gap-6">
-                    <Card className="border-l-4 border-l-emerald-500">
-                        <div className="flex items-start gap-5">
-                            <div className="p-4 bg-emerald-50 rounded-2xl text-emerald-600 border border-emerald-100 shadow-inner"><Icon name="check-circle" size={32} /></div>
-                            <div>
-                                <h3 className="font-bold text-lg text-slate-800 mb-3">Hitos Cumplidos</h3>
-                                <ul className="text-sm text-slate-600 space-y-3">
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>MINSA:</strong> Propuesta Hosokawa enviada (31/03).</li>
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>USK L5:</strong> Se entregó Plan de Mitigación al cliente.</li>
-                                    <li className="flex items-center gap-2"><Icon name="check-circle" size={16} className="text-emerald-500" /> <strong>GRAMOSA:</strong> 243h acumuladas (95%).</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card className="border-l-4 border-l-blue-500">
-                        <div className="flex items-start gap-5">
-                            <div className="p-4 bg-blue-50 rounded-2xl text-blue-600 border border-blue-100 shadow-inner"><Icon name="target" size={32} /></div>
-                            <div>
-                                <h3 className="font-bold text-lg text-slate-800 mb-3">Foco Inicio Abril</h3>
-                                <ul className="text-sm text-slate-600 space-y-3">
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Cotizaciones:</span> Hacer seguimiento a MINSA y ADM.</li>
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">SuKarne:</span> Monitorear respuesta al Plan de Mitigación.</li>
-                                    <li className="flex items-center gap-2"><Icon name="layout" size={16} className="text-blue-500" /> <span className="font-bold text-blue-700">Gramosa:</span> Liquidar el 5% final operativo.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                    <div className="bg-emerald-50 p-5 rounded-2xl border border-emerald-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-emerald-600 tracking-tighter">95%</div>
-                        <div className="text-xs font-bold text-emerald-800 uppercase tracking-widest mt-2 border-t border-emerald-200 pt-2">Avance Gramosa</div>
-                    </div>
-                    <div className="bg-blue-50 p-5 rounded-2xl border border-blue-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-blue-600 tracking-tighter">ENVIADA</div>
-                        <div className="text-xs font-bold text-blue-800 uppercase tracking-widest mt-2 border-t border-blue-200 pt-2">Propuesta MINSA</div>
-                    </div>
-                    <div className="bg-amber-50 p-5 rounded-2xl border border-amber-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-amber-600 tracking-tighter">PLAN</div>
-                        <div className="text-xs font-bold text-amber-800 uppercase tracking-widest mt-2 border-t border-amber-200 pt-2">Mitigación USK L5</div>
-                    </div>
-                    <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 text-center shadow-sm hover:shadow-md transition-shadow">
-                        <div className="text-4xl font-black text-slate-700 tracking-tighter">131h</div>
-                        <div className="text-xs font-bold text-slate-600 uppercase tracking-widest mt-2 border-t border-slate-100 pt-2">Cierre Var. Marzo</div>
+                        <h3 class="text-ph-gold font-black uppercase text-xs tracking-[0.2em] mb-6 border-b border-white/10 pb-4 italic">Next Targets: May '26</h3>
+                        <ul class="space-y-6">
+                            <li class="flex gap-4">
+                                <span class="text-ph-gold font-black bg-white/10 w-6 h-6 rounded-full flex items-center justify-center text-xs italic shrink-0">01</span>
+                                <p class="text-[11px] uppercase font-black leading-tight tracking-tight">Cierre de Planos Estructurales Gramosa para inicio de fabricación.</p>
+                            </li>
+                            <li class="flex gap-4">
+                                <span class="text-ph-gold font-black bg-white/10 w-6 h-6 rounded-full flex items-center justify-center text-xs italic shrink-0">02</span>
+                                <p class="text-[11px] uppercase font-black leading-tight tracking-tight">Implementación operativa de Mesa Técnica (Daniel Zepeda).</p>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        );
 
-        // --- DASHBOARD CONTAINER ---
-
-        const Dashboard = () => {
-            const [activeTab, setActiveTab] = useState('vision');
-            const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-            const tabs = [
-                { id: 'vision', label: 'Cierres' },
-                { id: 'financials', label: 'Control HH' },
-                { id: 'portfolio', label: 'Portafolio' },
-                { id: 'models', label: 'Modelos' },
-                { id: 'strategy', label: 'Estrategia' },
-                { id: 'agenda', label: 'Agenda' }
-            ];
-
-            return (
-                <div className="min-h-screen flex flex-col font-sans">
-                    
-                    {/* Header */}
-                    <header className="bg-slate-900 text-white sticky top-0 z-50 shadow-2xl ring-1 ring-white/10">
-                        <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="bg-white text-slate-900 font-black px-3 py-1 rounded-lg text-xl shadow-lg transform hover:scale-105 transition-transform cursor-default">PH</div>
-                                <div>
-                                    <h1 className="font-bold tracking-tight text-lg leading-none">MEOSA 2026</h1>
-                                    <p className="text-[10px] text-slate-400 font-medium uppercase tracking-widest mt-0.5">Centro de Mando</p>
-                                </div>
-                            </div>
-                            
-                            <nav className="hidden md:flex bg-slate-800/50 p-1.5 rounded-xl border border-slate-700 backdrop-blur-sm">
-                                {tabs.map(tab => (
-                                    <button 
-                                        key={tab.id} 
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${activeTab === tab.id ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-400 hover:text-white hover:bg-slate-700/50'}`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </nav>
-                            
-                             <button className="md:hidden p-2 text-slate-300 bg-slate-800 rounded-lg" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                                <Icon name={isMenuOpen ? "x" : "menu"} size={24} />
-                            </button>
-                        </div>
-
-                         {/* Mobile Nav */}
-                         {isMenuOpen && (
-                            <div className="md:hidden bg-slate-800 border-t border-slate-700 p-2 absolute w-full shadow-xl z-50">
-                                {tabs.map(tab => (
-                                    <button 
-                                        key={tab.id}
-                                        onClick={() => { setActiveTab(tab.id); setIsMenuOpen(false); }}
-                                        className={`block w-full text-left px-4 py-3 rounded-lg text-sm mb-1 ${activeTab === tab.id ? 'bg-blue-600 text-white' : 'text-slate-300'}`}
-                                    >
-                                        {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </header>
-
-                    {/* Contenido Principal */}
-                    <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-10">
-                        {activeTab === 'vision' && <ViewVision />}
-                        {activeTab === 'financials' && <ViewFinancials />}
-                        {activeTab === 'portfolio' && <ViewPortfolio />}
-                        {activeTab === 'models' && <ViewModels />}
-                        {activeTab === 'strategy' && <ViewStrategy />}
-                        {activeTab === 'agenda' && <ViewAgenda />}
-                    </main>
-
-                    {/* Footer */}
-                    <footer className="bg-white border-t border-slate-200 mt-auto py-8">
-                        <div className="max-w-7xl mx-auto px-4 flex justify-between text-sm text-slate-500">
-                            <p className="font-semibold text-slate-700">PH | We´re Accountable</p>
-                            <div className="flex items-center gap-2 text-xs font-mono bg-slate-100 px-3 py-1 rounded-full">
-                                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
-                                J.A.R.V.I.S. SYSTEM ACTIVE
-                            </div>
-                        </div>
-                    </footer>
-
+            <!-- BITÁCORA DE EVIDENCIAS JUSTIFICADAS -->
+            <div class="mb-12">
+                <h2 class="text-3xl font-black mb-8 uppercase tracking-tighter flex items-center gap-4 text-ph-navy">
+                    <span class="text-ph-success font-bold text-4xl">✔</span> Bitácora de Evidencias Auditadas (45 HH)
+                </h2>
+                <div class="overflow-hidden rounded-[2rem] border border-slate-200 shadow-2xl bg-white">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-ph-navy text-white text-[11px] font-black uppercase tracking-widest">
+                                <th class="p-6">Unidad</th>
+                                <th class="p-6">Actividad Realizada (Contexto MEOSA)</th>
+                                <th class="p-6">Evidencia / Entregable</th>
+                                <th class="p-6 text-center">HH</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-[12px] font-bold text-slate-700 uppercase">
+                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                                <td class="p-6 text-ph-navy font-black italic tracking-tighter">Gramosa Eng.</td>
+                                <td class="p-6 font-medium leading-tight">Revisión Ingeniería de Detalle Civil y Mecánica.</td>
+                                <td class="p-6">
+                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px] mr-1">📁 Planos Estructurales R2</span>
+                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px]">📝 Minuta J. Flores</span>
+                                </td>
+                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">15</td>
+                            </tr>
+                            <tr class="border-b border-slate-50 hover:bg-red-50/30 transition-colors">
+                                <td class="p-6 text-ph-hosokawa font-black italic tracking-tighter">Hosokawa Link</td>
+                                <td class="p-6 font-medium leading-tight">Dosificación LIW BACHOCO Tres Valles (Arquitectura Vertical).</td>
+                                <td class="p-6">
+                                    <span class="px-2 py-1 bg-red-50 text-ph-hosokawa rounded border border-ph-hosokawa/10 text-[9px] mr-1">🔗 Ficha LIW Vertical</span>
+                                    <span class="px-2 py-1 bg-red-50 text-ph-hosokawa rounded border border-ph-hosokawa/10 text-[9px]">📧 Aprobación Fábrica</span>
+                                </td>
+                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">10</td>
+                            </tr>
+                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                                <td class="p-6 text-ph-navy font-black italic tracking-tighter">DA Mesa Técnica</td>
+                                <td class="p-6 font-medium leading-tight">Levantamiento Campo Proyecto MINZA y Procesos Internos.</td>
+                                <td class="p-6">
+                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px] mr-1">📐 Diagrama Fronteras</span>
+                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px]">📋 Checklist Campo</span>
+                                </td>
+                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">10</td>
+                            </tr>
+                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
+                                <td class="p-6 text-ph-navy font-black italic tracking-tighter">Cotizaciones</td>
+                                <td class="p-6 font-medium leading-tight text-slate-500">Soporte Técnico-Comercial en Proyectos Estratégicos.</td>
+                                <td class="p-6">
+                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px] mr-1">🔢 Matriz de Costeo</span>
+                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px]">📄 Oferta MEOSA V2</span>
+                                </td>
+                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">10</td>
+                            </tr>
+                            <tr class="bg-slate-100/50">
+                                <td colspan="3" class="p-6 text-right font-black tracking-[0.3em] text-slate-400 text-xs">Devengado Real Abril:</td>
+                                <td class="p-6 text-center text-4xl font-black text-ph-navy border-l-8 border-ph-gold">45 HH</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            );
-        };
+            </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<Dashboard />);
-    </script>
+            <!-- SECCIÓN FINANCIERA -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
+                <!-- INVERSIÓN MENSUAL -->
+                <div class="bg-white p-10 rounded-[2.5rem] border-2 border-slate-100 shadow-xl flex flex-col justify-center text-center relative overflow-hidden group">
+                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-3">Inversión Mensual Fija</p>
+                    <p class="text-6xl font-black text-ph-navy mono tracking-tighter">$47,520</p>
+                    <div class="mt-4 flex flex-col items-center gap-2">
+                        <span class="text-[10px] font-black bg-ph-success text-white px-4 py-1.5 rounded-full shadow-lg">● PAQUETE ESTRATÉGICO 60 HH</span>
+                    </div>
+                </div>
+
+                <!-- SALDOS Y CRÉDITO -->
+                <div class="bg-ph-navy p-10 rounded-[2.5rem] text-white shadow-2xl flex flex-col justify-center relative overflow-hidden">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-5 mb-5">
+                        <span class="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">Saldo Diseño PFD</span>
+                        <span class="text-2xl font-black text-ph-gold mono tracking-tighter">$19,968.00</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">Préstamo Abril</span>
+                        <span class="text-2xl font-black text-white/90 mono tracking-tighter">$6,500.00</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="p-8 text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] bg-slate-50 border-t">
+            Value Report - DGSP Pedro Herrera © 2026 | No Limits Performance
+        </footer>
+    </div>
+
 </body>
 </html>
