@@ -1,194 +1,977 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PH Command Center - MEOSA Abril 2026</title>
-    <!-- Cargando Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        'ph-navy': '#123A5B',
-                        'ph-gold': '#FFA726',
-                        'ph-success': '#4CAF50',
-                        'ph-hosokawa': '#E30613',
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500&display=swap');
-        body { background-color: #f1f5f9; color: #123A5B; }
-        .mono { font-family: 'JetBrains Mono', monospace; }
-        .evidence-card:hover { transform: translateY(-2px); transition: all 0.3s ease; }
-        .header-gradient { background: linear-gradient(135deg, #123A5B 0%, #0a263d 100%); }
-    </style>
-</head>
-<body class="p-2 md:p-8">
+import React, { useMemo, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  CartesianGrid,
+  LineChart,
+  Line,
+} from "recharts";
 
-    <div class="max-w-6xl mx-auto bg-white shadow-2xl rounded-[2.5rem] overflow-hidden border border-gray-200">
-        <!-- HEADER EJECUTIVO -->
-        <header class="header-gradient p-10 text-white flex flex-col md:flex-row justify-between items-start md:items-center">
+const PAQUETE_HH = 60;
+const TARIFA_PAQUETE = 792;
+const TARIFA_ADICIONAL = 900;
+
+const actividades = [
+  {
+    fecha: "2026-04-01",
+    dia: "Miércoles",
+    inicio: "08:00",
+    fin: "09:00",
+    horas: 1,
+    frente: "MEOSA Interno / Planner y mentoría",
+    tipo: "Mentoría / mejora operativa",
+    actividad: "Sesión Planner - MEOSA",
+    evidencia: "Sesión de trabajo con Planner para estructurar seguimiento a ejecución de producción, revisar procesos, detectar cuellos de botella y crear indicadores.",
+    entregables: "Criterios de seguimiento e indicadores para Producción MEOSA.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-01",
+    dia: "Miércoles",
+    inicio: "14:00",
+    fin: "15:00",
+    horas: 1,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Definición de alcance",
+    actividad: "Definición Alcance Solvet - MEOSA",
+    evidencia: "Continuación de definición de alcance detallado para Solvet Culiacán y preparación de documento para levantamiento.",
+    entregables: "Documento base de levantamiento / definición de alcance Solvet.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-01",
+    dia: "Miércoles",
+    inicio: "15:00",
+    fin: "16:00",
+    horas: 1,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Preparación técnico-comercial",
+    actividad: "Análisis Solvet estructura levantamiento - MEOSA",
+    evidencia: "Preparación de presentación MEOSA para que Solvet conozca capacidades y enfoque de atención.",
+    entregables: "Presentación resumen MEOSA 2026 compartida al equipo.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-02",
+    dia: "Jueves",
+    inicio: "08:00",
+    fin: "11:00",
+    horas: 3,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Reunión cliente + minuta + DA",
+    actividad: "Trabajos en DA caso Solvet - MEOSA",
+    evidencia: "Reunión con cliente, procesamiento de información y generación de minuta de reunión y definición de alcance.",
+    entregables: "MESO-MN-001-PELLET SOLVET.pdf; minuta de reunión; definición preliminar de alcance.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-06",
+    dia: "Lunes",
+    inicio: "08:00",
+    fin: "10:00",
+    horas: 2,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Preparación de levantamiento",
+    actividad: "Preparación Material Solvet para presentar al equipo - MEOSA",
+    evidencia: "Preparación de material para Jesús Martínez y José Flores para organizar levantamiento de información con el cliente Solvet.",
+    entregables: "Material de presentación interna; DA detallado para organización de levantamiento.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-06",
+    dia: "Lunes",
+    inicio: "12:00",
+    fin: "13:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Reporte técnico / estandarización",
+    actividad: "SuKarne Reporte Mexicali - MEOSA",
+    evidencia: "Correcciones de reporte, salida final de Reporte Mexicali, reunión con el equipo para liberar plantilla definitiva e instrucciones de reporteo.",
+    entregables: "Reporte Mexicali; plantilla definitiva; criterios de desarrollo de reportes.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-06",
+    dia: "Lunes",
+    inicio: "15:00",
+    fin: "16:00",
+    horas: 1,
+    frente: "MEOSA Interno / Planner y mentoría",
+    tipo: "Mentoría / comunicación cliente",
+    actividad: "Planner Mentoría - MEOSA",
+    evidencia: "Trabajo con Planner para presentar a SuKarne avance y seguimiento a adicionales de póliza.",
+    entregables: "Correo estructurado de entregables del 06/04/2026 para SuKarne.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-07",
+    dia: "Martes",
+    inicio: "08:00",
+    fin: "10:00",
+    horas: 2,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Revisión de reporte técnico",
+    actividad: "SuKarne Reporte Mexicali - MEOSA",
+    evidencia: "Revisión y corrección del reporte de servicio de Mexicali del 27/03 al 01/04; orientación al equipo para envío al cliente.",
+    entregables: "Reporte Mexicali corregido; observaciones para liberación.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-07",
+    dia: "Martes",
+    inicio: "10:00",
+    fin: "13:00",
+    horas: 3,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Ajuste de propuesta",
+    actividad: "Hosokawa propuesta MINSA - MEOSA",
+    evidencia: "Ajustes solicitados por cliente, desglose de paquetes, solicitud de información a Roberto y alineación con Felipe.",
+    entregables: "MEHK26-001R3 INGENIERIA MULT MINSA.pdf.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-07",
+    dia: "Martes",
+    inicio: "19:00",
+    fin: "21:00",
+    horas: 2,
+    frente: "SESAJAL / DA ingeniería detalle",
+    tipo: "Análisis de alcance",
+    actividad: "SESAJAL Análisis de alcance - MEOSA",
+    evidencia: "Revisión de información recibida sobre solicitud de ingeniería, respuesta por correo, creación de carpeta y lista de información existente/faltante.",
+    entregables: "Correo de próximos pasos; matriz preliminar de información existente/faltante; carpeta de trabajo SESAJAL.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-09",
+    dia: "Jueves",
+    inicio: "09:00",
+    fin: "10:00",
+    horas: 1,
+    frente: "Comercializadora El Carmen / primer contacto",
+    tipo: "Primer contacto / DA",
+    actividad: "DA Comercializadora El Carmen - MEOSA",
+    evidencia: "Primer contacto con el cliente para evaluar necesidad, dolor operativo y oportunidad de atención.",
+    entregables: "Registro de necesidad inicial; acuerdo de siguiente paso comercial.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-09",
+    dia: "Jueves",
+    inicio: "10:00",
+    fin: "11:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Revisión de propuesta",
+    actividad: "MINSA Hosokawa - MEOSA",
+    evidencia: "Revisión de propuesta ajustada y explicación para Israel Hosokawa.",
+    entregables: "Criterios de explicación y validación de propuesta MINSA.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-09",
+    dia: "Jueves",
+    inicio: "11:00",
+    fin: "12:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Ajuste financiero-técnico",
+    actividad: "MINSA Ajuste de Propuesta a montos por especialidad - MEOSA",
+    evidencia: "Ajuste de propuesta a montos globales por levantamiento, mecánica, electricidad y estructural.",
+    entregables: "Propuesta MINSA ajustada por especialidad.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-09",
+    dia: "Jueves",
+    inicio: "12:00",
+    fin: "14:00",
+    horas: 2,
+    frente: "SESAJAL / DA ingeniería detalle",
+    tipo: "Matriz de preguntas",
+    actividad: "SESAJAL Cuestionario para el cliente - MEOSA",
+    evidencia: "Creación de tabla con consultas para el cliente para definición de alcance SESAJAL.",
+    entregables: "Tabla/matriz de consultas al cliente SESAJAL.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-09",
+    dia: "Jueves",
+    inicio: "14:00",
+    fin: "15:00",
+    horas: 1,
+    frente: "AltoSano FeedParts / termometría",
+    tipo: "Validación técnico-comercial",
+    actividad: "Validación de propuesta AltoSano Termometría - MEOSA",
+    evidencia: "Actualización de precios con Andrés y generación de documento integrado de termometría.",
+    entregables: "Datasheet Termometría FEEDPARTS.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-10",
+    dia: "Viernes",
+    inicio: "08:30",
+    fin: "10:30",
+    horas: 2,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Definición de alcance",
+    actividad: "Hosokawa Alcance fase 2 MINSA - MEOSA",
+    evidencia: "Revisión conjunta con Israel y Santiago del alcance Fase 2 y complejidad técnica.",
+    entregables: "Criterios de alcance Fase 2 MINSA.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-10",
+    dia: "Viernes",
+    inicio: "10:30",
+    fin: "11:30",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Preparación y reunión cliente",
+    actividad: "SuKarne Póliza - MEOSA",
+    evidencia: "Preparación de reunión y atención de reunión confirmada.",
+    entregables: "Puntos de seguimiento de póliza SuKarne.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-10",
+    dia: "Viernes",
+    inicio: "11:30",
+    fin: "12:30",
+    horas: 1,
+    frente: "MEOSA Interno / Planner y mentoría",
+    tipo: "Mentoría coordinación",
+    actividad: "Mentoría EDSON - MEOSA",
+    evidencia: "Alineación de entregables de cierres de proyectos que presentará Edson.",
+    entregables: "Estructura de cierre de proyectos MEOSA para Edson.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-13",
+    dia: "Lunes",
+    inicio: "08:00",
+    fin: "11:00",
+    horas: 3,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Minutas de trabajo",
+    actividad: "Hosokawa Minuta MINSA Fase 2 - MEOSA",
+    evidencia: "Desarrollo de minutas de trabajo con cliente y Hosokawa para definición de alcance.",
+    entregables: "MEHK-MN-001-MINSA FSE 2.pdf.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-13",
+    dia: "Lunes",
+    inicio: "14:00",
+    fin: "15:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Propuesta base",
+    actividad: "Propuesta base fase 2 MINSA - MEOSA",
+    evidencia: "Desarrollo de propuesta base para armado de cotización Fase 2 MINSA.",
+    entregables: "Base de cotización Fase 2 MINSA; lista de información pendiente de Hosokawa.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-14",
+    dia: "Martes",
+    inicio: "08:00",
+    fin: "17:00",
+    horas: 9,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Viaje + levantamiento en sitio",
+    actividad: "Levantamiento Solvet - MEOSA",
+    evidencia: "Viaje y logística para trabajos en Solvet; levantamiento realizado el mismo día.",
+    entregables: "Levantamiento en sitio; registro de información base para propuesta.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-15",
+    dia: "Miércoles",
+    inicio: "08:00",
+    fin: "12:00",
+    horas: 4,
+    frente: "Culiacán / Cliente roladora",
+    tipo: "Atención técnico-comercial en sitio",
+    actividad: "Visita Clientes Culiacán - MEOSA",
+    evidencia: "Atención a cliente con roladora vendida; coordinación de acuerdos para atenciones futuras después de instalación de caldera y roladora.",
+    entregables: "Acuerdos de seguimiento con cliente; insumos para servicio futuro.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-16",
+    dia: "Jueves",
+    inicio: "08:00",
+    fin: "11:00",
+    horas: 3,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Procesamiento de información",
+    actividad: "Solvet Levantamiento - MEOSA",
+    evidencia: "Procesamiento de información y generación de minuta de levantamiento con hallazgos y acuerdos; información compartida con Jesús Martínez.",
+    entregables: "Minuta de levantamiento Solvet; insumos para propuesta Pres. 0217-2026.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-16",
+    dia: "Jueves",
+    inicio: "12:00",
+    fin: "13:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Revisión de reporte",
+    actividad: "SuKarne Reporte Durango - MEOSA",
+    evidencia: "Revisión y corrección de reporte generado para intervención Durango.",
+    entregables: "Reporte Durango corregido.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-16",
+    dia: "Jueves",
+    inicio: "13:00",
+    fin: "16:00",
+    horas: 3,
+    frente: "Bachoco / DA técnico",
+    tipo: "Revisión de información / alcance",
+    actividad: "BACHOCO Revisión de información - MEOSA",
+    evidencia: "Revisión y formulación estructurada de alcance; solicitud de aclaratoria de dudas.",
+    entregables: "Estructura de alcance Bachoco; listado de dudas/aclaratorias.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-16",
+    dia: "Jueves",
+    inicio: "16:00",
+    fin: "17:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Reunión cliente / análisis de situación",
+    actividad: "Reunión SuKarne - MEOSA",
+    evidencia: "Revisión de acontecimientos de Durango e impactos de daños en línea.",
+    entregables: "Criterios de análisis de daños; acciones de seguimiento.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-17",
+    dia: "Viernes",
+    inicio: "10:00",
+    fin: "11:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Revisión de reporte",
+    actividad: "Reporte Durango Roladora 2 - Revisado - MEOSA",
+    evidencia: "Revisión de reporte correspondiente a intervención Roladora Durango ROL02; marcado como OK.",
+    entregables: "Reporte Durango Roladora 2 revisado / liberado.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-17",
+    dia: "Viernes",
+    inicio: "11:00",
+    fin: "12:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Seguimiento cliente",
+    actividad: "Seguimiento SuKarne - Póliza - MEOSA",
+    evidencia: "Acompañamiento de reunión semanal con SuKarne Póliza, presentación de cronograma y avances.",
+    entregables: "Cronograma y avance presentado en reunión semanal.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-17",
+    dia: "Viernes",
+    inicio: "15:00",
+    fin: "16:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Reunión de propuesta",
+    actividad: "Reunión Hosokawa MINSA - MEOSA",
+    evidencia: "Reunión asociada a seguimiento MINSA/Hosokawa.",
+    entregables: "Acuerdos de seguimiento MINSA/Hosokawa.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-17",
+    dia: "Viernes",
+    inicio: "16:00",
+    fin: "18:00",
+    horas: 2,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Reporte de levantamiento",
+    actividad: "Reporte Solvet levantamiento - MEOSA",
+    evidencia: "Desarrollo de reporte sobre levantamiento y definición de alcance Solvet Planta Pellet; alineación con José de resultados del levantamiento.",
+    entregables: "Reporte de levantamiento Solvet; definición de alcance Planta Pellet.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-18",
+    dia: "Sábado",
+    inicio: "08:30",
+    fin: "09:30",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Aclaratorias de alcance",
+    actividad: "Hosokawa definición fase 2 MINSA - MEOSA",
+    evidencia: "Reunión de aclaratorias para definición de alcance segunda etapa MINSA.",
+    entregables: "Entradas para definición de alcance Fase 2 MINSA.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-20",
+    dia: "Lunes",
+    inicio: "08:00",
+    fin: "09:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Reunión cliente/equipo",
+    actividad: "Hosokawa - MEOSA",
+    evidencia: "Reunión con equipo Hosokawa para revisión MINSA Fase 2.",
+    entregables: "Acuerdos de revisión Fase 2 MINSA.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-20",
+    dia: "Lunes",
+    inicio: "10:00",
+    fin: "11:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Coordinación de servicio",
+    actividad: "Seguimiento Póliza - MEOSA",
+    evidencia: "Solicitud directa de Iván para apoyo en reparación de fallas en unidad hidráulica Línea 5; coordinación logística con responsables expertos.",
+    entregables: "Coordinación logística y asignación de responsables expertos.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-20",
+    dia: "Lunes",
+    inicio: "11:00",
+    fin: "13:00",
+    horas: 2,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Armado de propuesta",
+    actividad: "Solvet armado de base de la propuesta - MEOSA",
+    evidencia: "Desarrollo de propuesta para torre de Pellet y volcador, revisión de planos de José Flores y validación de opciones viables.",
+    entregables: "Base técnica de propuesta Solvet; revisión de planos; alternativas viables.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-20",
+    dia: "Lunes",
+    inicio: "15:00",
+    fin: "16:00",
+    horas: 1,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Alineación de alcance",
+    actividad: "Reunión Jesús Alcance Solvet - MEOSA",
+    evidencia: "Revisión de detalles a considerar en la propuesta.",
+    entregables: "Lista de consideraciones para propuesta Solvet.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-20",
+    dia: "Lunes",
+    inicio: "17:00",
+    fin: "18:00",
+    horas: 1,
+    frente: "Holcim / soporte técnico fabricación",
+    tipo: "Soporte técnico a fabricación",
+    actividad: "Apoyo con cómputos de Holcim lista de anclajes - MEOSA",
+    evidencia: "Apoyo a Germán con definición de lista de anclajes de planos para fabricación MEOSA.",
+    entregables: "Lista de anclajes / insumo de fabricación.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-21",
+    dia: "Martes",
+    inicio: "08:00",
+    fin: "09:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Seguimiento póliza",
+    actividad: "Seguimiento Póliza SuKarne - MEOSA",
+    evidencia: "Seguimiento de refacción de empaque, orientación de pasos a seguir y recopilación de evidencias de servicio Michoacán.",
+    entregables: "Evidencias de servicio Michoacán; ruta de seguimiento de refacción.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-21",
+    dia: "Martes",
+    inicio: "09:00",
+    fin: "10:00",
+    horas: 1,
+    frente: "MEOSA Interno / Planner y mentoría",
+    tipo: "Mentoría técnica",
+    actividad: "Apoyo Mentoría Planner - MEOSA",
+    evidencia: "Apoyo para entender entradas requeridas en planos e identificar lista de partes a fabricar.",
+    entregables: "Criterios de lectura de planos; lista de partes a fabricar.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-21",
+    dia: "Martes",
+    inicio: "12:00",
+    fin: "14:00",
+    horas: 2,
+    frente: "Bachoco / DA técnico",
+    tipo: "Análisis de respuesta / agenda técnica",
+    actividad: "Bachoco respuesta - MEOSA",
+    evidencia: "Análisis de respuesta del cliente y generación de agenda para próxima sesión de trabajo Hosokawa; consideraciones compartidas con Avraham.",
+    entregables: "MEHK-AT-001-BACHOCO interna.pdf; agenda de próxima sesión; consideraciones para cliente.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-22",
+    dia: "Miércoles",
+    inicio: "08:00",
+    fin: "11:00",
+    horas: 3,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Sesión especial / compras / cliente",
+    actividad: "Sesión de trabajo especial - SuKarne Póliza - MEOSA",
+    evidencia: "Aclaración al equipo de compras sobre intervención para cambio de refacciones, alineada a intervenciones profundas de roladoras; presentación extraoficial al cliente.",
+    entregables: "Presentación extraoficial al cliente; criterios de intervención profunda de roladoras.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-22",
+    dia: "Miércoles",
+    inicio: "15:00",
+    fin: "16:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Programación de actividades especiales",
+    actividad: "Póliza SuKarne - MEOSA",
+    evidencia: "Programación de actividades especiales en Michoacán para atender presión del área de compras de SuKarne.",
+    entregables: "Alineación de programación Michoacán.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-23",
+    dia: "Jueves",
+    inicio: "09:00",
+    fin: "12:00",
+    horas: 3,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Sesión especial cliente",
+    actividad: "Sesión especial SuKarne Póliza - MEOSA",
+    evidencia: "Alineación de programaciones de refacción Michoacán; reunión con cliente.",
+    entregables: "Programa de refacción Michoacán alineado con cliente.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-23",
+    dia: "Jueves",
+    inicio: "14:00",
+    fin: "15:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Evaluación de alcance nuevo proyecto",
+    actividad: "Reunión Hosokawa - MEOSA",
+    evidencia: "Evaluación de alcance de nuevo proyecto Reynera para DA.",
+    entregables: "Insumos de DA proyecto Reynera.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-23",
+    dia: "Jueves",
+    inicio: "16:00",
+    fin: "18:00",
+    horas: 2,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Atención de falla / coordinación urgente",
+    actividad: "SuKarne Póliza - MEOSA",
+    evidencia: "Atención puntual a Keisler por fallas en Roladora 2, daño de correas por exceso de tensión; organización con Edson y Jesús para intervención.",
+    entregables: "Plan de intervención inmediata; coordinación con responsables MEOSA.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-24",
+    dia: "Viernes",
+    inicio: "20:00",
+    fin: "22:00",
+    horas: 2,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Atención fuera de horario / falla crítica",
+    actividad: "SuKarne Michoacán - MEOSA",
+    evidencia: "Atención al cliente por fallas en Roladora 2 recién intervenida; desacople de tornillería y seguimiento con Jesús para asignación de personal.",
+    entregables: "Ruta de atención sábado; asignación de personal para cliente.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-27",
+    dia: "Lunes",
+    inicio: "16:00",
+    fin: "17:00",
+    horas: 1,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Ajustes de cotización",
+    actividad: "Cotización Solvet - Ajustes y alineamiento - MEOSA",
+    evidencia: "Últimos ajustes a propuesta Solvet; se comparte con Eli.",
+    entregables: "Propuesta Solvet ajustada; envío interno a Eli.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-28",
+    dia: "Martes",
+    inicio: "07:00",
+    fin: "08:00",
+    horas: 1,
+    frente: "Solvet / DA y propuesta",
+    tipo: "Comunicación comercial",
+    actividad: "Sugerencias de Correo Solvet - MEOSA",
+    evidencia: "Preparación y envío de redacción para envío de propuesta Solvet por parte de Eli al cliente.",
+    entregables: "Texto de correo de envío de propuesta a Solvet.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-28",
+    dia: "Martes",
+    inicio: "10:00",
+    fin: "11:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Explicación propuesta cliente",
+    actividad: "Reunión MINSA - MEOSA",
+    evidencia: "Explicación de propuesta MINSA Etapa 1 y aclaración de dudas y alcance de Etapa 2 con el cliente.",
+    entregables: "Aclaraciones de propuesta MINSA; criterios Etapa 2.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-28",
+    dia: "Martes",
+    inicio: "11:00",
+    fin: "12:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Análisis técnico de intervención",
+    actividad: "Revisión de Intervención SuKarne Michoacán - MEOSA",
+    evidencia: "Análisis de cambio de base de motor; reunión con Jesús Martínez y orientación al equipo sobre actividades recomendadas.",
+    entregables: "Recomendaciones técnicas para tensión de correa / base de motor de roladora.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-29",
+    dia: "Miércoles",
+    inicio: "09:00",
+    fin: "11:00",
+    horas: 2,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Reunión extraordinaria / plan de acción",
+    actividad: "SuKarne Reunión extraordinaria - MEOSA",
+    evidencia: "Reunión interna en sede MEOSA para revisar fallas de Roladora 2 Michoacán, convocada por PH con apoyo de Jesús Martínez.",
+    entregables: "Plan de acción para mitigar fallas Roladora 2 Michoacán; orientación al equipo.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-29",
+    dia: "Miércoles",
+    inicio: "15:00",
+    fin: "16:00",
+    horas: 1,
+    frente: "Hosokawa-MINSA-Reynera / DA técnico-comercial",
+    tipo: "Alineación de cotización",
+    actividad: "Hosokawa MINSA Fase 2 - Cotización MEOSA",
+    evidencia: "Reunión con Israel Hosokawa y equipo para alinear pormenores de alcance Fase 2 y qué debe cotizarse; fecha límite de propuesta 11/05/2026.",
+    entregables: "Criterios de cotización Fase 2 MINSA; lista de información pendiente de Hosokawa.",
+    estado: "Auditable",
+  },
+  {
+    fecha: "2026-04-29",
+    dia: "Miércoles",
+    inicio: "20:00",
+    fin: "21:00",
+    horas: 1,
+    frente: "SuKarne / Póliza de mantenimiento",
+    tipo: "Seguimiento fuera de horario",
+    actividad: "Seguimiento Póliza - MEOSA",
+    evidencia: "Seguimiento a intervención Michoacán Roladora 2.",
+    entregables: "Seguimiento de intervención Michoacán ROL02.",
+    estado: "Auditable",
+  },
+];
+
+const colorByFront = {
+  "Solvet / DA y propuesta": "#2563eb",
+  "SuKarne / Póliza de mantenimiento": "#16a34a",
+  "Hosokawa-MINSA-Reynera / DA técnico-comercial": "#9333ea",
+  "Culiacán / Cliente roladora": "#eab308",
+  "Bachoco / DA técnico": "#0f766e",
+  "MEOSA Interno / Planner y mentoría": "#f97316",
+  "SESAJAL / DA ingeniería detalle": "#dc2626",
+  "Comercializadora El Carmen / primer contacto": "#db2777",
+  "AltoSano FeedParts / termometría": "#0891b2",
+  "Holcim / soporte técnico fabricación": "#525252",
+};
+
+function formatMoney(value) {
+  return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(value);
+}
+
+function formatDate(date) {
+  return new Date(`${date}T12:00:00`).toLocaleDateString("es-MX", { day: "2-digit", month: "short" });
+}
+
+export default function DashboardAuditoriaMEOSAAbril() {
+  const [frontFilter, setFrontFilter] = useState("Todos");
+  const [textFilter, setTextFilter] = useState("");
+  
+  const totalHH = useMemo(() => actividades.reduce((s, a) => s + a.horas, 0), []);
+  const horasPaquete = Math.min(totalHH, PAQUETE_HH);
+  const horasAdicionales = Math.max(totalHH - PAQUETE_HH, 0);
+  const montoPaquete = horasPaquete > 0 ? PAQUETE_HH * TARIFA_PAQUETE : 0;
+  const montoAdicional = horasAdicionales * TARIFA_ADICIONAL;
+  const montoTotal = montoPaquete + montoAdicional;
+
+  const fronts = useMemo(() => ["Todos", ...Array.from(new Set(actividades.map((a) => a.frente))).sort()], []);
+
+  const filtradas = useMemo(() => {
+    const q = textFilter.trim().toLowerCase();
+    return actividades.filter((a) => {
+      const matchesFront = frontFilter === "Todos" || a.frente === frontFilter;
+      const matchesText = !q || `${a.fecha} ${a.frente} ${a.actividad} ${a.evidencia} ${a.entregables} ${a.tipo}`.toLowerCase().includes(q);
+      return matchesFront && matchesText;
+    });
+  }, [frontFilter, textFilter]);
+
+  const resumenFrente = useMemo(() => {
+    const map = new Map();
+    actividades.forEach((a) => {
+      const cur = map.get(a.frente) || { frente: a.frente, horas: 0, eventos: 0 };
+      cur.horas += a.horas;
+      cur.eventos += 1;
+      map.set(a.frente, cur);
+    });
+    return Array.from(map.values()).sort((a, b) => b.horas - a.horas);
+  }, []);
+
+  const resumenFiltrado = useMemo(() => {
+    const total = filtradas.reduce((s, a) => s + a.horas, 0);
+    const eventos = filtradas.length;
+    const frentes = new Set(filtradas.map((a) => a.frente)).size;
+    return { total, eventos, frentes };
+  }, [filtradas]);
+
+  const porDia = useMemo(() => {
+    const map = new Map();
+    actividades.forEach((a) => {
+      const cur = map.get(a.fecha) || { fecha: a.fecha, horas: 0, eventos: 0 };
+      cur.horas += a.horas;
+      cur.eventos += 1;
+      map.set(a.fecha, cur);
+    });
+    return Array.from(map.values()).sort((a, b) => a.fecha.localeCompare(b.fecha));
+  }, []);
+
+  const porTipo = useMemo(() => {
+    const map = new Map();
+    actividades.forEach((a) => {
+      const cur = map.get(a.tipo) || { tipo: a.tipo, horas: 0 };
+      cur.horas += a.horas;
+      map.set(a.tipo, cur);
+    });
+    return Array.from(map.values()).sort((a, b) => b.horas - a.horas).slice(0, 10);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 p-6">
+      <div className="mx-auto max-w-7xl space-y-6">
+        <header className="rounded-3xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800 p-6 shadow-2xl">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <div class="flex items-center gap-3 mb-3">
-                    <span class="bg-ph-gold text-ph-navy px-3 py-0.5 rounded font-black tracking-widest text-[10px] uppercase shadow-sm">
-                        SOCIO ESTRATÉGICO
-                    </span>
-                    <span class="text-blue-200/50 font-bold text-xs uppercase tracking-tighter">MEOSA EXCLUSIVE REPORT</span>
-                </div>
-                <h1 class="text-5xl font-black tracking-tighter uppercase leading-none">Informe de Valor <br><span class="text-ph-gold">Abril 2026</span></h1>
-                <p class="text-blue-100 text-sm mt-3 font-medium border-l-2 border-ph-gold pl-3 italic">
-                    Propuesta ME26-004R2 | Proyectos: Hosokawa • Gramosa • DA
-                </p>
+              <p className="text-sm uppercase tracking-[0.25em] text-sky-300">Reporte mensual · ME26-004R2</p>
+              <h1 className="mt-2 text-3xl font-bold md:text-5xl">MEOSA · Abril 2026</h1>
+              <p className="mt-3 max-w-4xl text-slate-300">
+                Resumen mensual de actividades, frentes de trabajo, horas aplicadas y entregables generados bajo el esquema de colaboración estratégica vigente.
+              </p>
             </div>
-            <div class="mt-8 md:mt-0 bg-white/5 p-6 rounded-3xl backdrop-blur-xl border border-white/10 text-right shadow-inner">
-                <p class="text-[10px] uppercase font-black opacity-50 tracking-[0.2em] mb-1">Cierre Auditado</p>
-                <p class="text-3xl font-black">03 MAY 2026</p>
-                <p class="text-[10px] font-bold text-ph-gold mt-1 uppercase">Validado por J.A.R.V.I.S.</p>
+            <div className="rounded-2xl border border-amber-400/30 bg-amber-400/10 px-5 py-4 text-amber-100">
+              <p className="text-sm text-amber-200">Base de negociación</p>
+              <p className="text-3xl font-bold">60 HH</p>
+              <p className="text-xs text-amber-100">{formatMoney(TARIFA_PAQUETE)} / HH paquete · {formatMoney(TARIFA_ADICIONAL)} / HH adicional</p>
             </div>
+          </div>
         </header>
 
-        <main class="p-10">
-            <!-- BLOQUE DE MÉTRICAS CLAVE -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-                
-                <!-- CONSUMO REAL (45 HH) -->
-                <div class="lg:col-span-2 bg-slate-50 p-8 rounded-[2rem] border-l-8 border-ph-gold shadow-sm">
-                    <h2 class="text-2xl font-black mb-8 uppercase tracking-tight flex items-center gap-3">
-                        <span class="bg-ph-navy text-white w-8 h-8 rounded-full flex items-center justify-center text-sm italic">PH</span>
-                        Balance de Colaboración Estratégica
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-                        <div class="bg-ph-navy text-white p-5 rounded-[1.5rem] shadow-lg">
-                            <p class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest">Capacidad</p>
-                            <p class="text-5xl font-black mono leading-none">60<span class="text-lg ml-1 opacity-40">HH</span></p>
-                        </div>
-                        <div class="bg-white border-2 border-ph-navy p-5 rounded-[1.5rem] shadow-inner">
-                            <p class="text-[10px] font-bold text-ph-navy/50 uppercase mb-1 tracking-widest text-ph-gold">Auditadas</p>
-                            <p class="text-5xl font-black text-ph-navy mono leading-none">45<span class="text-sm ml-1 opacity-40">HH</span></p>
-                        </div>
-                        <div class="bg-ph-success text-white p-5 rounded-[1.5rem] shadow-lg">
-                            <p class="text-[10px] font-bold opacity-60 uppercase mb-1 tracking-widest">A Favor Mayo</p>
-                            <p class="text-5xl font-black mono leading-none">15<span class="text-lg ml-1 opacity-40">HH</span></p>
-                        </div>
-                    </div>
-                </div>
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-6">
+          <Kpi title="HH del periodo" value={String(totalHH)} note="Registro mensual consolidado" />
+          <Kpi title="HH paquete" value={String(horasPaquete)} note="Base mínima mensual" tone="success" />
+          <Kpi title="HH adicionales" value={String(horasAdicionales)} note="Excedente sobre 60 HH" tone="warning" />
+          <Kpi title="Monto paquete" value={formatMoney(montoPaquete)} note="60 HH × $792" tone="money" />
+          <Kpi title="Monto adicional" value={formatMoney(montoAdicional)} note={`${horasAdicionales} HH × $900`} tone="money" />
+          <Kpi title="Total estimado" value={formatMoney(montoTotal)} note="Paquete + adicional" tone="money" />
+        </section>
 
-                <!-- FOCO ESTRATÉGICO MAYO -->
-                <div class="bg-ph-navy p-8 rounded-[2rem] text-white shadow-xl flex flex-col justify-between">
-                    <div>
-                        <h3 class="text-ph-gold font-black uppercase text-xs tracking-[0.2em] mb-6 border-b border-white/10 pb-4 italic">Next Targets: May '26</h3>
-                        <ul class="space-y-6">
-                            <li class="flex gap-4">
-                                <span class="text-ph-gold font-black bg-white/10 w-6 h-6 rounded-full flex items-center justify-center text-xs italic shrink-0">01</span>
-                                <p class="text-[11px] uppercase font-black leading-tight tracking-tight">Cierre de Planos Estructurales Gramosa para inicio de fabricación.</p>
-                            </li>
-                            <li class="flex gap-4">
-                                <span class="text-ph-gold font-black bg-white/10 w-6 h-6 rounded-full flex items-center justify-center text-xs italic shrink-0">02</span>
-                                <p class="text-[11px] uppercase font-black leading-tight tracking-tight">Implementación operativa de Mesa Técnica (Daniel Zepeda).</p>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+        <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+          <div className="xl:col-span-2 rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold">Horas por frente</h2>
+              <p className="text-sm text-slate-400">Distribución de dedicación por frente de trabajo.</p>
             </div>
-
-            <!-- BITÁCORA DE EVIDENCIAS JUSTIFICADAS -->
-            <div class="mb-12">
-                <h2 class="text-3xl font-black mb-8 uppercase tracking-tighter flex items-center gap-4 text-ph-navy">
-                    <span class="text-ph-success font-bold text-4xl">✔</span> Bitácora de Evidencias Auditadas (45 HH)
-                </h2>
-                <div class="overflow-hidden rounded-[2rem] border border-slate-200 shadow-2xl bg-white">
-                    <table class="w-full text-left border-collapse">
-                        <thead>
-                            <tr class="bg-ph-navy text-white text-[11px] font-black uppercase tracking-widest">
-                                <th class="p-6">Unidad</th>
-                                <th class="p-6">Actividad Realizada (Contexto MEOSA)</th>
-                                <th class="p-6">Evidencia / Entregable</th>
-                                <th class="p-6 text-center">HH</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-[12px] font-bold text-slate-700 uppercase">
-                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                                <td class="p-6 text-ph-navy font-black italic tracking-tighter">Gramosa Eng.</td>
-                                <td class="p-6 font-medium leading-tight">Revisión Ingeniería de Detalle Civil y Mecánica.</td>
-                                <td class="p-6">
-                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px] mr-1">📁 Planos Estructurales R2</span>
-                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px]">📝 Minuta J. Flores</span>
-                                </td>
-                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">15</td>
-                            </tr>
-                            <tr class="border-b border-slate-50 hover:bg-red-50/30 transition-colors">
-                                <td class="p-6 text-ph-hosokawa font-black italic tracking-tighter">Hosokawa Link</td>
-                                <td class="p-6 font-medium leading-tight">Dosificación LIW BACHOCO Tres Valles (Arquitectura Vertical).</td>
-                                <td class="p-6">
-                                    <span class="px-2 py-1 bg-red-50 text-ph-hosokawa rounded border border-ph-hosokawa/10 text-[9px] mr-1">🔗 Ficha LIW Vertical</span>
-                                    <span class="px-2 py-1 bg-red-50 text-ph-hosokawa rounded border border-ph-hosokawa/10 text-[9px]">📧 Aprobación Fábrica</span>
-                                </td>
-                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">10</td>
-                            </tr>
-                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                                <td class="p-6 text-ph-navy font-black italic tracking-tighter">DA Mesa Técnica</td>
-                                <td class="p-6 font-medium leading-tight">Levantamiento Campo Proyecto MINZA y Procesos Internos.</td>
-                                <td class="p-6">
-                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px] mr-1">📐 Diagrama Fronteras</span>
-                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px]">📋 Checklist Campo</span>
-                                </td>
-                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">10</td>
-                            </tr>
-                            <tr class="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                                <td class="p-6 text-ph-navy font-black italic tracking-tighter">Cotizaciones</td>
-                                <td class="p-6 font-medium leading-tight text-slate-500">Soporte Técnico-Comercial en Proyectos Estratégicos.</td>
-                                <td class="p-6">
-                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px] mr-1">🔢 Matriz de Costeo</span>
-                                    <span class="px-2 py-1 bg-ph-bg text-ph-navy rounded border border-ph-navy/10 text-[9px]">📄 Oferta MEOSA V2</span>
-                                </td>
-                                <td class="p-6 text-center text-ph-navy text-xl font-black mono italic">10</td>
-                            </tr>
-                            <tr class="bg-slate-100/50">
-                                <td colspan="3" class="p-6 text-right font-black tracking-[0.3em] text-slate-400 text-xs">Devengado Real Abril:</td>
-                                <td class="p-6 text-center text-4xl font-black text-ph-navy border-l-8 border-ph-gold">45 HH</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={resumenFrente} margin={{ left: 10, right: 20, top: 10, bottom: 85 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="frente" angle={-35} textAnchor="end" interval={0} height={110} tick={{ fill: "#cbd5e1", fontSize: 11 }} />
+                  <YAxis tick={{ fill: "#cbd5e1" }} />
+                  <Tooltip contentStyle={{ background: "#020617", border: "1px solid #334155", borderRadius: 12 }} />
+                  <Bar dataKey="horas" name="HH" radius={[8, 8, 0, 0]}>
+                    {resumenFrente.map((entry) => (
+                      <Cell key={entry.frente} fill={colorByFront[entry.frente] || "#38bdf8"} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
+          </div>
 
-            <!-- SECCIÓN FINANCIERA -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-stretch">
-                <!-- INVERSIÓN MENSUAL -->
-                <div class="bg-white p-10 rounded-[2.5rem] border-2 border-slate-100 shadow-xl flex flex-col justify-center text-center relative overflow-hidden group">
-                    <p class="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-3">Inversión Mensual Fija</p>
-                    <p class="text-6xl font-black text-ph-navy mono tracking-tighter">$47,520</p>
-                    <div class="mt-4 flex flex-col items-center gap-2">
-                        <span class="text-[10px] font-black bg-ph-success text-white px-4 py-1.5 rounded-full shadow-lg">● PAQUETE ESTRATÉGICO 60 HH</span>
-                    </div>
-                </div>
-
-                <!-- SALDOS Y CRÉDITO -->
-                <div class="bg-ph-navy p-10 rounded-[2.5rem] text-white shadow-2xl flex flex-col justify-center relative overflow-hidden">
-                    <div class="flex justify-between items-center border-b border-white/10 pb-5 mb-5">
-                        <span class="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">Saldo Diseño PFD</span>
-                        <span class="text-2xl font-black text-ph-gold mono tracking-tighter">$19,968.00</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">Préstamo Abril</span>
-                        <span class="text-2xl font-black text-white/90 mono tracking-tighter">$6,500.00</span>
-                    </div>
-                </div>
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+            <h2 className="text-xl font-semibold">Distribución</h2>
+            <p className="mb-3 text-sm text-slate-400">Participación porcentual por frente.</p>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie data={resumenFrente} dataKey="horas" nameKey="frente" innerRadius={62} outerRadius={105} paddingAngle={2}>
+                    {resumenFrente.map((entry) => (
+                      <Cell key={entry.frente} fill={colorByFront[entry.frente] || "#38bdf8"} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => [`${Number(value).toFixed(0)} HH`, "Horas"]} contentStyle={{ background: "#020617", border: "1px solid #334155", borderRadius: 12 }} />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
-        </main>
+          </div>
+        </section>
 
-        <footer class="p-8 text-center text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] bg-slate-50 border-t">
-            Value Report - DGSP Pedro Herrera © 2026 | No Limits Performance
-        </footer>
+        <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+            <h2 className="text-xl font-semibold">Carga diaria</h2>
+            <p className="mb-3 text-sm text-slate-400">Distribución diaria de horas aplicadas durante el periodo.</p>
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={porDia} margin={{ left: 0, right: 20, top: 10, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="fecha" tickFormatter={formatDate} tick={{ fill: "#cbd5e1", fontSize: 12 }} />
+                  <YAxis tick={{ fill: "#cbd5e1" }} />
+                  <Tooltip labelFormatter={(value) => formatDate(value)} formatter={(value) => [`${Number(value).toFixed(0)} HH`, "Horas"]} contentStyle={{ background: "#020617", border: "1px solid #334155", borderRadius: 12 }} />
+                  <Line type="monotone" dataKey="horas" stroke="#38bdf8" strokeWidth={3} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+            <h2 className="text-xl font-semibold">Top tipos de intervención</h2>
+            <p className="mb-4 text-sm text-slate-400">Lectura funcional de esfuerzo aplicado.</p>
+            <div className="space-y-3">
+              {porTipo.map((item) => (
+                <div key={item.tipo}>
+                  <div className="mb-1 flex justify-between gap-3 text-sm">
+                    <span className="text-slate-200">{item.tipo}</span>
+                    <span className="font-semibold text-sky-300">{item.horas.toFixed(0)} HH</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-800">
+                    <div className="h-full rounded-full bg-sky-400" style={{ width: `${(item.horas / Math.max(...porTipo.map((x) => x.horas))) * 100}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="rounded-3xl border border-slate-800 bg-slate-900 p-5 shadow-xl">
+          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <h2 className="text-xl font-semibold">Detalle de actividades y entregables</h2>
+              <p className="text-sm text-slate-400">Relación de actividades realizadas, evidencia de trabajo, entregables asociados y horas aplicadas.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:min-w-[640px]">
+              <select className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm" value={frontFilter} onChange={(e) => setFrontFilter(e.target.value)}>
+                {fronts.map((f) => <option key={f}>{f}</option>)}
+              </select>
+              <input className="rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-sky-500" placeholder="Buscar: Solvet, reporte, minuta..." value={textFilter} onChange={(e) => setTextFilter(e.target.value)} />
+            </div>
+          </div>
+
+          <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+            <Mini title="HH filtradas" value={resumenFiltrado.total.toFixed(0)} />
+            <Mini title="Eventos filtrados" value={String(resumenFiltrado.eventos)} />
+            <Mini title="Frentes filtrados" value={String(resumenFiltrado.frentes)} />
+          </div>
+
+          <div className="overflow-hidden rounded-2xl border border-slate-800">
+            <div className="max-h-[680px] overflow-auto">
+              <table className="w-full min-w-[1200px] border-collapse text-left text-sm">
+                <thead className="sticky top-0 z-10 bg-slate-950 text-xs uppercase tracking-wide text-slate-400">
+                  <tr>
+                    <th className="px-4 py-3">Fecha</th>
+                    <th className="px-4 py-3">Horario</th>
+                    <th className="px-4 py-3">HH</th>
+                    <th className="px-4 py-3">Frente</th>
+                    <th className="px-4 py-3">Actividad</th>
+                    <th className="px-4 py-3">Evidencia</th>
+                    <th className="px-4 py-3">Entregables</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {filtradas.map((a, idx) => (
+                    <tr key={`${a.fecha}-${a.inicio}-${idx}`} className="align-top hover:bg-slate-800/45">
+                      <td className="px-4 py-3 font-medium text-slate-100">{formatDate(a.fecha)}<br /><span className="text-xs text-slate-500">{a.dia}</span></td>
+                      <td className="px-4 py-3 text-slate-300">{a.fin ? `${a.inicio}–${a.fin}` : a.inicio}</td>
+                      <td className="px-4 py-3 font-bold text-sky-300">{a.horas.toFixed(0)}</td>
+                      <td className="px-4 py-3"><span className="inline-flex items-center gap-2 rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-200"><span className="h-2 w-2 rounded-full" style={{ backgroundColor: colorByFront[a.frente] || "#38bdf8" }} />{a.frente}</span></td>
+                      <td className="px-4 py-3"><p className="font-semibold text-slate-100">{a.actividad}</p><p className="mt-1 text-xs text-slate-400">{a.tipo}</p></td>
+                      <td className="px-4 py-3 text-slate-300">{a.evidencia}</td>
+                      <td className="px-4 py-3 text-slate-300">{a.entregables}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+            <h2 className="text-xl font-semibold">Lectura ejecutiva</h2>
+            <ul className="mt-3 space-y-2 text-sm text-slate-300">
+              <li>• Horas consolidadas del periodo: <strong>{totalHH} HH</strong>.</li>
+              <li>• Frente dominante: <strong>Solvet</strong>, con definición de alcance, levantamiento, reporte y propuesta.</li>
+              <li>• Segundo bloque: <strong>SuKarne</strong>, principalmente póliza, reportes, seguimiento técnico y atención de fallas.</li>
+              <li>• Tercer bloque: <strong>Hosokawa-MINSA-Reynera</strong>, con DA, minutas, ajustes de propuesta y cotización.</li>
+            </ul>
+          </div>
+          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-5">
+            <h2 className="text-xl font-semibold">Resumen económico</h2>
+            <div className="mt-4 space-y-3 text-sm text-slate-300">
+              <div className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3"><span>Paquete mensual base</span><strong>{PAQUETE_HH} HH · {formatMoney(PAQUETE_HH * TARIFA_PAQUETE)}</strong></div>
+              <div className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3"><span>Horas adicionales</span><strong>{horasAdicionales} HH · {formatMoney(montoAdicional)}</strong></div>
+              <div className="flex items-center justify-between rounded-2xl border border-violet-400/30 bg-violet-400/10 px-4 py-3 text-violet-100"><span>Total del periodo</span><strong>{formatMoney(montoTotal)}</strong></div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
+  );
+}
 
-</body>
-</html>
+function Kpi({ title, value, note, tone = "default" }) {
+  const tones = {
+    default: "border-slate-800 bg-slate-900 text-sky-300",
+    warning: "border-amber-400/30 bg-amber-400/10 text-amber-200",
+    success: "border-emerald-400/30 bg-emerald-400/10 text-emerald-200",
+    money: "border-violet-400/30 bg-violet-400/10 text-violet-200",
+  };
+  return <div className={`rounded-3xl border p-5 shadow-xl ${tones[tone]}`}><p className="text-sm text-slate-300">{title}</p><p className="mt-2 text-3xl font-bold">{value}</p><p className="mt-1 text-xs text-slate-400">{note}</p></div>;
+}
+
+function Mini({ title, value }) {
+  return <div className="rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3"><p className="text-xs uppercase tracking-wide text-slate-500">{title}</p><p className="mt-1 text-xl font-bold text-slate-100">{value}</p></div>;
+}
+
